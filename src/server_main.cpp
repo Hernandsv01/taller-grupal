@@ -1,3 +1,5 @@
-//
-// Created by hernan on 12/05/24.
-//
+#include <iostream>
+
+int main(int argc, char* argv[]) {
+    std::cout << "Hello server!" << std::endl;
+}
