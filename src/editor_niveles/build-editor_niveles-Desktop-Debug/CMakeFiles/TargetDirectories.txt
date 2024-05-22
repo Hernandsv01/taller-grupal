@@ -1,0 +1,4 @@
+/home/mariano/Taller de programacion/taller-grupal/src/editor_niveles/build-editor_niveles-Desktop-Debug/CMakeFiles/editor_niveles.dir
+/home/mariano/Taller de programacion/taller-grupal/src/editor_niveles/build-editor_niveles-Desktop-Debug/CMakeFiles/edit_cache.dir
+/home/mariano/Taller de programacion/taller-grupal/src/editor_niveles/build-editor_niveles-Desktop-Debug/CMakeFiles/rebuild_cache.dir
+/home/mariano/Taller de programacion/taller-grupal/src/editor_niveles/build-editor_niveles-Desktop-Debug/CMakeFiles/editor_niveles_autogen.dir
