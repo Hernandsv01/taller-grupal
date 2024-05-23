@@ -129,6 +129,30 @@ client_gui/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/client_gui.dir/build.make CMakeFiles/client_gui.dir/build
 .PHONY : client_gui/fast
 
+gui_loop.o: gui_loop.cpp.o
+.PHONY : gui_loop.o
+
+# target to build an object file
+gui_loop.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/client_gui.dir/build.make CMakeFiles/client_gui.dir/gui_loop.cpp.o
+.PHONY : gui_loop.cpp.o
+
+gui_loop.i: gui_loop.cpp.i
+.PHONY : gui_loop.i
+
+# target to preprocess a source file
+gui_loop.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/client_gui.dir/build.make CMakeFiles/client_gui.dir/gui_loop.cpp.i
+.PHONY : gui_loop.cpp.i
+
+gui_loop.s: gui_loop.cpp.s
+.PHONY : gui_loop.s
+
+# target to generate assembly for a file
+gui_loop.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/client_gui.dir/build.make CMakeFiles/client_gui.dir/gui_loop.cpp.s
+.PHONY : gui_loop.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -162,6 +186,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... client_gui"
+	@echo "... gui_loop.o"
+	@echo "... gui_loop.i"
+	@echo "... gui_loop.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
