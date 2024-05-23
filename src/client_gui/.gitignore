@@ -1,0 +1,8 @@
+# Ejecutable
+client_gui
+
+
+# CMake
+CMakeFiles
+cmake_install.*
+CMakeCache.*
