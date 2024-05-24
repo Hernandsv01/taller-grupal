@@ -11,7 +11,17 @@ double get_random() {
     return random[x];
 }
 
-GuiLoop::GuiLoop() : tick_actual(0){};
+GuiLoop::GuiLoop() : tick_actual(0) {
+    EstadoJugador jugador;
+    jugador.direccion = Direccion::Derecha;
+    jugador.id = 0;
+    jugador.posicion = Posicion{0.5, 1.5};
+    jugador.puntosDeVida = 10;
+    jugador.tipoPersonaje = TipoPersonaje::Jazz;
+    jugador.puntaje = 0;
+
+    estadoActual.jugadores.emplace_back(jugador);
+};
 
 std::string GuiLoop::text_description() { return "GuiLoop"; }
 
@@ -94,11 +104,18 @@ void GuiLoop::ejecutar_renderer() {
     // renderer.renderizar(tick_actual, estadoActual);
 
     std::cout << "tick: " << tick_actual << "\n";
+    std::cout << "(" << estadoActual.jugadores[0].posicion.x << ", "
+              << estadoActual.jugadores[0].posicion.y << ")" << std::endl;
+
     return;
 }
 
 void GuiLoop::actualizar_estado() {
     // TODO: Acá deberia codear la manera de actualizar el estado actual
+
+    estadoActual.jugadores[0].posicion.x += 0.3;
+    estadoActual.jugadores[0].posicion.y += 0.1;
+
     // while (true) {
     //     auto update = queueUpdates.tryrecv();
     //     if (update == None)

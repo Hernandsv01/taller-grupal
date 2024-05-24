@@ -11,6 +11,7 @@
 #include <chrono>
 
 #include "../common/thread.h"
+#include "estado_juego.h"
 
 class GuiLoop : public Thread {
     std::chrono::steady_clock reloj;
@@ -20,7 +21,8 @@ class GuiLoop : public Thread {
 
     // TODO: estado que Mariano debe actualizar,
     // TODO: a partir de las updates que recibe de un Queue?
-    // EstadoJuego estadoActual;
+    EstadoJuego estadoActual;
+
     // Queue<update> queueUpdates;
 
     uint32_t tick_actual;
