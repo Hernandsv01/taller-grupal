@@ -13,12 +13,19 @@ double get_random() {
 
 GuiLoop::GuiLoop() : tick_actual(0){};
 
-void GuiLoop::ejecutar() {
+std::string GuiLoop::text_description() { return "GuiLoop"; }
+
+void GuiLoop::stop_custom() {
+    // No tengo que hacer nada, ya que el GuiLoop se va a terminar de ejecutar
+    //  solo cuando termine el proximo tick, y _keep_running sea falso
+}
+
+void GuiLoop::run() {
     using namespace std::chrono;
     time_point INICIO_ABSOLUTO = reloj.now();
     time_point inicio_tick = INICIO_ABSOLUTO;
 
-    while (true) {
+    while (_keep_running) {
         /*
 
         inicio_tick     final_tick

@@ -11,7 +11,12 @@ int main() {
 
     GuiLoop loop;
 
-    loop.ejecutar();
+    loop.start();
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    loop.stop();
+    loop.join();
 
     return 0;
 }

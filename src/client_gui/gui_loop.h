@@ -10,7 +10,9 @@
 
 #include <chrono>
 
-class GuiLoop {
+#include "../common/thread.h"
+
+class GuiLoop : public Thread {
     std::chrono::steady_clock reloj;
 
     // TODO: Acá matias debería poner el renderer para que se cree
@@ -26,9 +28,13 @@ class GuiLoop {
    public:
     GuiLoop();
 
-    void ejecutar();
-
    private:
+    void run() override;
+
+    void stop_custom() override;
+
+    std::string text_description() override;
+
     void ejecutar_renderer();
 
     void actualizar_estado();
