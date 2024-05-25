@@ -1,9 +1,9 @@
-#include "client_protocol.h"
+#include "protocol.h"
 
 ClientProtocol::ClientProtocol() {}
 
-void ClientProtocol::receive_msj() {}
+void ClientProtocol::send_key_event() {
 
-void ClientProtocol::send_msj() {}
+}
 
 

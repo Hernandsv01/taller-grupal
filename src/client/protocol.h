@@ -10,7 +10,10 @@ private:
 public:
     ClientProtocol();
 
+    //envia al server la tecla presionada
     void send_key_event();
+
+
 
 };
 
