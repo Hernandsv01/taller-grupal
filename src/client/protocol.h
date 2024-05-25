@@ -1,7 +1,7 @@
 #ifndef CLIENT_PROTOCOL_H
 #define CLIENT_PROTOCOL_H
 
-#include "common_socket.h"
+#include "../common/socket.h"
 
 class ClientProtocol{
 private:
@@ -10,9 +10,7 @@ private:
 public:
     ClientProtocol();
 
-    void receive_msj();
-
-    void send_msj();
+    void send_key_event();
 
 };
 
