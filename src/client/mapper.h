@@ -4,13 +4,9 @@
 #include "../common/dtos.h"
 #include <SDL2/SDL.h>
 
-class Mapper{
-private:
-public:
+struct Mapper{
     Mapper();
-
     void map_key_event();
-
 };
 
 #endif //MAPPER_H
