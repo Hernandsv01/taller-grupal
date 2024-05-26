@@ -1,6 +1,7 @@
 #ifndef EVENTLISTENER_H
 #define EVENTLISTENER_H
 
+#include <SDL2/SDL.h>
 #include "../common/thread.h"
 #include "../common/socket.h"
 #include "protocol.h"
@@ -12,15 +13,16 @@
 
 class EventListener : public Thread{
 private:
+    SDL_Window& window;
     ClientProtocol protocol;
     Mapper mapper;
 
     void process_event(const SDL_Event& event, bool& running) {
 public:
-    static EventListener(Socket socket);
+    static EventListener(SDL_Window& window, Socket& socket);
 
     //loop que escucha los eventos del teclado
-    void listen();
+    void run();
 
 };
 
