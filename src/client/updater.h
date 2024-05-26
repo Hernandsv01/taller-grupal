@@ -9,11 +9,14 @@
 class Updater : public Thread{
 private:
     ClientProtocol protocol;
+    bool is_running = true;
 public:
-    static Updater(Socket socket);
+    static Updater(Socket& socket);
 
     //envia la informacion actualizada al
-    void update();
+    void run();
+
+    void stop();
 };
 
 #endif //UPDATER_H
