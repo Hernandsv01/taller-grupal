@@ -15,6 +15,12 @@ ActionType Mapper::map_key_event(const SDL_EVENT& event){
             case SDLK_SPACE:
                 action = JUMP;
                 break;
+            case SDLK_RETURN:
+                action = SHOOT;
+                break;
+            case SDLK_m:
+                action = SPECIAL;
+                break;
             default:
                 action = NULL_ACTION;
         }
