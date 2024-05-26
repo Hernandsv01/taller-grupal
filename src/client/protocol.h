@@ -2,6 +2,7 @@
 #define CLIENT_PROTOCOL_H
 
 #include "../common/socket.h"
+#include "../common/dtos.h"
 
 class ClientProtocol{
 private:
@@ -11,7 +12,7 @@ public:
     ClientProtocol(Socket& socket);
 
     //envia al server la tecla presionada
-    void send_key_event();
+    void send_action(ActionType& key_event);
 
     void receive_ticks();
 
