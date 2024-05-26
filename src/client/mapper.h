@@ -6,7 +6,7 @@
 
 struct Mapper{
     Mapper();
-    void map_key_event();
+    ActionType map_key_event();
 };
 
 #endif //MAPPER_H
