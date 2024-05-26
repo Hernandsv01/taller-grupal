@@ -5,15 +5,15 @@
 
 class ClientProtocol{
 private:
-    Socket socket;
+    Socket& socket;
 
 public:
-    ClientProtocol();
+    ClientProtocol(Socket& socket);
 
     //envia al server la tecla presionada
     void send_key_event();
 
-
+    void receive_ticks();
 
 };
 
