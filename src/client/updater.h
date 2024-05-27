@@ -1,8 +1,8 @@
 #ifndef UPDATER_H
 #define UPDATER_H
 
-#include "../common/thread.h"
-#include "../common/socket.h"
+#include "../common/library/thread.h"
+#include "../common/library/socket.h"
 #include "protocol.h"
 //Escucha el server y actualiza los estados de las entidades del juego.
 //

@@ -2,8 +2,8 @@
 #define EVENTLISTENER_H
 
 #include <SDL2/SDL.h>
-#include "../common/thread.h"
-#include "../common/socket.h"
+#include "../common/library/thread.h"
+#include "../common/library/socket.h"
 #include "protocol.h"
 #include "mapper.h"
 
