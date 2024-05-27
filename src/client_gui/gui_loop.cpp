@@ -15,7 +15,7 @@ GuiLoop::GuiLoop() : tick_actual(0) {
     EstadoJugador jugador;
     jugador.direccion = Direccion::Derecha;
     jugador.id = 0;
-    jugador.posicion = Posicion{0.5, 1.5};
+    jugador.posicion = Posicion{5, 1};
     jugador.puntosDeVida = 10;
     jugador.tipoPersonaje = TipoPersonaje::Jazz;
     jugador.puntaje = 0;

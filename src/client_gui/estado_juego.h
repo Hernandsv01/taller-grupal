@@ -14,8 +14,9 @@ struct Enemigo;
 struct Item;
 
 struct Posicion {
-    float x;
-    float y;
+    //Modifico a "int", son los pixeles
+    int x;
+    int y;
 };
 enum Direccion { Izquierda, Derecha };
 
@@ -33,7 +34,8 @@ struct Entidad {
 };
 
 enum Estado {
-    Disparar,
+    Parado,
+    Disparando,
     Saltando,
     Cayendo,
     Corriendo,
