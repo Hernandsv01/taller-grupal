@@ -14,6 +14,10 @@ std::vector<Update> Update_queue::pop() {
 }
 
 std::vector<Update> Update_queue::try_pop() {
-    return updates.try_pop();
+    std::vector<Update> update;
+    if(updates.try_pop(update)){
+        return update;
+    }
+    return update;
 }
 

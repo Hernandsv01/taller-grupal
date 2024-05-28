@@ -14,7 +14,7 @@ private:
     ClientProtocol protocol;
     bool is_running = true;
 public:
-    static Updater(Socket& socket);
+    explicit Updater(Socket& socket);
 
     //envia la informacion actualizada al
     void run();
