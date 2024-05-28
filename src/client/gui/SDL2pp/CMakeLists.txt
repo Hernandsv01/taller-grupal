@@ -79,89 +79,89 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SDL2PP_WARNINGS}")
 
 # config.h
 configure_file(
-	SDL2pp/Config.hh.in
+        SDL2pp/Config.hh.in
 	SDL2pp/Config.hh
 )
 
 # sources
 set(LIBRARY_SOURCES
-	SDL2pp/AudioDevice.cc
-	SDL2pp/AudioLock.cc
-	SDL2pp/AudioSpec.cc
-	SDL2pp/Color.cc
-	SDL2pp/Exception.cc
-	SDL2pp/Point.cc
-	SDL2pp/RWops.cc
-	SDL2pp/Rect.cc
-	SDL2pp/Renderer.cc
-	SDL2pp/SDL.cc
-	SDL2pp/Surface.cc
-	SDL2pp/SurfaceLock.cc
-	SDL2pp/Texture.cc
-	SDL2pp/TextureLock.cc
-	SDL2pp/Wav.cc
-	SDL2pp/Window.cc
+        SDL2pp/AudioDevice.cc
+        SDL2pp/AudioLock.cc
+        SDL2pp/AudioSpec.cc
+        SDL2pp/Color.cc
+        SDL2pp/Exception.cc
+        SDL2pp/Point.cc
+        SDL2pp/RWops.cc
+        SDL2pp/Rect.cc
+        SDL2pp/Renderer.cc
+        SDL2pp/SDL.cc
+        SDL2pp/Surface.cc
+        SDL2pp/SurfaceLock.cc
+        SDL2pp/Texture.cc
+        SDL2pp/TextureLock.cc
+        SDL2pp/Wav.cc
+        SDL2pp/Window.cc
 )
 
 set(LIBRARY_HEADERS
-	SDL2pp/AudioDevice.hh
-	SDL2pp/AudioSpec.hh
-	SDL2pp/Color.hh
-	SDL2pp/ContainerRWops.hh
-	SDL2pp/Exception.hh
-	SDL2pp/Optional.hh
-	SDL2pp/Point.hh
-	SDL2pp/RWops.hh
-	SDL2pp/Rect.hh
-	SDL2pp/Renderer.hh
-	SDL2pp/SDL.hh
-	SDL2pp/SDL2pp.hh
-	SDL2pp/StreamRWops.hh
-	SDL2pp/Surface.hh
-	SDL2pp/Texture.hh
-	SDL2pp/Wav.hh
-	SDL2pp/Window.hh
+        SDL2pp/AudioDevice.hh
+        SDL2pp/AudioSpec.hh
+        SDL2pp/Color.hh
+        SDL2pp/ContainerRWops.hh
+        SDL2pp/Exception.hh
+        SDL2pp/Optional.hh
+        SDL2pp/Point.hh
+        SDL2pp/RWops.hh
+        SDL2pp/Rect.hh
+        SDL2pp/Renderer.hh
+        SDL2pp/SDL.hh
+        SDL2pp/SDL2pp.hh
+        SDL2pp/StreamRWops.hh
+        SDL2pp/Surface.hh
+        SDL2pp/Texture.hh
+        SDL2pp/Wav.hh
+        SDL2pp/Window.hh
 )
 
 # optional sources
 if(SDL2PP_WITH_TTF)
 	set(LIBRARY_SOURCES
 		${LIBRARY_SOURCES}
-		SDL2pp/SDLTTF.cc
-		SDL2pp/Font.cc
+            SDL2pp/SDLTTF.cc
+            SDL2pp/Font.cc
 	)
 	set(LIBRARY_HEADERS
 		${LIBRARY_HEADERS}
-		SDL2pp/SDLTTF.hh
-		SDL2pp/Font.hh
+            SDL2pp/SDLTTF.hh
+            SDL2pp/Font.hh
 	)
 endif()
 
 if(SDL2PP_WITH_IMAGE)
 	set(LIBRARY_SOURCES
 		${LIBRARY_SOURCES}
-		SDL2pp/SDLImage.cc
+            SDL2pp/SDLImage.cc
 	)
 	set(LIBRARY_HEADERS
 		${LIBRARY_HEADERS}
-		SDL2pp/SDLImage.hh
+            SDL2pp/SDLImage.hh
 	)
 endif()
 
 if(SDL2PP_WITH_MIXER)
 	set(LIBRARY_SOURCES
 		${LIBRARY_SOURCES}
-		SDL2pp/Chunk.cc
-		SDL2pp/Mixer.cc
-		SDL2pp/Music.cc
-		SDL2pp/SDLMixer.cc
+            SDL2pp/Chunk.cc
+            SDL2pp/Mixer.cc
+            SDL2pp/Music.cc
+            SDL2pp/SDLMixer.cc
 	)
 	set(LIBRARY_HEADERS
 		${LIBRARY_HEADERS}
-		SDL2pp/Chunk.hh
-		SDL2pp/Mixer.hh
-		SDL2pp/Music.hh
-		SDL2pp/SDLMixer.hh
+            SDL2pp/Chunk.hh
+            SDL2pp/Mixer.hh
+            SDL2pp/Music.hh
+            SDL2pp/SDLMixer.hh
 	)
 endif()
 
@@ -205,7 +205,7 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
 	# doxygen
 	find_package(Doxygen)
 	if(DOXYGEN_FOUND)
-		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+		configure_file(Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 		add_custom_target(doxygen
 			${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -246,9 +246,9 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
 	install(
 		FILES
 			${PROJECT_BINARY_DIR}/cmake/SDL2ppConfig.cmake
-			cmake/FindSDL2_image.cmake
-			cmake/FindSDL2_ttf.cmake
-			cmake/FindSDL2_mixer.cmake
+            cmake/FindSDL2_image.cmake
+            cmake/FindSDL2_ttf.cmake
+            cmake/FindSDL2_mixer.cmake
 		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SDL2pp
 	)
 endif()

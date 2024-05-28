@@ -45,7 +45,7 @@ libSDL2pp.so
 libSDL2pp.so.*
 libSDL2pp.dylib
 libSDL2pp.*.dylib
-tests/live_*
+tests/live_mixer.cc
 tests/test_*
 !tests/live_*.cc
 !tests/test_*.cc

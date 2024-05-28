@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 2.9)
 project(client_gui)
 
 SET(TARGET_H
-    gui_loop.h  
+        gui_loop.h
    )
 
 SET(TARGET_SRC
-    gui_loop.cpp
-    main.cpp    
+        gui_loop.cpp
+        main.cpp
 )
 
 # set up SDL2pp library

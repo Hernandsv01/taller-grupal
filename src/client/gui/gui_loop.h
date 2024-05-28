@@ -10,7 +10,7 @@
 
 #include <chrono>
 
-#include "../common/thread.h"
+#include "../../common/library/thread.h"
 #include "estado_juego.h"
 
 class GuiLoop : public Thread {
