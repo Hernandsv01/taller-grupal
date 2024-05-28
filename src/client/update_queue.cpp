@@ -1,4 +1,5 @@
 #include "update_queue.h"
+Queue<std::vector<Update>> updates;
 
 void Update_queue::push(std::vector<Update> &update) {
     updates.push(update);
