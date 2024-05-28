@@ -4,6 +4,9 @@
 #include "../common/library/thread.h"
 #include "../common/library/socket.h"
 #include "protocol.h"
+#include "update_queue.h"
+#include <vector>
+
 //Escucha el server y actualiza los estados de las entidades del juego.
 //
 class Updater : public Thread{
