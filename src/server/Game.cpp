@@ -15,23 +15,37 @@ Game::Game() : status(Game_status::WAITING) {}
  */
 void Game::run() {
     status = Game_status::RUNNING;
+    using namespace std::chrono;
+    time_point INICIO_ABSOLUTO = reloj.now();
+    time_point inicio_tick = INICIO_ABSOLUTO;
     while (status == Game_status::RUNNING) {
-        for (Client* client : Client_Monitor::getAll()) {
-            uint8_t action = client->getReceiver().get_next_action();
-            process_action(action, client->get_player_position());
-        }
+        time_point final_tick = inicio_tick + TICK_DURATION;
 
-        std::vector<Update> total_updates;
-        std::vector<Update> tick_updates;
-        for (Dynamic_entity entity : entity_pool) {
-            tick_updates = entity.tick();
-            total_updates.insert(total_updates.end(), tick_updates.begin(), tick_updates.end());
-        }
+        run_iteration();
 
-        Client_Monitor::sendAll(total_updates);
+        // Calculate the start time for the next tick
+        inicio_tick += TICK_DURATION;
+        tick_actual += 1;
 
-        // sleep ???
+        // Sleep until the next tick
+        std::this_thread::sleep_until(final_tick);
     }
+}
+
+void Game::run_iteration() {
+    for (Client* client : Client_Monitor::getAll()) {
+        uint8_t action = client->getReceiver().get_next_action();
+        process_action(action, client->get_player_position());
+    }
+
+    std::vector<Update> total_updates;
+    std::vector<Update> tick_updates;
+    for (Dynamic_entity entity : entity_pool) {
+        tick_updates = entity.tick();
+        total_updates.insert(total_updates.end(), tick_updates.begin(), tick_updates.end());
+    }
+
+    Client_Monitor::sendAll(total_updates);
 }
 
 void Game::process_action(uint8_t action, int player) {
