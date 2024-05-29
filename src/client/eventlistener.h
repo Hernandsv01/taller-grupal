@@ -17,9 +17,10 @@ private:
     ClientProtocol protocol;
     Mapper mapper;
 
-    void process_event(const SDL_Event& event, bool& running) {
+    void process_event(const SDL_Event& event, bool& running);
+
 public:
-    static EventListener(SDL_Window& window, Socket& socket);
+    explicit EventListener(SDL_Window& window, Socket& socket);
 
     //loop que escucha los eventos del teclado
     void run();

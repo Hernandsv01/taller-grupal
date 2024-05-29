@@ -3,18 +3,21 @@
 
 #include "../common/library/socket.h"
 #include "../common/dtos.h"
+#include <vector>
 
 class ClientProtocol{
 private:
     Socket& socket;
 
 public:
-    ClientProtocol(Socket& socket);
+    explicit ClientProtocol(Socket& socket);
 
     //envia al server la tecla presionada
     void send_action(ActionType& key_event);
 
-    void receive_ticks();
+    std::vector<Update>  receive_ticks();
+
+    void kill();
 
 };
 

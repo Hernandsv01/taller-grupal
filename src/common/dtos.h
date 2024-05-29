@@ -3,7 +3,7 @@
 
 #include <sstream>
 
-enum ActionType{
+enum ActionType: std::uint8_t {
     NULL_ACTION = 0x00,
 
     JUMP = 0x01,
@@ -23,6 +23,7 @@ struct ActionMessage{
 
 //msj que recibe desde el server para mapear a la entidad.
 struct Update{
+    std::uint8_t id;
     std::uint8_t key;
     std::uint8_t value;
 }__attribute__((packed));

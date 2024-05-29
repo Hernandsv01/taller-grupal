@@ -1,6 +1,5 @@
 #include "protocol.h"
 #include <sstream>
-#include <vector>
 
 ClientProtocol::ClientProtocol(Socket& socket) : socket(socket){}
 
@@ -18,8 +17,13 @@ std::vector<Update> ClientProtocol::receive_ticks() {
     this->socket.recvall(&quantity, sizeof(uint8_t), &was_closed);
     //
     std::vector<Update> update(quantity);
-    this->socket.recvall(&update.data(), sizeof(Update)*quantity, &was_closed); //falta el size of what que no me acuerdo como era
+    this->socket.recvall(update.data(), sizeof(Update)*quantity, &was_closed); //falta el size of what que no me acuerdo como era
     //
     return update;
+}
+
+void ClientProtocol::kill() {
+    socket.shutdown(2);
+    socket.close();
 }
 
