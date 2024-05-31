@@ -6,7 +6,6 @@
 #include "yaml-cpp/yaml.h"
 
 namespace YAML {
-
 template <>
 struct convert<::Map> {
     static Node encode(const ::Map& map) {
@@ -20,17 +19,6 @@ struct convert<::Map> {
 
         node["blocks"] = map.bloques;
 
-        // USADO PARA CONVERTIR EN ARRAY 1D.
-        //  Node nodo_bloques;
-
-        // for (const std::vector<::Block>& fila_bloques : map.bloques) {
-        //     for (const ::Block& block : fila_bloques) {
-        //         nodo_bloques.push_back(block);
-        //     }
-        // }
-
-        // node["blocks"] = nodo_bloques;
-
         return node;
     }
 
@@ -41,19 +29,6 @@ struct convert<::Map> {
         map.size_y = node["size"]["y"].as<uint>();
 
         map.background_texture = node["texture_background"].as<std::string>();
-
-        // USADO PARA CONVERTIR DESDE ARRAY 1D
-        //  std::vector<::Block> tira_de_bloques =
-        //      node["blocks"].as<std::vector<::Block>>();
-
-        // std::vector<std::vector<::Block>> matriz_bloques(
-        //     map.size_y, std::vector<::Block>(map.size_x));
-
-        // for (uint8_t y = 0; y < map.size_y; y++) {
-        //     for (uint8_t x = 0; x < map.size_x; x++) {
-        //         matriz_bloques[y][x] = tira_de_bloques[x + y * map.size_y];
-        //     }
-        // }
 
         map.bloques = node["blocks"].as<std::vector<std::vector<::Block>>>();
 
@@ -75,79 +50,33 @@ struct convert<::Block> {
             return false;
         }
 
-        block.collision = node[0].as<::BlockCollision>();
-
+        block.collision = node[0].as<::Collision>();
         block.texture = node[1].as<::IdTexture>();
         return true;
     }
 };
 
 template <>
-struct convert<::BlockCollision> {
-    static Node encode(const ::BlockCollision& blockCollision) {
+struct convert<::Collision> {
+    static Node encode(const ::Collision& blockCollision) {
         // tengo que usar uint porque sino por alguna razon
         // crea el nodo como un string de bytes, en vez de un numero
         uint number_collision = (uint)blockCollision;
-
         Node node(number_collision);
-
         return node;
     }
 
-    static bool decode(const Node& node, ::BlockCollision& block) {
+    static bool decode(const Node& node, ::Collision& block) {
         if (!node.IsScalar()) return false;
 
         // Como comente antes, tengo que convertirlo a un uint,
         // porque sino hace cosas raras
-        block = static_cast<BlockCollision>(node.as<uint>());
+        block = static_cast<Collision>(node.as<uint>());
 
         return true;
     }
 };
 }  // namespace YAML
-
-int main() {
-    // // Map mapa(2, 3);
-
-    // // mapa.bloques[0][0] = Block{BlockCollision::Air, "textura0"};
-    // // mapa.bloques[0][1] = Block{BlockCollision::Cube, "textura1"};
-    // // mapa.bloques[1][0] = Block{BlockCollision::Cube, "textura2"};
-    // // mapa.bloques[1][1] = Block{BlockCollision::TriangleLowerRight,
-    // "textura3"};
-    // // mapa.bloques[2][0] = Block{BlockCollision::TriangleUpperLeft,
-    // "textura4"};
-    // // mapa.bloques[2][1] = Block{BlockCollision::Air, "textura5"};
-
-    // // YAML::Node node;
-
-    // // node["MAPA"] = mapa;
-
-    // // // YAML::Node node;  // starts out as null
-
-    // // // node["test"] = Block{BlockCollision::Cube, "texture1"};
-
-    // // YAML::Emitter emitter;
-
-    // // emitter << node;
-
-    // std::cout << emitter.c_str() << std::endl;
-
-    Map mapa2("testmap.yaml");
-
-    YAML::Emitter emitter2;
-
-    emitter2 << YAML::Node(mapa2);
-
-    std::cout << emitter2.c_str() << std::endl;
-
-    // YAML::Node node2;  // starts out as null
-
-    // node2["test"] = Block{BlockCollision::Cube, "texture1"};
-
-    // Block a = node2["test"].as<Block>();
-
-    // std::cout << (a.collision == BlockCollision::Cube) << std::endl;
-}
 
 Map::Map() {}
 
@@ -156,17 +85,37 @@ Map::Map(uint8_t size_x, uint8_t size_y)
       size_y(size_y),
       bloques(size_y, std::vector<::Block>(size_x)) {}
 
-Map::Map(const char* path) {
-    // TODO: COMO CONSTRUYO EL MISMO MAPA A PARTIR DE EL OBJETO YA CONSTRUIDO?
-    // TAL VEZ TENGO QUE USAR UN METODO ESTATICO???
-
+Map Map::fromYaml(const char* path) {
     YAML::Node nodo_mapa = YAML::LoadFile(path);
 
     Map mapa_temp = nodo_mapa.as<Map>();
 
-    this->id = mapa_temp.id;
-    this->size_x = mapa_temp.size_x;
-    this->size_y = mapa_temp.size_y;
-    this->bloques = mapa_temp.bloques;
-    this->background_texture = mapa_temp.background_texture;
+    return mapa_temp;
+}
+
+std::vector<BlockOnlyCollision> Map::get_all_blocks_collisions() const {
+    std::vector<BlockOnlyCollision> block_collisions;
+
+    for (uint y = 0; y < size_y; y++) {
+        for (uint x = 0; x < size_x; x++) {
+            Collision current_block_collision = bloques[y][x].collision;
+
+            if (current_block_collision == Collision::Air) continue;
+
+            Coordinate coord{static_cast<uint8_t>(x), static_cast<uint8_t>(y)};
+
+            block_collisions.emplace_back(
+                BlockOnlyCollision{coord, current_block_collision});
+        }
+    }
+
+    return block_collisions;
+}
+
+std::string Map::get_name() const { return this->map_name; }
+
+IdTexture Map::get_background() const { return this->background_texture; }
+
+Coordinate Map::get_map_size() const {
+    return Coordinate{this->size_x, this->size_y};
 }

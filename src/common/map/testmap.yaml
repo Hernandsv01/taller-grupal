@@ -1,11 +1,10 @@
 name: Mapa Test
 size:
   x: 5
-  y: 5
+  y: 4
 texture_background: texture4
 blocks:
-  [[5, texture3], [0,   nan      ], [0,   nan      ], [0,      nan   ], [6, texture3],
-   [0,     nan    ], [0,    nan     ], [0,    nan     ], [0,   nan      ], [0,   nan      ],
-   [0,    nan     ], [0,     nan    ], [0,      nan   ], [0,       nan  ], [0,     nan    ],
-   [0,   nan      ], [3, texture2], [1, texture2], [4, texture2], [0,     nan    ],
-   [1, texture2], [1, texture1], [1, texture1], [1, texture1], [1, texture2]]
+  [[[5, texture3], [0,   nan   ], [0,   nan   ], [0,   nan   ], [6, texture3]],
+   [[0,    nan  ], [0,     nan ], [0,      nan], [0,    nan  ], [0,  nan    ]],
+   [[0,   nan   ], [3, texture2], [1, texture2], [4, texture2], [0,  nan    ]],
+   [[1, texture2], [1, texture1], [1, texture1], [1, texture1], [1, texture2]]]

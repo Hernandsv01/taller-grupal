@@ -1,9 +1,12 @@
-set(SOURCE
-    map.cpp)
+set(CMAKE_CXX_STANDARD 17)
 
-set(HEADERS
+
+set(SOURCES 
+    map.cpp
+    test.cpp
     map.h)
 
-add_executable(main.out map.cpp)
 
-target_link_libraries(main.out PUBLIC yaml-cpp)
+add_executable(test ${SOURCES})
+
+target_link_libraries(test PUBLIC yaml-cpp)
