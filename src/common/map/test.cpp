@@ -29,11 +29,29 @@ void test02PuedeAccederBienABloques() {
         BlockOnlyCollision{Coordinate{0, 2}, Collision::TriangleUpperLeft});
 
     assert(colisiones == esperados);
+
+    assert(mapa.get_block_collision(Coordinate{1, 2}) == Collision::Air);
+}
+
+void test03PuedeObtenerTexturas() {
+    Map mapa = Map::fromYaml("testmap2.yaml");
+
+    std::vector<BlockOnlyTexture> texturas = mapa.get_all_block_textures();
+
+    std::vector<BlockOnlyTexture> esperados;
+
+    esperados.emplace_back(BlockOnlyTexture{Coordinate{1, 0}, "textura1"});
+    esperados.emplace_back(BlockOnlyTexture{Coordinate{0, 1}, "textura2"});
+    esperados.emplace_back(BlockOnlyTexture{Coordinate{1, 1}, "textura3"});
+    esperados.emplace_back(BlockOnlyTexture{Coordinate{0, 2}, "textura4"});
+
+    assert(texturas == esperados);
 }
 
 int main() {
     test01GuardaBienParametrosSimples();
-
     test02PuedeAccederBienABloques();
+    test03PuedeObtenerTexturas();
+
     std::cout << "PASARON LOS TESTS" << std::endl;
 }

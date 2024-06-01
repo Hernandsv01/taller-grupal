@@ -80,11 +80,6 @@ struct convert<::Collision> {
 
 Map::Map() {}
 
-Map::Map(uint8_t size_x, uint8_t size_y)
-    : size_x(size_x),
-      size_y(size_y),
-      bloques(size_y, std::vector<::Block>(size_x)) {}
-
 Map Map::fromYaml(const char* path) {
     YAML::Node nodo_mapa = YAML::LoadFile(path);
 
@@ -93,26 +88,63 @@ Map Map::fromYaml(const char* path) {
     return mapa_temp;
 }
 
+Map::Map(uint8_t size_x, uint8_t size_y)
+    : size_x(size_x),
+      size_y(size_y),
+      bloques(size_y, std::vector<::Block>(size_x)) {}
+
+std::string Map::get_name() const { return this->map_name; }
+
 std::vector<BlockOnlyCollision> Map::get_all_blocks_collisions() const {
     std::vector<BlockOnlyCollision> block_collisions;
 
     for (uint y = 0; y < size_y; y++) {
         for (uint x = 0; x < size_x; x++) {
-            Collision current_block_collision = bloques[y][x].collision;
+            Block current_block = bloques[y][x];
 
-            if (current_block_collision == Collision::Air) continue;
+            if (!current_block.has_collision()) continue;
 
             Coordinate coord{static_cast<uint8_t>(x), static_cast<uint8_t>(y)};
 
             block_collisions.emplace_back(
-                BlockOnlyCollision{coord, current_block_collision});
+                BlockOnlyCollision{coord, current_block.collision});
         }
     }
 
     return block_collisions;
 }
 
-std::string Map::get_name() const { return this->map_name; }
+Collision Map::get_block_collision(const Coordinate& coord) const {
+    return Map::get_block_collision(coord.x, coord.y);
+}
+
+Collision Map::get_block_collision(uint8_t x, uint8_t y) const {
+    return bloques[y][x].collision;
+}
+
+// TODO:
+// std::vector<Coordinate> Map::get_player_spawns() const;
+// std::vector<Coordinate> Map::get_enemy_spawns() const;
+// std::vector<Coordinate> Map::get_items_spawns() const;
+
+std::vector<BlockOnlyTexture> Map::get_all_block_textures() const {
+    std::vector<BlockOnlyTexture> block_textures;
+
+    for (uint y = 0; y < size_y; y++) {
+        for (uint x = 0; x < size_x; x++) {
+            Block current_block = bloques[y][x];
+
+            if (!current_block.has_texture()) continue;
+
+            Coordinate coord{static_cast<uint8_t>(x), static_cast<uint8_t>(y)};
+
+            block_textures.emplace_back(
+                BlockOnlyTexture{coord, current_block.texture});
+        }
+    }
+
+    return block_textures;
+}
 
 IdTexture Map::get_background() const { return this->background_texture; }
 

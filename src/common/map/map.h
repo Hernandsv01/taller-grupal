@@ -34,11 +34,21 @@ typedef std::string IdTexture;
 struct Block {
     Collision collision;
     IdTexture texture;
+
+    // Por ahora uso estas definiciones de si tiene textura y colision
+    bool has_collision() { return (collision != Collision::Air); }
+
+    bool has_texture() { return (collision != Collision::Air); }
 };
 
 struct BlockOnlyTexture {
     Coordinate coordinate;
     IdTexture texture;
+
+    bool operator==(const BlockOnlyTexture& other) const {
+        return (this->coordinate == other.coordinate) &&
+               (this->texture == other.texture);
+    }
 };
 
 struct BlockOnlyCollision {
@@ -79,8 +89,6 @@ class Map {
     // inicializa vacío, porque así lo requiera la api de yaml-cpp
     friend struct YAML::convert<Map>;
 
-    Map();
-
     std::string map_name = "unnamed";
 
     uint8_t size_x;
@@ -89,8 +97,10 @@ class Map {
 
     IdTexture background_texture = "undefined";
 
-    // Servidor
+    Map();
+
    public:
+    // Servidor
     Map static fromYaml(const char* path);
 
     Map(uint8_t size_x, uint8_t size_y);
@@ -98,12 +108,13 @@ class Map {
     std::string get_name() const;
 
     std::vector<BlockOnlyCollision> get_all_blocks_collisions() const;
-    Collision get_block_collision(Coordinate coordenadas) const;
+    Collision get_block_collision(const Coordinate& coordenadas) const;
     Collision get_block_collision(uint8_t x, uint8_t y) const;
 
-    std::vector<Coordinate> get_player_spawns() const;
-    std::vector<Coordinate> get_enemy_spawns() const;
-    std::vector<Coordinate> get_items_spawns() const;
+    // TODO:
+    // std::vector<Coordinate> get_player_spawns() const;
+    // std::vector<Coordinate> get_enemy_spawns() const;
+    // std::vector<Coordinate> get_items_spawns() const;
 
     // Cliente
     std::vector<BlockOnlyTexture> get_all_block_textures() const;
