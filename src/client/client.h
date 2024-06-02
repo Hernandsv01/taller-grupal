@@ -10,7 +10,6 @@
 class Client{
 private:
     Socket& socket;
-    Render render;
     GuiLoop gui;
     EventListener eventListener;
     Updater updater;
