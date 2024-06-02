@@ -1,7 +1,7 @@
 #ifndef MAPPER_H
 #define MAPPER_H
 
-#include "../common/dtos.h"
+#include "ActionType.h"
 #include <SDL2/SDL.h>
 
 struct Mapper{

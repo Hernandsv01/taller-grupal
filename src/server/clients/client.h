@@ -6,8 +6,10 @@
 #include "socket.h"
 #include "thread.h"
 #include "queue.h"
-#include "dtos.h"
+#include "Update.h"
 #include "protocol.h"
+#include "ActionMessage.h"
+#include "ActionType.h"
 
 class Client_receiver: public Thread {
 private:

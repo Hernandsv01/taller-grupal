@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "Entity.h"
-#include "dtos.h"
 #include "Game.h"
 
 class Dynamic_entity : public Entity {

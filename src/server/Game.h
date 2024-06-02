@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include "thread.h"
-#include "dtos.h"
+#include "Update.h"
 #include "game_status.h"
 #include "Entity.h"
 #include "Dynamic_entity.h"
