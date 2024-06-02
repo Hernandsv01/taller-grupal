@@ -1,0 +1,142 @@
+cmake_minimum_required(VERSION 3.28)
+project(taller_grupal)
+
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(src/client)
+include_directories(src/client/gui)
+include_directories(src/client/gui/SDL2pp/SDL2pp)
+include_directories(src/client/gui/SDL2pp/tests)
+include_directories(src/common)
+include_directories(src/common/library)
+include_directories(src/server)
+include_directories(src/server/clients)
+include_directories(src/server/model)
+include_directories(src/server/model/constants)
+
+add_executable(taller_grupal
+        src/client/gui/SDL2pp/examples/audio_sine.cc
+        src/client/gui/SDL2pp/examples/audio_wav.cc
+        src/client/gui/SDL2pp/examples/fill.cc
+        src/client/gui/SDL2pp/examples/image.cc
+        src/client/gui/SDL2pp/examples/lines.cc
+        src/client/gui/SDL2pp/examples/mixer.cc
+        src/client/gui/SDL2pp/examples/mixer_effects.cc
+        src/client/gui/SDL2pp/examples/mixer_music.cc
+        src/client/gui/SDL2pp/examples/mixer_music_sine.cc
+        src/client/gui/SDL2pp/examples/rendertarget.cc
+        src/client/gui/SDL2pp/examples/sprites.cc
+        src/client/gui/SDL2pp/examples/ttf.cc
+        src/client/gui/SDL2pp/SDL2pp/AudioDevice.cc
+        src/client/gui/SDL2pp/SDL2pp/AudioDevice.hh
+        src/client/gui/SDL2pp/SDL2pp/AudioLock.cc
+        src/client/gui/SDL2pp/SDL2pp/AudioSpec.cc
+        src/client/gui/SDL2pp/SDL2pp/AudioSpec.hh
+        src/client/gui/SDL2pp/SDL2pp/Chunk.cc
+        src/client/gui/SDL2pp/SDL2pp/Chunk.hh
+        src/client/gui/SDL2pp/SDL2pp/Color.cc
+        src/client/gui/SDL2pp/SDL2pp/Color.hh
+        src/client/gui/SDL2pp/SDL2pp/ContainerRWops.hh
+        src/client/gui/SDL2pp/SDL2pp/Exception.cc
+        src/client/gui/SDL2pp/SDL2pp/Exception.hh
+        src/client/gui/SDL2pp/SDL2pp/Font.cc
+        src/client/gui/SDL2pp/SDL2pp/Font.hh
+        src/client/gui/SDL2pp/SDL2pp/Mixer.cc
+        src/client/gui/SDL2pp/SDL2pp/Mixer.hh
+        src/client/gui/SDL2pp/SDL2pp/Music.cc
+        src/client/gui/SDL2pp/SDL2pp/Music.hh
+        src/client/gui/SDL2pp/SDL2pp/Optional.hh
+        src/client/gui/SDL2pp/SDL2pp/Point.cc
+        src/client/gui/SDL2pp/SDL2pp/Point.hh
+        src/client/gui/SDL2pp/SDL2pp/Rect.cc
+        src/client/gui/SDL2pp/SDL2pp/Rect.hh
+        src/client/gui/SDL2pp/SDL2pp/Renderer.cc
+        src/client/gui/SDL2pp/SDL2pp/Renderer.hh
+        src/client/gui/SDL2pp/SDL2pp/RWops.cc
+        src/client/gui/SDL2pp/SDL2pp/RWops.hh
+        src/client/gui/SDL2pp/SDL2pp/SDL.cc
+        src/client/gui/SDL2pp/SDL2pp/SDL.hh
+        src/client/gui/SDL2pp/SDL2pp/SDL2pp.hh
+        src/client/gui/SDL2pp/SDL2pp/SDLImage.cc
+        src/client/gui/SDL2pp/SDL2pp/SDLImage.hh
+        src/client/gui/SDL2pp/SDL2pp/SDLMixer.cc
+        src/client/gui/SDL2pp/SDL2pp/SDLMixer.hh
+        src/client/gui/SDL2pp/SDL2pp/SDLTTF.cc
+        src/client/gui/SDL2pp/SDL2pp/SDLTTF.hh
+        src/client/gui/SDL2pp/SDL2pp/StreamRWops.hh
+        src/client/gui/SDL2pp/SDL2pp/Surface.cc
+        src/client/gui/SDL2pp/SDL2pp/Surface.hh
+        src/client/gui/SDL2pp/SDL2pp/SurfaceLock.cc
+        src/client/gui/SDL2pp/SDL2pp/Texture.cc
+        src/client/gui/SDL2pp/SDL2pp/Texture.hh
+        src/client/gui/SDL2pp/SDL2pp/TextureLock.cc
+        src/client/gui/SDL2pp/SDL2pp/Wav.cc
+        src/client/gui/SDL2pp/SDL2pp/Wav.hh
+        src/client/gui/SDL2pp/SDL2pp/Window.cc
+        src/client/gui/SDL2pp/SDL2pp/Window.hh
+        src/client/gui/SDL2pp/tests/live_audiodevice.cc
+        src/client/gui/SDL2pp/tests/live_mixer.cc
+        src/client/gui/SDL2pp/tests/live_rendering.cc
+        src/client/gui/SDL2pp/tests/live_window.cc
+        src/client/gui/SDL2pp/tests/movetest.hh
+        src/client/gui/SDL2pp/tests/test_color.cc
+        src/client/gui/SDL2pp/tests/test_color_constexpr.cc
+        src/client/gui/SDL2pp/tests/test_error.cc
+        src/client/gui/SDL2pp/tests/test_font.cc
+        src/client/gui/SDL2pp/tests/test_optional.cc
+        src/client/gui/SDL2pp/tests/test_pointrect.cc
+        src/client/gui/SDL2pp/tests/test_pointrect_constexpr.cc
+        src/client/gui/SDL2pp/tests/test_rwops.cc
+        src/client/gui/SDL2pp/tests/test_surface.cc
+        src/client/gui/SDL2pp/tests/test_wav.cc
+        src/client/gui/SDL2pp/tests/testing.h
+        src/client/gui/testfiles/testJazzRunRight.cpp
+        src/client/gui/testfiles/testJazzStand.cpp
+        src/client/gui/estado_juego.h
+        src/client/gui/gui_loop.cpp
+        src/client/gui/gui_loop.h
+        src/client/gui/main.cpp
+        src/client/gui/render.cpp
+        src/client/gui/render.h
+        src/client/eventlistener.cpp
+        src/client/eventlistener.h
+        src/client/mapper.cpp
+        src/client/mapper.h
+        src/client/protocol.cpp
+        src/client/protocol.h
+        src/client/update_queue.cpp
+        src/client/update_queue.h
+        src/client/updater.cpp
+        src/client/updater.h
+        src/common/library/liberror.cpp
+        src/common/library/liberror.h
+        src/common/library/queue.h
+        src/common/library/resolver.cpp
+        src/common/library/resolver.h
+        src/common/library/resolvererror.cpp
+        src/common/library/resolvererror.h
+        src/common/library/socket.cpp
+        src/common/library/socket.h
+        src/common/library/thread.h
+        src/common/Update.h
+        src/server/clients/client.cpp
+        src/server/clients/client.h
+        src/server/clients/client_listener.cpp
+        src/server/clients/client_listener.h
+        src/server/clients/client_monitor.cpp
+        src/server/clients/client_monitor.h
+        src/server/clients/protocol.cpp
+        src/server/clients/protocol.h
+        src/server/model/constants/game_status.h
+        src/common/updateables.h
+        src/server/model/Dynamic_entity.h
+        src/server/model/Enemy.h
+        src/server/model/Entity.h
+        src/server/model/Player.h
+        src/server/Game.cpp
+        src/server/Game.h
+        src/server/server_main.cpp
+        src/client_main.cpp
+        src/server/physics/physics.h
+        src/server/physics/physics.cpp
+        src/common/ActionMessage.h)
