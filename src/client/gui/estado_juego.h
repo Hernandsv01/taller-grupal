@@ -1,8 +1,12 @@
 #ifndef ESTADO_JUEGO_H
 #define ESTADO_JUEGO_H
 
+#include <algorithm>
 #include <cstdint>
+#include <map>
 #include <vector>
+
+#include "../../common/dtos.h"
 
 typedef uint8_t Id;
 typedef uint8_t PuntosVida;
@@ -14,13 +18,14 @@ struct Enemigo;
 struct Item;
 
 struct Posicion {
-    //Modifico a "int", son los pixeles
+    // Modifico a "int", son los pixeles
     int x;
     int y;
 };
 enum Direccion { Izquierda, Derecha };
 
-struct EstadoJuego {
+struct EstadoJuegoRenderer {
+    EstadoJugador jugadorPrincipal;
     std::vector<EstadoJugador> jugadores;
     std::vector<Proyectil> proyectiles;
     std::vector<Enemigo> enemigos;
@@ -66,6 +71,56 @@ struct Enemigo : public Entidad {
 enum TipoItem { Moneda, Arma };
 struct Item : public Entidad {
     TipoItem tipoItem;
+};
+
+class EstadoJuegoActualizable {
+    std::map<Id, EstadoJugador> jugadores;
+    std::map<Id, Proyectil> proyectiles;
+    std::map<Id, Enemigo> enemigos;
+    std::map<Id, Item> items;
+    Id id_jugador_actual = 1;
+
+   private:
+    //    https://stackoverflow.com/questions/771453/copy-map-values-to-vector-in-stl
+    template <typename T>
+    std::vector<T> get_vector_from(std::map<Id, T> map) {
+        std::vector<T> vector;
+
+        std::transform(map.begin(), map.end(), std::back_inserter(vector),
+                       [](const auto &par_id_key) { return par_id_key.second });
+
+        return vector;
+    }
+
+   public:
+    void actualizar(Update update) {
+        // Incluir logica de que tipo de update es
+        if (jugadores.count(update.id)) {
+            jugadores[update.id].posicion.x = update.value;
+        }
+    }
+
+    EstadoJuegoRenderer obtener_estado() {
+        EstadoJuegoRenderer estado;
+
+        EstadoJugador jugador_principal = this->jugadores.at(id_jugador_actual);
+
+        estado.jugadorPrincipal = jugador_principal;
+
+        // Elimino jugador principal de map
+        this->jugadores.erase(id_jugador_actual);
+
+        estado.jugadores = this->get_vector_from(this->jugadores);
+
+        // vuelvo a agregar jugador principal a map
+        this->jugadores[id_jugador_actual] = jugador_principal;
+
+        estado.items = this->get_vector_from(this->items);
+        estado.enemigos = this->get_vector_from(this->enemigos);
+        estado.proyectiles = this->get_vector_from(this->proyectiles);
+
+        return estado;
+    }
 };
 
 #endif

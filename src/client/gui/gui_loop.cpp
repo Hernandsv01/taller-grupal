@@ -3,6 +3,8 @@
 #include <iostream>
 #include <thread>
 
+#include "../update_queue.h"
+
 double get_random() {
     static int x = 0;
     double random[] = {0.90, 1.0, 1.7, 5, 2.6};
@@ -20,15 +22,16 @@ GuiLoop::GuiLoop() : tick_actual(0) {
     jugador.tipoPersonaje = TipoPersonaje::Jazz;
     jugador.puntaje = 0;
 
-    estadoActual.jugadores.emplace_back(jugador);
+    // estadoJuegoActualizable.jugadores.emplace_back(jugador);
 };
 
-std::string GuiLoop::text_description() { return "GuiLoop"; }
+// std::string GuiLoop::text_description() { return "GuiLoop"; }
 
-void GuiLoop::stop_custom() {
-    // No tengo que hacer nada, ya que el GuiLoop se va a terminar de ejecutar
-    //  solo cuando termine el proximo tick, y _keep_running sea falso
-}
+// void GuiLoop::stop_custom() {
+//     // No tengo que hacer nada, ya que el GuiLoop se va a terminar de
+//     ejecutar
+//     //  solo cuando termine el proximo tick, y _keep_running sea falso
+// }
 
 void GuiLoop::run() {
     using namespace std::chrono;
@@ -101,11 +104,15 @@ void GuiLoop::run() {
 
 void GuiLoop::ejecutar_renderer() {
     // TODO: acá matias debería poner el llamado al renderr
-    // renderer.renderizar(tick_actual, estadoActual);
+    EstadoJuegoRenderer estado_para_renderer =
+        estadoJuegoActualizable.obtener_estado();
+
+    // renderer.renderizar(tick_actual, estado_para_renderer);
 
     std::cout << "tick: " << tick_actual << "\n";
-    std::cout << "(" << estadoActual.jugadores[0].posicion.x << ", "
-              << estadoActual.jugadores[0].posicion.y << ")" << std::endl;
+    std::cout << "(" << estado_para_renderer.jugadorPrincipal.posicion.x << ", "
+              << estado_para_renderer.jugadorPrincipal.posicion.y << ")"
+              << std::endl;
 
     return;
 }
@@ -113,14 +120,18 @@ void GuiLoop::ejecutar_renderer() {
 void GuiLoop::actualizar_estado() {
     // TODO: Acá deberia codear la manera de actualizar el estado actual
 
-    estadoActual.jugadores[0].posicion.x += 0.3;
-    estadoActual.jugadores[0].posicion.y += 0.1;
+    std::vector<Update> all_updates;
+    std::vector<Update> update_one_tick = Update_queue::try_pop();
+    // Juntar todas las updates en un único vector
+    while (update_one_tick.size() > 0) {
+        all_updates.insert(all_updates.end(), update_one_tick.begin(),
+                           update_one_tick.end());
 
-    // while (true) {
-    //     auto update = queueUpdates.tryrecv();
-    //     if (update == None)
-    //         break:
+        update_one_tick = Update_queue::try_pop();
+    }
 
-    //     estadoActual.actualizar(update);
-    // }
+    // aplicar de a una las updates en orden
+    for (Update update : all_updates) {
+        estadoJuegoActualizable.actualizar(update);
+    }
 }

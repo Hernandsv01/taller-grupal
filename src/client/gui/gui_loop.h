@@ -21,7 +21,7 @@ class GuiLoop : public Thread {
 
     // TODO: estado que Mariano debe actualizar,
     // TODO: a partir de las updates que recibe de un Queue?
-    EstadoJuego estadoActual;
+    EstadoJuegoActualizable estadoJuegoActualizable;
 
     // Queue<update> queueUpdates;
 
@@ -33,9 +33,9 @@ class GuiLoop : public Thread {
    private:
     void run() override;
 
-    void stop_custom() override;
+    // void stop_custom() override;
 
-    std::string text_description() override;
+    // std::string text_description() override;
 
     void ejecutar_renderer();
 
