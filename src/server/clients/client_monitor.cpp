@@ -11,7 +11,7 @@ Client* Client_Monitor::get(int i) {
 }
 
 void Client_Monitor::sendAll(std::vector<Update> updates) {
-    for (size_t i = 0; i < list.size(); ++i) {
-        list[i]->getSender().addToQueue(updates);
+    for (auto & i : list) {
+        i->getSender().addToQueue(updates);
     }
 }

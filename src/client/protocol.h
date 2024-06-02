@@ -2,7 +2,8 @@
 #define CLIENT_PROTOCOL_H
 
 #include "../common/library/socket.h"
-#include "../common/dtos.h"
+#include "ActionType.h"
+#include "Update.h"
 #include <vector>
 
 class ClientProtocol{

@@ -1,5 +1,5 @@
-#ifndef COMMON_DTOS_H
-#define COMMON_DTOS_H
+#ifndef ACTIONTYPE_H
+#define ACTIONTYPE_H
 
 #include <sstream>
 
@@ -17,15 +17,4 @@ enum ActionType: std::uint8_t {
     STOP_RUN_LEFT = 0x21
 };
 
-struct ActionMessage{
-    std::uint8_t action;
-}__attribute__((packed));
-
-//msj que recibe desde el server para mapear a la entidad.
-struct Update{
-    std::uint8_t id;
-    std::uint8_t key;
-    std::uint8_t value;
-}__attribute__((packed));
-
-#endif //COMMON_DTOS_H
+#endif //ACTIONTYPE_H

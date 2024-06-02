@@ -1,41 +1,65 @@
 #include "Game.h"
 
-Game::Game() : status(Game_status::WAITING) {}
+Game::Game() : status(Game_status::WAITING) {
+    entity_pool.push_back(Player(0, 0, 0));
+}
 
-/*
- * 1. Leer posibles comandos de todos los clientes
- *      a. try_pop a cada cliente
- *      b. mapear acciones
- *      c. ejecutar acciones (actualizar valores de lo que sea)
- * 2. Ejecutar un tick y guardar info actualizada (jugadores o enemigos moviendose, etc)
- *      a. recorrer pool de entities
- *      b. si se actualizó info, agregar a paquete de actualización
- * 3. Armar y distribuir paquete de actualización a todos los clientes
- * 4. sleep ????
- */
 void Game::run() {
     status = Game_status::RUNNING;
+    std::chrono::steady_clock::time_point INICIO_ABSOLUTO = reloj.now();
+    std::chrono::steady_clock::time_point inicio_tick = INICIO_ABSOLUTO;
     while (status == Game_status::RUNNING) {
-        for (Client* client : Client_Monitor::getAll()) {
-            uint8_t action = client->getReceiver().get_next_action();
-            process_action(action, client->get_player_position());
-        }
+        std::chrono::steady_clock::time_point final_tick = inicio_tick + TICK_DURATION;
 
-        std::vector<Update> total_updates;
-        std::vector<Update> tick_updates;
-        for (Dynamic_entity entity : entity_pool) {
-            tick_updates = entity.tick();
-            total_updates.insert(total_updates.end(), tick_updates.begin(), tick_updates.end());
-        }
+        run_iteration();
 
-        Client_Monitor::sendAll(total_updates);
+        // Calculate the start time for the next tick
+        inicio_tick += TICK_DURATION;
 
-        // sleep ???
+        // Sleep until the next tick
+        std::this_thread::sleep_until(final_tick);
     }
+}
+
+void Game::run_iteration() {
+    for (Client* client : Client_Monitor::getAll()) {
+        uint8_t action = client->getReceiver().get_next_action();
+        process_action(action, client->get_player_position());
+    }
+
+    std::vector<Update> total_updates;
+    std::vector<Update> tick_updates;
+    for (Dynamic_entity entity : entity_pool) {
+        tick_updates = entity.tick(&entity_pool);
+        total_updates.insert(total_updates.end(), tick_updates.begin(), tick_updates.end());
+    }
+
+    Client_Monitor::sendAll(total_updates);
 }
 
 void Game::process_action(uint8_t action, int player) {
     if (action == NULL_ACTION) {
+        return;
+    }
+    if (action == JUMP) {
+        return; // Not implemented
+    }
+    if (action == RUN_LEFT) {
+        entity_pool[player].setXSpeed(-1);
+    }
+    if (action == RUN_RIGHT) {
+        entity_pool[player].setXSpeed(1);
+    }
+    if (action == SHOOT) {
+        return; // Not implemented
+    }
+    if (action == SPECIAL) {
+        return; // Not implemented
+    }
+    if (action == STOP_RUN_RIGHT) {
+        return;
+    }
+    if (action == STOP_RUN_LEFT) {
         return;
     }
 }

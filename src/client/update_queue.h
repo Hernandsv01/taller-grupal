@@ -2,7 +2,7 @@
 #define UPDATE_MONITOR_H
 
 #include "../common/library/queue.h"
-#include "../common/dtos.h"
+#include "../common/Update.h"
 #include <sstream>
 #include <vector>
 

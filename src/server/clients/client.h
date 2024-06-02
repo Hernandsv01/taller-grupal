@@ -3,11 +3,13 @@
 
 #include <utility>
 
-#include "common/library/socket.h"
-#include "common/library/thread.h"
-#include "common/library/queue.h"
-#include "common/dtos.h"
+#include "socket.h"
+#include "thread.h"
+#include "queue.h"
+#include "Update.h"
 #include "protocol.h"
+#include "ActionMessage.h"
+#include "ActionType.h"
 
 class Client_receiver: public Thread {
 private:
