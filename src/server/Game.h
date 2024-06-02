@@ -1,13 +1,14 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "common/library/thread.h"
-#include "common/dtos.h"
-#include "constants/game_status.h"
+#include "thread.h"
+#include "dtos.h"
+#include "game_status.h"
 #include "Entity.h"
 #include "Dynamic_entity.h"
-#include "clients/client.h"
-#include "clients/client_monitor.h"
+#include "client.h"
+#include "client_monitor.h"
+#include "Player.h"
 #include <vector>
 #include <chrono>
 

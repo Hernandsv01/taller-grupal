@@ -3,10 +3,10 @@
 
 #include <utility>
 
-#include "common/library/socket.h"
-#include "common/library/thread.h"
-#include "common/library/queue.h"
-#include "common/dtos.h"
+#include "socket.h"
+#include "thread.h"
+#include "queue.h"
+#include "dtos.h"
 #include "protocol.h"
 
 class Client_receiver: public Thread {

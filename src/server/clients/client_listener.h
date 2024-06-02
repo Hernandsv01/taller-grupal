@@ -3,8 +3,8 @@
 
 #include <utility>
 
-#include "common/library/socket.h"
-#include "common/library/thread.h"
+#include "socket.h"
+#include "thread.h"
 #include "client.h"
 #include "client_monitor.h"
 
