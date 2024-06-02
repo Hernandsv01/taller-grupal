@@ -1,4 +1,4 @@
-#include "client.h"
+#include "server_client.h"
 
 void Client_sender::run() {
     while (is_running) {
@@ -13,7 +13,9 @@ void Client_sender::run() {
     }
 }
 
-void Client_sender::addToQueue(std::vector<Update> const& result) { outputQueue.try_push(result); }
+void Client_sender::addToQueue(std::vector<Update> const& result) {
+    outputQueue.try_push(result);
+}
 
 void Client_receiver::run() {
     while (is_running) {

@@ -1,19 +1,19 @@
 #include <iostream>
 
-#include "lobby/lobby.h"
+// #include "lobby/lobby.h"
 #include "../../src/common/library/socket.h"
 #include "client.h"
 
-
 int main(int argc, char* argv[]) {
-    //std::cout << "Hello client!" << std::endl;
-    //Lobby lobby;
-    //lobby.exec();
-    //Socket&& socket = lobby.get_socket(); //ver si puedo agregar esto.
-    //harcodear socket
+    // std::cout << "Hello client!" << std::endl;
+    // Lobby lobby;
+    // lobby.exec();
+    // Socket&& socket = lobby.get_socket(); //ver si puedo agregar esto.
+    // harcodear socket
     const char* hostname = "127.0.0.1";
     const char* servname = "8080";
-    Window window;
+    Window window("TEST", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 600,
+                  800, SDL_WINDOW_RESIZABLE);
     Socket socket(hostname, servname);
     Client client(std::move(socket), window);
     client.exec();

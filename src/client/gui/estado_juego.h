@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 
-#include "../../common/dtos.h"
+#include "../../common/Update.h"
 
 typedef uint8_t Id;
 typedef uint8_t PuntosVida;
@@ -23,14 +23,6 @@ struct Posicion {
     int y;
 };
 enum Direccion { Izquierda, Derecha };
-
-struct EstadoJuegoRenderer {
-    EstadoJugador jugadorPrincipal;
-    std::vector<EstadoJugador> jugadores;
-    std::vector<Proyectil> proyectiles;
-    std::vector<Enemigo> enemigos;
-    std::vector<Item> items;
-};
 
 struct Entidad {
     Id id;
@@ -73,6 +65,14 @@ struct Item : public Entidad {
     TipoItem tipoItem;
 };
 
+struct EstadoJuegoRenderer {
+    EstadoJugador jugadorPrincipal;
+    std::vector<EstadoJugador> jugadores;
+    std::vector<Proyectil> proyectiles;
+    std::vector<Enemigo> enemigos;
+    std::vector<Item> items;
+};
+
 class EstadoJuegoActualizable {
     std::map<Id, EstadoJugador> jugadores;
     std::map<Id, Proyectil> proyectiles;
@@ -86,8 +86,9 @@ class EstadoJuegoActualizable {
     std::vector<T> get_vector_from(std::map<Id, T> map) {
         std::vector<T> vector;
 
-        std::transform(map.begin(), map.end(), std::back_inserter(vector),
-                       [](const auto &par_id_key) { return par_id_key.second });
+        std::transform(
+            map.begin(), map.end(), std::back_inserter(vector),
+            [](const auto &par_id_key) { return par_id_key.second; });
 
         return vector;
     }
