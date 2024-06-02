@@ -2,7 +2,7 @@
 
 Mapper::Mapper() {}
 
-ActionType Mapper::map_key_event(const SDL_EVENT& event){
+ActionType Mapper::map_key_event(const SDL_Event& event){
     ActionType action = NULL_ACTION;
     if(event.type == SDL_KEYDOWN){
         switch (event.key.keysym.sym) {

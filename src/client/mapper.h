@@ -6,7 +6,7 @@
 
 struct Mapper{
     Mapper();
-    ActionType map_key_event();
+    ActionType map_key_event(const SDL_Event& event);
 };
 
 #endif //MAPPER_H
