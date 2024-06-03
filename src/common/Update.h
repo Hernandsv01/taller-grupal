@@ -3,10 +3,10 @@
 
 #include <sstream>
 
-struct Update{
+struct Update {
     std::uint16_t id;
     std::uint8_t key;
-    std::uint16_t value;
-}__attribute__((packed));
+    std::uint32_t value;
+} __attribute__((packed));
 
-#endif //COMMON_DTOS_H
+#endif  // COMMON_DTOS_H
