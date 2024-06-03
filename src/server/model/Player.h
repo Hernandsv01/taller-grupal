@@ -10,12 +10,14 @@ class Player : public Dynamic_entity {
     Player(int id, int x_spawn, int y_spawn)
         : Dynamic_entity(id, x_spawn, y_spawn, 5, 5, true, 0, 0, 0){};
     std::vector<Update> tick(
-        std::vector<Dynamic_entity>* entity_pool) override {
+        std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) override {
         std::vector<Update> updates;
         if (vel_x != 0) {
             pos_x += vel_x;
 
             // falta verificar colisión
+
+            std::cout << pos_x << std::endl;
 
             Update update{static_cast<uint8_t>(id), Updateables::POSITION_X,
                           static_cast<uint8_t>(pos_x)};

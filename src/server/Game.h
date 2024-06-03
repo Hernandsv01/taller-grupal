@@ -22,7 +22,7 @@ class Game : public Thread {
     std::chrono::steady_clock reloj;
 
     Game_status status;
-    std::vector<Dynamic_entity> entity_pool;
+    std::vector<std::unique_ptr<Dynamic_entity>> entity_pool;
 
    public:
     explicit Game();

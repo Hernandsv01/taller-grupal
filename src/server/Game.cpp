@@ -1,7 +1,7 @@
 #include "Game.h"
 
 Game::Game() : status(Game_status::WAITING) {
-    entity_pool.push_back(Player(0, 0, 0));
+    entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
 }
 
 void Game::run() {
@@ -30,8 +30,8 @@ void Game::run_iteration() {
 
     std::vector<Update> total_updates;
     std::vector<Update> tick_updates;
-    for (Dynamic_entity entity : entity_pool) {
-        tick_updates = entity.tick(&entity_pool);
+    for (std::unique_ptr<Dynamic_entity>& entity_ptr : entity_pool) {
+        tick_updates = entity_ptr->tick(&entity_pool);
         total_updates.insert(total_updates.end(), tick_updates.begin(),
                              tick_updates.end());
     }
@@ -47,10 +47,10 @@ void Game::process_action(uint8_t action, int player) {
         return;  // Not implemented
     }
     if (action == RUN_LEFT) {
-        entity_pool[player].setXSpeed(-1);
+        entity_pool[player]->setXSpeed(-1);
     }
     if (action == RUN_RIGHT) {
-        entity_pool[player].setXSpeed(1);
+        entity_pool[player]->setXSpeed(1);
     }
     if (action == SHOOT) {
         return;  // Not implemented

@@ -28,10 +28,8 @@ class Dynamic_entity : public Entity {
            acc_y(acc_y)*/
           {};
 
-    virtual std::vector<Update> tick(std::vector<Dynamic_entity>* entity_pool) {
-        throw std::runtime_error("No se implementó");
-        return std::vector<Update>();
-    };
+    virtual std::vector<Update> tick(
+        std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) = 0;
 
     void setXSpeed(int vel_x_param) { vel_x = vel_x_param; }
 

@@ -4,10 +4,10 @@
 #include "clients/client_listener.h"
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        std::cerr << "Bad program call. Expected " << argv[0] << " <port>\n";
-        return -1;
-    }
+    // if (argc != 2) {
+    //     std::cerr << "Bad program call. Expected " << argv[0] << " <port>\n";
+    //     return -1;
+    // }
     // Client_listener listener(argv[1]);
     char* puerto = "15500";
     Client_listener listener(puerto);
