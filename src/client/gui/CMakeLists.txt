@@ -15,7 +15,7 @@ set(SDL2PP_WITH_IMAGE YES)
 set(SDL2PP_WITH_TTF YES)
 add_subdirectory(SDL2pp)
 
-add_executable(client_gui ${TARGET_SRC})
+#add_executable(client_gui ${TARGET_SRC})
 
 # add compilation flags
 SET(CMAKE_CXX_STANDARD 17)
@@ -29,3 +29,6 @@ target_link_libraries(testJazzStand PUBLIC SDL2pp)
 
 add_executable(testJazzRunRight testfiles/testJazzRunRight.cpp render.cpp)
 target_link_libraries(testJazzRunRight PUBLIC SDL2pp)
+
+add_executable(testMap testfiles/testMap.cpp render.cpp)
+target_link_libraries(testMap PUBLIC SDL2pp)

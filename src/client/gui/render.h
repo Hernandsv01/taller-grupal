@@ -8,7 +8,10 @@ class Render {
     public:
         Render(int width, int height);
 
-        void presentPlayer(struct EstadoJugador);
+        void presentGame(EstadoJuegoRenderer, MapInfo mapInfo);
+
+        void copyPlayer(EstadoJugador jugador);
+        void copyMap(MapInfo mapInfo);
 
         void sleep(int milliSecond);
 
@@ -18,8 +21,12 @@ class Render {
         Renderer renderer;
         Texture standSpritesJazz;
         Texture runSpritesJazz;
+        Texture mapsTexture;
 
         int frame;
+    
+        void copyMapPart(int typeOfPart ,int part, std::vector<Posicion> positions);
+        void copyWall();
 
         void copyEntity(int posX, int posY,
                             int spriteLong, int spriteHigh,

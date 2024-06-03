@@ -26,7 +26,7 @@ int main() {
     int finalPosX = width- XPICPIX;
     while (pjPosX <= finalPosX) {
         
-        render.presentPlayer(personajeJazz);
+        render.copyPlayer(personajeJazz);
         //Simulate 30 fps, 33.333 milliseconds
 		render.sleep(33);
 	}

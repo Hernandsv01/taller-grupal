@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 
-#include "../../common/dtos.h"
+#include "../../common/Update.h"
 
 typedef uint8_t Id;
 typedef uint8_t PuntosVida;
@@ -24,14 +24,6 @@ struct Posicion {
 };
 enum Direccion { Izquierda, Derecha };
 
-struct EstadoJuegoRenderer {
-    EstadoJugador jugadorPrincipal;
-    std::vector<EstadoJugador> jugadores;
-    std::vector<Proyectil> proyectiles;
-    std::vector<Enemigo> enemigos;
-    std::vector<Item> items;
-};
-
 struct Entidad {
     Id id;
     Posicion posicion = Posicion{0, 0};
@@ -39,7 +31,7 @@ struct Entidad {
 };
 
 enum Estado {
-    Parado,
+    Esperando,
     Disparando,
     Saltando,
     Cayendo,
@@ -59,6 +51,14 @@ struct EstadoJugador : public Entidad {
     // Tendría que ver que variaciones tendría eso
 };
 
+struct EstadoJuegoRenderer {
+    EstadoJugador jugadorPrincipal;
+    std::vector<EstadoJugador> jugadores;
+    std::vector<Proyectil> proyectiles;
+    std::vector<Enemigo> enemigos;
+    std::vector<Item> items;
+};
+
 struct Proyectil : public Entidad {
     // Faltaría tipo de proyectil
 };
@@ -72,6 +72,18 @@ enum TipoItem { Moneda, Arma };
 struct Item : public Entidad {
     TipoItem tipoItem;
 };
+
+enum TypeOfMaps { Diamond};
+enum TypeOfGround { RightSign = 2};
+enum TypeOfUnderG { RedDiamond = 0};
+struct MapInfo {
+    TypeOfMaps mapTexture;
+    TypeOfGround typeOfGround;
+    std::vector<Posicion> groundPosition;
+    TypeOfUnderG typeOfUnder;
+    std::vector<Posicion> underPosition;
+};
+
 
 class EstadoJuegoActualizable {
     std::map<Id, EstadoJugador> jugadores;
@@ -87,7 +99,7 @@ class EstadoJuegoActualizable {
         std::vector<T> vector;
 
         std::transform(map.begin(), map.end(), std::back_inserter(vector),
-                       [](const auto &par_id_key) { return par_id_key.second });
+                       [](const auto &par_id_key) { return par_id_key.second; });
 
         return vector;
     }
