@@ -1,6 +1,8 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include <SDL2pp/SDL2pp.hh>
+
 #include "../../src/common/library/socket.h"
 #include "eventlistener.h"
 #include "gui/gui_loop.h"
@@ -10,13 +12,13 @@
 class Client {
    private:
     Socket& socket;
-    Window& window;
+    SDL2pp::Window& window;
     GuiLoop gui;
     EventListener eventListener;
     Updater updater;
 
    public:
-    explicit Client(Socket&& socket, Window& window);
+    explicit Client(Socket&& socket, SDL2pp::Window& window);
 
     void exec();
 };

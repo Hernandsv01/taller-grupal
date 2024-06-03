@@ -37,6 +37,8 @@ set(SOURCES_CLIENT
         src/client/update_queue.h
         src/client/updater.cpp
         src/client/updater.h
+        src/client/client.h
+        src/client/client.cpp
         
         src/client/client_main.cpp
         )

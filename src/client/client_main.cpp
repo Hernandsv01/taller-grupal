@@ -11,9 +11,9 @@ int main(int argc, char* argv[]) {
     // Socket&& socket = lobby.get_socket(); //ver si puedo agregar esto.
     // harcodear socket
     const char* hostname = "127.0.0.1";
-    const char* servname = "8080";
-    Window window("TEST", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 600,
-                  800, SDL_WINDOW_RESIZABLE);
+    const char* servname = "15500";
+    Window window("TEST", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800,
+                  600, SDL_WINDOW_RESIZABLE);
     Socket socket(hostname, servname);
     Client client(std::move(socket), window);
     client.exec();

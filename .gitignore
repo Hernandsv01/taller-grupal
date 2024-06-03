@@ -30,6 +30,8 @@
 *.exe
 *.out
 *.app
+client
+server
 
 # Idea
 .idea/
@@ -40,3 +42,5 @@ CMakeFiles
 
 Makefile
 cmake_install.cmake
+
+.vscode/
