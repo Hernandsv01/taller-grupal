@@ -3,18 +3,17 @@
 
 #include <vector>
 
-#include "client.h"
+#include "server_client.h"
 
 class Client_Monitor {
-private:
-    static std::vector<Client*> list;
+   private:
+    static std::vector<Server_Client*> list;
 
-public:
-    static void add(Client* client);
-    static Client* get(int i);
+   public:
+    static void add(Server_Client* client);
+    static Server_Client* get(int i);
     static void sendAll(std::vector<Update> updates);
-    static std::vector<Client*> getAll() { return list; }
+    static std::vector<Server_Client*> getAll() { return list; }
 };
-
 
 #endif  // CLIENT_MONITOR_H

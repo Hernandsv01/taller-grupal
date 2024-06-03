@@ -30,6 +30,17 @@
 *.exe
 *.out
 *.app
+client
+server
 
 # Idea
 .idea/
+
+CMakeCache.txt
+
+CMakeFiles
+
+Makefile
+cmake_install.cmake
+
+.vscode/

@@ -1,12 +1,25 @@
 #include "client.h"
 
-Client::Client(Socket &&socket, Window window) : socket(socket), gui(window), eventListener(window, socket), updater(socket) {
-}
+#include <iostream>
+
+Client::Client(Socket socket, SDL2pp::Window& window)
+    : socket(std::move(socket)),
+      window(window),
+      //   gui(),
+      eventListener(window, this->socket),
+      updater(this->socket) {}
 
 void Client::exec() {
-    gui.start();
-    eventListener.start();
+    // gui.start();
+
     updater.start();
+    eventListener.start();
 }
 
+Client::~Client() {
+    eventListener.stop();
+    updater.stop();
 
+    eventListener.join();
+    updater.join();
+}
