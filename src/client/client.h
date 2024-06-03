@@ -11,16 +11,18 @@
 
 class Client {
    private:
-    Socket& socket;
+    Socket socket;
     SDL2pp::Window& window;
-    GuiLoop gui;
+    // GuiLoop gui;
     EventListener eventListener;
     Updater updater;
 
    public:
-    explicit Client(Socket&& socket, SDL2pp::Window& window);
+    explicit Client(Socket socket, SDL2pp::Window& window);
 
     void exec();
+
+    ~Client();
 };
 
 #endif  // CLIENT_H

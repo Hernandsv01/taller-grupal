@@ -24,7 +24,7 @@ class EventListener : public Thread {
     EventListener(SDL2pp::Window& window, Socket& socket);
 
     // loop que escucha los eventos del teclado
-    void run();
+    void run() override;
 };
 
 #endif  // EVENTLISTENER_H
