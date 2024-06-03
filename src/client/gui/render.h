@@ -9,7 +9,9 @@ using namespace SDL2pp;
 
 class Render {
    public:
-    Render(int width, int height);
+    //   Render(int width, int height);
+
+    explicit Render(Window& window);
 
     void presentPlayer(struct EstadoJugador);
 
@@ -17,7 +19,7 @@ class Render {
 
    private:
     SDL sdl;
-    Window window;
+    Window& window;
     Renderer renderer;
     Texture standSpritesJazz;
     Texture runSpritesJazz;
@@ -25,7 +27,7 @@ class Render {
     int frame;
 
     void copyEntity(int posX, int posY, int spriteLong, int spriteHigh,
-                    int animationLong, Texture &sprite);
+                    int animationLong, Texture& sprite);
 };
 
 #endif

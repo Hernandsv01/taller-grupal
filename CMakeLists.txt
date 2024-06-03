@@ -20,6 +20,13 @@ include_directories(src/server/model/constants)
 # src/client/gui/testfiles/testJazzStand.cpp
         # src/client/gui/main.cpp
 
+set(SOURCES_TEST_SDL
+        # src/client/gui/testfiles/testJazzRunRight.cpp
+        src/client/gui/testfiles/testJazzStand.cpp
+        src/client/gui/estado_juego.h
+        src/client/gui/render.h
+        src/client/gui/render.cpp
+        )
 
 set(SOURCES_CLIENT
         src/client/gui/estado_juego.h
@@ -84,6 +91,9 @@ src/server/clients/server_client.cpp
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})
 
 add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
+
+
+add_executable(testsdl ${SOURCES_TEST_SDL})
         
         
 
@@ -95,3 +105,4 @@ add_subdirectory(src/client/gui/SDL2pp)
 
 
 target_link_libraries(client PUBLIC SDL2pp)
+target_link_libraries(testsdl PUBLIC SDL2pp)

@@ -13,9 +13,11 @@ int main(int argc, char* argv[]) {
     const char* hostname = "127.0.0.1";
     const char* servname = "15500";
     SDL2pp::SDL sdl(SDL_INIT_VIDEO);
-    SDL2pp::Window window("TEST", SDL_WINDOWPOS_UNDEFINED,
-                          SDL_WINDOWPOS_UNDEFINED, 800, 600,
+    SDL2pp::Window window("TEST", SDL_WINDOWPOS_CENTERED,
+                          SDL_WINDOWPOS_CENTERED, 800, 600,
                           SDL_WindowFlags::SDL_WINDOW_RESIZABLE);
+
+    // INICIO Client main normal
     Socket socket(hostname, servname);
     Client client(std::move(socket), window);
 
@@ -27,6 +29,23 @@ int main(int argc, char* argv[]) {
     } while (input != "q");
 
     return 0;
+    // FINAL  Client main normal
+
+    // INICIO CLIENT MAIN ONLY RENDER
+    // ¿ESTE LO USO PARA PROBAR PORQUE NO RENDERIZA NADA?
+    // Render render(window);
+
+    // EstadoJugador personajeJazz;
+    // personajeJazz.posicion = Posicion{100, 200};
+    // personajeJazz.direccion = Direccion::Derecha;
+    // personajeJazz.tipoPersonaje = Jazz;
+    // personajeJazz.puntosDeVida = 10;
+    // personajeJazz.puntaje = 0;
+
+    // while (1) {
+    //     render.presentPlayer(personajeJazz);
+    // }
+    // FINAL CLIENT MAIN ONLY RENDER
 
     // Estructura del main
     /*

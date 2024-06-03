@@ -13,7 +13,7 @@ class Client {
    private:
     Socket socket;
     SDL2pp::Window& window;
-    // GuiLoop gui;
+    GuiLoop gui;
     EventListener eventListener;
     Updater updater;
 
