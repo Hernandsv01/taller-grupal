@@ -9,6 +9,17 @@
 #define JAZZRUNY 35
 #define RUNSPRITELONG 8
 
+#define JAZZINTOXX 42
+#define JAZZINTOXY 48
+#define INTOXSPRITELONG 8
+
+#define JAZZINTOXWALKX 63
+#define JAZZINTOXWALKY 50
+#define INTOXWALKSPRITELONG 12
+
+#define JAZZX 90
+#define JAZZY 71
+
 #define GROUND 0
 #define UNDER 1
 #define BACK 2
@@ -24,9 +35,13 @@ Render::Render(int width, int height) :
 	window("SDL2pp demo", SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_RESIZABLE),
 	renderer(window, -1, SDL_RENDERER_ACCELERATED),
+
+	mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
 	standSpritesJazz(renderer, DATA_PATH "/Jazz_stand.png"),
 	runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
-	mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
+	intoxJazz(renderer, DATA_PATH "/Jazz_intoxStand.png"),
+	intoxWalkJazz(renderer, DATA_PATH "/Jazz_intoxWalk.png"),
+	
 	xCenter(width/2), yCenter(height/2),
 	xReference(xCenter), yReference(yCenter),
 	frame(0) {
@@ -46,8 +61,12 @@ void Render::copyPlayer(EstadoJugador jugador) {
 	
 	if (jugador.estados[0] == Esperando) {
 		copyEntity(xPos, yPos,JAZZSTANDX, JAZZSTANDY, STANDSPRITELONG, standSpritesJazz);
-	} else {
+	} else if (jugador.estados[0] == Corriendo) {
 		copyEntity(xPos, yPos,JAZZRUNX, JAZZRUNY, RUNSPRITELONG, runSpritesJazz);
+	} else if (jugador.estados[0] == Intoxicado) {
+		copyEntity(xPos, yPos,JAZZINTOXX, JAZZINTOXY, INTOXSPRITELONG, intoxJazz);
+	} else {
+		copyEntity(xPos, yPos,JAZZINTOXWALKX, JAZZINTOXWALKY, INTOXWALKSPRITELONG, intoxWalkJazz);
 	}
 }
 
@@ -91,6 +110,10 @@ void Render::copyMapPart(int typeOfPart ,int part, std::vector<Posicion> positio
 						position.y - yReference + yCenter,
 						PARTDIMX, PARTDIMY));
 	}
+}
+
+void Render::presentImage() {
+    renderer.Present();
 }
 
 void Render::sleep(int millisecond) {

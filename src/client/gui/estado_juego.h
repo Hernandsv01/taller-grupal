@@ -37,6 +37,7 @@ enum Estado {
     Cayendo,
     Corriendo,
     Intoxicado,
+    IntoxCaminando,
     Muerto,
     RecibiendoDanio
 };

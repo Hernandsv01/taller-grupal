@@ -31,6 +31,7 @@ int main() {
     while (1) {
         
         render.copyMap(mapInfo);
+        render.presentImage();
         //Simulate 30 fps, 33.333 milliseconds
 		render.sleep(50);
 	}

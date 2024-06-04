@@ -6,6 +6,7 @@ using namespace SDL2pp;
 class Render {
     
     public:
+
         Render(int width, int height);
 
         void presentGame(EstadoJuegoRenderer, MapInfo mapInfo);
@@ -13,15 +14,21 @@ class Render {
         void copyPlayer(EstadoJugador jugador);
         void copyMap(MapInfo mapInfo);
 
+        void presentImage();
+
         void sleep(int milliSecond);
 
     private:
         SDL sdl;
         Window window;
         Renderer renderer;
+
+        Texture mapsTexture;
         Texture standSpritesJazz;
         Texture runSpritesJazz;
-        Texture mapsTexture;
+        Texture intoxJazz;
+        Texture intoxWalkJazz;
+        
 
         int xCenter;
         int yCenter;
