@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../../common/Update.h"
+#include "../../common/updateables.h"
 
 typedef uint8_t Id;
 typedef uint8_t PuntosVida;
@@ -88,7 +89,7 @@ class EstadoJuegoActualizable {
 
         std::transform(
             map.begin(), map.end(), std::back_inserter(vector),
-            [](const auto &par_id_key) { return par_id_key.second; });
+            [](const auto& par_id_key) { return par_id_key.second; });
 
         return vector;
     }
@@ -99,10 +100,64 @@ class EstadoJuegoActualizable {
         this->jugadores.insert({jugador.id, jugador});
     }
 
+    EstadoJugador& obtener_referencia_estado_jugador(Id id) {
+        return this->jugadores.at(id);
+    }
+
+    Entidad& obtener_referencia_entidad(Id id) {
+        if (this->jugadores.count(id)) {
+            return this->jugadores.at(id);
+        } else if (this->proyectiles.count(id)) {
+            return this->proyectiles.at(id);
+        } else if (this->enemigos.count(id)) {
+            return this->enemigos.at(id);
+        } else if (this->items.count(id)) {
+            return this->items.at(id);
+        }
+
+        // No se encontró la ID. Devuelvo algun tipo de error;
+        return this->items.at(id);
+    }
+
     void actualizar(Update update) {
         // Incluir logica de que tipo de update es
-        if (jugadores.count(update.id)) {
-            jugadores[update.id].posicion.x = update.value;
+
+        switch (update.key) {
+            case Updateables::HEALTH: {
+                // Solo jugador
+                EstadoJugador& jugador_a_modificar =
+                    this->jugadores.at(update.id);
+                jugador_a_modificar.puntosDeVida = update.value;
+                break;
+            }
+
+            case Updateables::POSITION_X: {
+                // Cualquier entidad
+                Entidad& entidad_a_modificar =
+                    this->obtener_referencia_entidad(update.id);
+                entidad_a_modificar.posicion.x = update.value;
+                break;
+            }
+
+            case Updateables::POSITION_Y: {
+                // Cualquier entidad
+                Entidad& entidad_a_modificar =
+                    this->obtener_referencia_entidad(update.id);
+                entidad_a_modificar.posicion.y = update.value;
+                break;
+            }
+
+            case Updateables::BULLETS: {
+                // Solo jugador
+                std::cout << "No estoy seguro que debería hacer este updatable"
+                          << std::endl;
+                //  TODO: que sería esto?s
+                break;
+            }
+
+            default:
+                std::cerr << "Tipo de update no implementado" << std::endl;
+                break;
         }
     }
 
