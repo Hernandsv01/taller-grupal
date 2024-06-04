@@ -17,7 +17,8 @@
 class GuiLoop : public Thread {
     std::chrono::steady_clock reloj;
 
-    Render render;
+    Window& window_for_render;
+    Render* render = nullptr;
 
     // TODO: estado que Mariano debe actualizar,
     // TODO: a partir de las updates que recibe de un Queue?
@@ -28,9 +29,12 @@ class GuiLoop : public Thread {
    public:
     // GuiLoop();
     explicit GuiLoop(Window& window);
+    ~GuiLoop();
 
    private:
     void run() override;
+
+    void inicializar_render();
 
     // void stop_custom() override;
 

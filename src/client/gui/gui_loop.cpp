@@ -13,7 +13,7 @@ double get_random() {
     return random[x];
 }
 
-GuiLoop::GuiLoop(Window& window) : tick_actual(0), render(window) {
+GuiLoop::GuiLoop(Window& window) : tick_actual(0), window_for_render(window) {
     EstadoJugador jugador;
     jugador.direccion = Direccion::Derecha;
     jugador.id = 1;
@@ -33,7 +33,16 @@ GuiLoop::GuiLoop(Window& window) : tick_actual(0), render(window) {
 //     //  solo cuando termine el proximo tick, y _keep_running sea falso
 // }
 
+void GuiLoop::inicializar_render() { render = new Render(window_for_render); }
+
+GuiLoop::~GuiLoop() {
+    delete render;
+    render = nullptr;
+}
+
 void GuiLoop::run() {
+    inicializar_render();
+
     using namespace std::chrono;
     time_point INICIO_ABSOLUTO = reloj.now();
     time_point inicio_tick = INICIO_ABSOLUTO;
@@ -106,7 +115,11 @@ void GuiLoop::ejecutar_renderer() {
     EstadoJuegoRenderer estado_para_renderer =
         estadoJuegoActualizable.obtener_estado();
 
-    render.presentPlayer(estado_para_renderer.jugadorPrincipal);
+    if (render == nullptr)
+        throw std::runtime_error(
+            "Se debe inicializar el render antes de usarlo");
+
+    render->presentPlayer(estado_para_renderer.jugadorPrincipal);
 
     // std::cout << "tick: " << tick_actual << "\n";
     // std::cout << "(" << estado_para_renderer.jugadorPrincipal.posicion.x
