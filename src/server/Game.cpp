@@ -4,6 +4,9 @@ Game::Game() : status(Game_status::WAITING) {
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
 }
 
+// Agregado para poder parar el loop del servidor, antes de joinear este thread
+void Game::stop() { status = Game_status::STOPPED; }
+
 void Game::run() {
     status = Game_status::RUNNING;
     std::chrono::steady_clock::time_point INICIO_ABSOLUTO = reloj.now();
