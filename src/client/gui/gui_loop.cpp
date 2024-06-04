@@ -16,7 +16,7 @@ double get_random() {
 GuiLoop::GuiLoop(Window& window) : tick_actual(0), window_for_render(window) {
     EstadoJugador jugador;
     jugador.direccion = Direccion::Derecha;
-    jugador.id = 1;
+    jugador.id = 0;
     jugador.posicion = Posicion{100, 200};
     jugador.puntosDeVida = 10;
     jugador.tipoPersonaje = TipoPersonaje::Jazz;

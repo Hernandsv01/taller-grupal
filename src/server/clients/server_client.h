@@ -3,7 +3,6 @@
 
 #include <utility>
 
-#include "ActionMessage.h"
 #include "ActionType.h"
 #include "Update.h"
 #include "protocol.h"
@@ -61,7 +60,7 @@ class Server_Client {
         : skt(std::move(socket)),
           receiver(skt),
           sender(skt),
-          player_position(-1) {
+          player_position(0) {
         receiver.start();
         sender.start();
     }

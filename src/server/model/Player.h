@@ -17,10 +17,8 @@ class Player : public Dynamic_entity {
 
             // falta verificar colisión
 
-            std::cout << pos_x << std::endl;
-
-            Update update{static_cast<uint8_t>(id), Updateables::POSITION_X,
-                          static_cast<uint8_t>(pos_x)};
+            Update update{static_cast<uint16_t>(id), Updateables::POSITION_X,
+                          static_cast<uint32_t>(pos_x)};
             updates.push_back(update);
         }
         if (vel_y != 0) {
@@ -28,8 +26,8 @@ class Player : public Dynamic_entity {
 
             // falta verificar colisión
 
-            Update update{static_cast<uint8_t>(id), Updateables::POSITION_Y,
-                          static_cast<uint8_t>(pos_y)};
+            Update update{static_cast<uint16_t>(id), Updateables::POSITION_Y,
+                          static_cast<uint32_t>(pos_y)};
             updates.push_back(update);
         }
         return updates;
