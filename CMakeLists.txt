@@ -6,6 +6,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_STANDARD 17)
 
+
 include_directories(src/client)
 include_directories(src/client/gui)
 include_directories(src/client/gui/SDL2pp/SDL2pp)
@@ -92,16 +93,15 @@ src/server/clients/server_client.cpp
         )
 
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})
-
 add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
-
-
 add_executable(testsdl ${SOURCES_TEST_SDL})
-        
-        
+
+find_package(Threads REQUIRED)
+target_link_libraries(server PRIVATE Threads::Threads)
+target_link_libraries(client PRIVATE Threads::Threads)
+target_link_libraries(testsdl PRIVATE Threads::Threads)
 
 
-        
 set(SDL2PP_WITH_IMAGE YES)
 set(SDL2PP_WITH_TTF YES)
 add_subdirectory(src/client/gui/SDL2pp)
@@ -109,3 +109,8 @@ add_subdirectory(src/client/gui/SDL2pp)
 
 target_link_libraries(client PUBLIC SDL2pp)
 target_link_libraries(testsdl PUBLIC SDL2pp)
+
+add_compile_options(-lpthread)
+
+
+
