@@ -13,16 +13,16 @@ double get_random() {
     return random[x];
 }
 
-GuiLoop::GuiLoop() : tick_actual(0) {
+GuiLoop::GuiLoop(Window& window) : tick_actual(0), window_for_render(window) {
     EstadoJugador jugador;
     jugador.direccion = Direccion::Derecha;
-    jugador.id = 0;
-    jugador.posicion = Posicion{5, 1};
+    jugador.id = 1;
+    jugador.posicion = Posicion{100, 200};
     jugador.puntosDeVida = 10;
     jugador.tipoPersonaje = TipoPersonaje::Jazz;
     jugador.puntaje = 0;
 
-    // estadoJuegoActualizable.jugadores.emplace_back(jugador);
+    estadoJuegoActualizable.agregar_jugador_principal(jugador);
 };
 
 // std::string GuiLoop::text_description() { return "GuiLoop"; }
@@ -33,11 +33,19 @@ GuiLoop::GuiLoop() : tick_actual(0) {
 //     //  solo cuando termine el proximo tick, y _keep_running sea falso
 // }
 
+void GuiLoop::inicializar_render() { render = new Render(window_for_render); }
+
+GuiLoop::~GuiLoop() {
+    delete render;
+    render = nullptr;
+}
+
 void GuiLoop::run() {
+    inicializar_render();
+
     using namespace std::chrono;
     time_point INICIO_ABSOLUTO = reloj.now();
     time_point inicio_tick = INICIO_ABSOLUTO;
-
     while (_keep_running) {
         /*
 
@@ -107,14 +115,17 @@ void GuiLoop::ejecutar_renderer() {
     EstadoJuegoRenderer estado_para_renderer =
         estadoJuegoActualizable.obtener_estado();
 
-    // renderer.renderizar(tick_actual, estado_para_renderer);
+    if (render == nullptr)
+        throw std::runtime_error(
+            "Se debe inicializar el render antes de usarlo");
 
-    std::cout << "tick: " << tick_actual << "\n";
-    std::cout << "(" << estado_para_renderer.jugadorPrincipal.posicion.x << ", "
-              << estado_para_renderer.jugadorPrincipal.posicion.y << ")"
-              << std::endl;
+    render->presentPlayer(estado_para_renderer.jugadorPrincipal);
 
-    return;
+    // std::cout << "tick: " << tick_actual << "\n";
+    // std::cout << "(" << estado_para_renderer.jugadorPrincipal.posicion.x
+    // << ", "
+    //           << estado_para_renderer.jugadorPrincipal.posicion.y << ")"
+    //           << std::endl;
 }
 
 void GuiLoop::actualizar_estado() {

@@ -186,6 +186,19 @@ target_include_directories(SDL2pp PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
 	$<INSTALL_INTERFACE:include>
 )
+
+if(NOT TARGET SDL2::SDL2)
+	if(NOT SDL2_FOUND)
+		message(FATAL_ERROR "SDL2 not found!")
+	endif()
+
+	add_library(SDL2::SDL2 INTERFACE IMPORTED)
+	set_target_properties(SDL2::SDL2 PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIRS}"
+			INTERFACE_LINK_LIBRARIES "${SDL2_LIBRARIES}"
+	)
+endif()
+
 target_link_libraries(SDL2pp PUBLIC ${SDL2_ALL_LIBRARIES})
 generate_export_header(SDL2pp EXPORT_FILE_NAME SDL2pp/Export.hh)
 

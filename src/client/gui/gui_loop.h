@@ -12,26 +12,29 @@
 
 #include "../../common/library/thread.h"
 #include "estado_juego.h"
+#include "render.h"
 
 class GuiLoop : public Thread {
     std::chrono::steady_clock reloj;
 
-    // TODO: Acá matias debería poner el renderer para que se cree
-    // Renderer renderer;
+    Window& window_for_render;
+    Render* render = nullptr;
 
     // TODO: estado que Mariano debe actualizar,
     // TODO: a partir de las updates que recibe de un Queue?
     EstadoJuegoActualizable estadoJuegoActualizable;
 
-    // Queue<update> queueUpdates;
-
     uint32_t tick_actual;
 
    public:
-    GuiLoop();
+    // GuiLoop();
+    explicit GuiLoop(Window& window);
+    ~GuiLoop();
 
    private:
     void run() override;
+
+    void inicializar_render();
 
     // void stop_custom() override;
 
