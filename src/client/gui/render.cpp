@@ -27,10 +27,14 @@ Render::Render(int width, int height) :
 	standSpritesJazz(renderer, DATA_PATH "/Jazz_stand.png"),
 	runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
 	mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
+	xCenter(width/2), yCenter(height/2),
+	xReference(xCenter), yReference(yCenter),
 	frame(0) {
 }
 
 void Render::presentGame(EstadoJuegoRenderer gameStatus, MapInfo mapInfo) {
+	xReference = gameStatus.jugadorPrincipal.posicion.x;
+	yReference = gameStatus.jugadorPrincipal.posicion.y;
 	copyMap(mapInfo);
 	copyPlayer(gameStatus.jugadorPrincipal);
 	renderer.Present();
@@ -56,7 +60,7 @@ void Render::copyEntity(int xPos, int yPos,
 	renderer.Copy(
 			sprite,
 			Rect(srcX, BASESPRITE, spriteLong, spriteHigh),
-			Rect(xPos, yPos, spriteLong, spriteHigh));
+			Rect(xCenter - spriteLong/2, yCenter, spriteLong, spriteHigh));
 	
 	frame = (frame +1) % animationLong;
 }
@@ -83,7 +87,9 @@ void Render::copyMapPart(int typeOfPart ,int part, std::vector<Posicion> positio
 		renderer.Copy(
 					mapsTexture,
 					Rect(part *PARTDIMX, typeOfPart*PARTDIMY, PARTDIMX, PARTDIMY),
-					Rect(position.x, position.y, PARTDIMX, PARTDIMY));
+					Rect(position.x - xReference + xCenter,
+						position.y - yReference + yCenter,
+						PARTDIMX, PARTDIMY));
 	}
 }
 

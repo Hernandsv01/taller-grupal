@@ -23,6 +23,10 @@ class Render {
         Texture runSpritesJazz;
         Texture mapsTexture;
 
+        int xCenter;
+        int yCenter;
+        int xReference;
+        int yReference;
         int frame;
     
         void copyMapPart(int typeOfPart ,int part, std::vector<Posicion> positions);

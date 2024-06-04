@@ -7,11 +7,12 @@ int main() {
     int height = 480;
     int pjPosX = width/2;
     int pjPosY = 300;
+    int groundPosY = 300;
 
     //Map
     std::vector<Posicion> positionGround;
     for (int i= 0; i<640; i+= 32) {
-        positionGround.push_back(Posicion{i, 300});
+        positionGround.push_back(Posicion{i, groundPosY});
     }
     std::vector<Posicion> positionUnder;
     for (int i= 0; i<640; i+= 32) {
