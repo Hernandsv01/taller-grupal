@@ -29,6 +29,7 @@ class Game : public Thread {
     void run() override;
     void run_iteration();
     void process_action(uint8_t action, int player);
+    void stop() override;
 };
 
 #endif  // GAME_H
