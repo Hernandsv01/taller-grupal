@@ -12,7 +12,6 @@ bool Protocol::sendData(std::vector<Update> payload) {
     skt.sendall(&size, sizeof(size), &was_closed);
 
     if (was_closed) return false;
-    return true;
 
     skt.sendall(&payload, sizeof(Update) * payload.size(), &was_closed);
 
@@ -25,7 +24,7 @@ bool Protocol::sendData(std::vector<Update> payload) {
  * @param result
  * @return true if operation was successful, false otherwise
  */
-bool Protocol::receiveData(ActionMessage* result) {
+bool Protocol::receiveData(ActionType* result) {
     if (was_closed) return false;
 
     skt.recvall(result, sizeof(ActionMessage), &was_closed);

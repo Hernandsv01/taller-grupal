@@ -58,10 +58,7 @@ void Game::process_action(uint8_t action, int player) {
     if (action == SPECIAL) {
         return;  // Not implemented
     }
-    if (action == STOP_RUN_RIGHT) {
-        return;
-    }
-    if (action == STOP_RUN_LEFT) {
-        return;
+    if (action == STOP_RUN_RIGHT || action == STOP_RUN_LEFT) {
+        entity_pool[player]->setXSpeed(0);
     }
 }
