@@ -14,7 +14,7 @@
 class Client_receiver : public Thread {
    private:
     Protocol protocol;
-    Queue<ActionMessage> inputQueue;
+    Queue<ActionType> inputQueue;
     bool is_running;
 
    public:

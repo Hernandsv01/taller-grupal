@@ -6,6 +6,7 @@
 #include "../../common/ActionMessage.h"
 #include "../../common/Update.h"
 #include "../../common/library/socket.h"
+#include "ActionType.h"
 
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
@@ -19,7 +20,7 @@ class Protocol {
     explicit Protocol(Socket& skt) : skt(skt), was_closed(false) {}
 
     bool sendData(std::vector<Update> payload);
-    bool receiveData(ActionMessage* result);
+    bool receiveData(ActionType* result);
     bool connectionClosed();
 };
 

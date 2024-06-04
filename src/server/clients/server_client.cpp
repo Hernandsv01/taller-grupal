@@ -19,7 +19,7 @@ void Client_sender::addToQueue(std::vector<Update> const& result) {
 
 void Client_receiver::run() {
     while (is_running) {
-        ActionMessage action;
+        ActionType action;
         bool successful = protocol.receiveData(&action);
         if (!successful) {
             is_running = false;
@@ -30,6 +30,7 @@ void Client_receiver::run() {
 }
 
 ActionType Client_receiver::get_next_action() {
-    // TODO: BRUH
-    return ActionType::NULL_ACTION;
+    ActionType message = ActionType::NULL_ACTION;
+    inputQueue.try_pop(message);
+    return message;
 }
