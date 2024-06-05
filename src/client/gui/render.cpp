@@ -30,21 +30,35 @@
 //Jazz stand dimension (46, 49) pix
 //Jazz run dimension (67, 34) pix
 
-Render::Render(int width, int height) :
-	sdl(SDL_INIT_VIDEO),
-	window("SDL2pp demo", SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_RESIZABLE),
-	renderer(window, -1, SDL_RENDERER_ACCELERATED),
+#define WINDOW_TITLE "SDL2pp demo"
 
+#define DATA_PATH "src/client/gui/data"
+
+// Render::Render(int width, int height)
+//     : sdl(SDL_INIT_VIDEO),
+//       window(Window(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED,
+//                     SDL_WINDOWPOS_UNDEFINED, width, height,
+//                     SDL_WINDOW_RESIZABLE)),
+//       renderer(window, -1, SDL_RENDERER_ACCELERATED),
+//       standSpritesJazz(renderer, DATA_PATH "/Jazz_stand.png"),
+//       runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
+//       frame(0) {}
+
+Render::Render(Window& window) :
+	window(window),
+	renderer(window, -1, SDL_RENDERER_ACCELERATED),
 	mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
 	standSpritesJazz(renderer, DATA_PATH "/Jazz_stand.png"),
 	runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
 	intoxJazz(renderer, DATA_PATH "/Jazz_intoxStand.png"),
 	intoxWalkJazz(renderer, DATA_PATH "/Jazz_intoxWalk.png"),
 	
-	xCenter(width/2), yCenter(height/2),
+	xCenter(window.GetWidth()/2), yCenter(window.GetHeight()/2),
 	xReference(xCenter), yReference(yCenter),
 	frame(0) {
+		window.SetTitle(WINDOW_TITLE);
+		window.SetSize(800, 600);
+		window.SetPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }
 
 void Render::presentGame(EstadoJuegoRenderer gameStatus, MapInfo mapInfo) {
@@ -70,11 +84,9 @@ void Render::copyPlayer(EstadoJugador jugador) {
 	}
 }
 
-void Render::copyEntity(int xPos, int yPos, 
-							int spriteLong, int spriteHigh,
-							int animationLong, Texture &sprite) {
-	
-	int srcX = frame * spriteLong;
+void Render::copyEntity(int xPos, int yPos, int spriteLong, int spriteHigh,
+                        int animationLong, Texture& sprite) {
+    int srcX = frame * spriteLong;
 
 	renderer.Copy(
 			sprite,

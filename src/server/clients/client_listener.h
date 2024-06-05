@@ -3,24 +3,24 @@
 
 #include <utility>
 
+#include "client_monitor.h"
+#include "server_client.h"
 #include "socket.h"
 #include "thread.h"
-#include "client.h"
-#include "client_monitor.h"
 
 #define SHUTDOWN_MODE 2
 
-class Client_listener: public Thread {
-private:
+class Client_listener : public Thread {
+   private:
     Socket skt_listener;
     bool is_running;
 
-public:
-    explicit Client_listener(char* port): skt_listener(port), is_running(true) {}
+   public:
+    explicit Client_listener(char* port)
+        : skt_listener(port), is_running(true) {}
 
     void run() override;
     void kill();
 };
-
 
 #endif  // SERVER_CLIENT_LISTENER_H

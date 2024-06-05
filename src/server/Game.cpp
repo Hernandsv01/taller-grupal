@@ -1,7 +1,7 @@
 #include "Game.h"
 
 Game::Game() : status(Game_status::WAITING) {
-    entity_pool.push_back(Player(0, 0, 0));
+    entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
 }
 
 void Game::run() {
@@ -9,7 +9,8 @@ void Game::run() {
     std::chrono::steady_clock::time_point INICIO_ABSOLUTO = reloj.now();
     std::chrono::steady_clock::time_point inicio_tick = INICIO_ABSOLUTO;
     while (status == Game_status::RUNNING) {
-        std::chrono::steady_clock::time_point final_tick = inicio_tick + TICK_DURATION;
+        std::chrono::steady_clock::time_point final_tick =
+            inicio_tick + TICK_DURATION;
 
         run_iteration();
 
@@ -22,16 +23,17 @@ void Game::run() {
 }
 
 void Game::run_iteration() {
-    for (Client* client : Client_Monitor::getAll()) {
+    for (Server_Client* client : Client_Monitor::getAll()) {
         uint8_t action = client->getReceiver().get_next_action();
         process_action(action, client->get_player_position());
     }
 
     std::vector<Update> total_updates;
     std::vector<Update> tick_updates;
-    for (Dynamic_entity entity : entity_pool) {
-        tick_updates = entity.tick(&entity_pool);
-        total_updates.insert(total_updates.end(), tick_updates.begin(), tick_updates.end());
+    for (std::unique_ptr<Dynamic_entity>& entity_ptr : entity_pool) {
+        tick_updates = entity_ptr->tick(&entity_pool);
+        total_updates.insert(total_updates.end(), tick_updates.begin(),
+                             tick_updates.end());
     }
 
     Client_Monitor::sendAll(total_updates);
@@ -42,24 +44,21 @@ void Game::process_action(uint8_t action, int player) {
         return;
     }
     if (action == JUMP) {
-        return; // Not implemented
+        return;  // Not implemented
     }
     if (action == RUN_LEFT) {
-        entity_pool[player].setXSpeed(-1);
+        entity_pool[player]->setXSpeed(-1);
     }
     if (action == RUN_RIGHT) {
-        entity_pool[player].setXSpeed(1);
+        entity_pool[player]->setXSpeed(1);
     }
     if (action == SHOOT) {
-        return; // Not implemented
+        return;  // Not implemented
     }
     if (action == SPECIAL) {
-        return; // Not implemented
+        return;  // Not implemented
     }
-    if (action == STOP_RUN_RIGHT) {
-        return;
-    }
-    if (action == STOP_RUN_LEFT) {
-        return;
+    if (action == STOP_RUN_RIGHT || action == STOP_RUN_LEFT) {
+        entity_pool[player]->setXSpeed(0);
     }
 }

@@ -25,8 +25,12 @@ int main() {
     mapInfo.typeOfUnder = RedDiamond;
     mapInfo.underPosition = positionUnder;
 
-    
-    Render render(width, height);
+    SDL sdl(SDL_INIT_VIDEO);
+    Window window("SDL2pp demo",
+			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+			640, 480,
+			SDL_WINDOW_RESIZABLE);
+    Render render(window);
     int pjPosX = 0;
     int pjPosY = 300;
     

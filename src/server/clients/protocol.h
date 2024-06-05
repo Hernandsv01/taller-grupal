@@ -1,24 +1,25 @@
+#include <netinet/in.h>
+
 #include <iostream>
 #include <vector>
 
-#include <netinet/in.h>
-
-#include "common/library/socket.h"
-#include "common/dtos.h"
+#include "../../common/Update.h"
+#include "../../common/library/socket.h"
+#include "ActionType.h"
 
 #ifndef PROTOCOL_H
 #define PROTOCOL_H
 
 class Protocol {
-private:
+   private:
     Socket& skt;
     bool was_closed;
 
-public:
-    explicit Protocol(Socket& skt): skt(skt), was_closed(false) {}
+   public:
+    explicit Protocol(Socket& skt) : skt(skt), was_closed(false) {}
 
     bool sendData(std::vector<Update> payload);
-    bool receiveData(ActionMessage* result);
+    bool receiveData(ActionType* result);
     bool connectionClosed();
 };
 

@@ -1,9 +1,9 @@
 #include "../render.h"
 #include "../estado_juego.h"
+#include <SDL2pp/SDL2pp.hh>
 
 #define XPICPIX 134
 #define RUNSPEED 10
-//Jazz run dimension (134, 34) pix
 
 int main() {
     int width = 640;
@@ -25,8 +25,16 @@ int main() {
     mapInfo.typeOfUnder = RedDiamond;
     mapInfo.underPosition = positionUnder;
 
-    
-    Render render(width, height);
+
+    //Initialize SDL structures
+    SDL sdl(SDL_INIT_VIDEO);
+    Window window("SDL2pp demo",
+			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+			width, height,
+			SDL_WINDOW_RESIZABLE);
+    Render render(window);
+
+    //Player position
     int pjPosX = 640/2;
     int pjPosY = 300;
     int cantMaxFrames = 50;

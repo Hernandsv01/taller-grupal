@@ -1,19 +1,21 @@
-#ifndef UPDATE_MONITOR_H
-#define UPDATE_MONITOR_H
+#ifndef UPDATE_QUEUE_H
+#define UPDATE_QUEUE_H
 
-#include "../common/library/queue.h"
-#include "../common/Update.h"
 #include <sstream>
 #include <vector>
 
-class Update_queue{
-private:
+#include "../common/Update.h"
+#include "../common/library/queue.h"
+
+class Update_queue {
+   private:
     static Queue<std::vector<Update>> updates;
-public:
+
+   public:
     static void push(std::vector<Update>& update);
     static void try_push(std::vector<Update>& update);
     static std::vector<Update> pop();
     static std::vector<Update> try_pop();
 };
 
-#endif //UPDATE_MONITOR_H
+#endif  // UPDATE_MONITOR_H

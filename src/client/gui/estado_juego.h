@@ -91,7 +91,7 @@ class EstadoJuegoActualizable {
     std::map<Id, Proyectil> proyectiles;
     std::map<Id, Enemigo> enemigos;
     std::map<Id, Item> items;
-    Id id_jugador_actual = 1;
+    Id id_jugador_principal = 1;
 
    private:
     //    https://stackoverflow.com/questions/771453/copy-map-values-to-vector-in-stl
@@ -99,13 +99,19 @@ class EstadoJuegoActualizable {
     std::vector<T> get_vector_from(std::map<Id, T> map) {
         std::vector<T> vector;
 
-        std::transform(map.begin(), map.end(), std::back_inserter(vector),
-                       [](const auto &par_id_key) { return par_id_key.second; });
+        std::transform(
+            map.begin(), map.end(), std::back_inserter(vector),
+            [](const auto &par_id_key) { return par_id_key.second; });
 
         return vector;
     }
 
    public:
+    void agregar_jugador_principal(EstadoJugador jugador) {
+        this->id_jugador_principal = jugador.id;
+        this->jugadores.insert({jugador.id, jugador});
+    }
+
     void actualizar(Update update) {
         // Incluir logica de que tipo de update es
         if (jugadores.count(update.id)) {
@@ -116,17 +122,18 @@ class EstadoJuegoActualizable {
     EstadoJuegoRenderer obtener_estado() {
         EstadoJuegoRenderer estado;
 
-        EstadoJugador jugador_principal = this->jugadores.at(id_jugador_actual);
+        EstadoJugador jugador_principal =
+            this->jugadores.at(id_jugador_principal);
 
         estado.jugadorPrincipal = jugador_principal;
 
         // Elimino jugador principal de map
-        this->jugadores.erase(id_jugador_actual);
+        this->jugadores.erase(id_jugador_principal);
 
         estado.jugadores = this->get_vector_from(this->jugadores);
 
         // vuelvo a agregar jugador principal a map
-        this->jugadores[id_jugador_actual] = jugador_principal;
+        this->jugadores[id_jugador_principal] = jugador_principal;
 
         estado.items = this->get_vector_from(this->items);
         estado.enemigos = this->get_vector_from(this->enemigos);
