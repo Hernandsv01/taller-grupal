@@ -5,7 +5,7 @@ Game::Game() : status(Game_status::WAITING) {
 }
 
 // Agregado para poder parar el loop del servidor, antes de joinear este thread
-void Game::stop() { status = Game_status::STOPPED; }
+void Game::stop_custom() { status = Game_status::STOPPED; }
 
 void Game::run() {
     status = Game_status::RUNNING;
