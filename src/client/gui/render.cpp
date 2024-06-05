@@ -32,7 +32,9 @@
 
 #define WINDOW_TITLE "SDL2pp demo"
 
+#ifndef DATA_PATH
 #define DATA_PATH "src/client/gui/data"
+#endif
 
 // Render::Render(int width, int height)
 //     : sdl(SDL_INIT_VIDEO),
