@@ -16,6 +16,8 @@ class Client_receiver : public Thread {
     Queue<ActionType> inputQueue;
     bool is_running;
 
+    std::string text_description() override { return "Client_reciever server"; }
+
    public:
     explicit Client_receiver(Socket& socket)
         : protocol(socket), inputQueue(), is_running(true) {}
@@ -30,6 +32,8 @@ class Client_sender : public Thread {
     Protocol protocol;
     Queue<std::vector<Update>> outputQueue;
     bool is_running;
+
+    std::string text_description() override { return "Client_sender server"; }
 
    public:
     explicit Client_sender(Socket& socket)

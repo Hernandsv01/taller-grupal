@@ -24,12 +24,14 @@ class Game : public Thread {
     Game_status status;
     std::vector<std::unique_ptr<Dynamic_entity>> entity_pool;
 
+    std::string text_description() override { return "Game server"; }
+
    public:
     explicit Game();
     void run() override;
     void run_iteration();
     void process_action(uint8_t action, int player);
-    void stop() override;
+    void stop_custom() override;
 };
 
 #endif  // GAME_H

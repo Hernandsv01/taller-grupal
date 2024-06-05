@@ -26,6 +26,8 @@ class GuiLoop : public Thread {
 
     uint32_t tick_actual;
 
+    std::string text_description() override { return "GuiLoop cliente"; }
+
    public:
     // GuiLoop();
     explicit GuiLoop(Window& window);
