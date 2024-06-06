@@ -43,19 +43,26 @@ class Thread : public Runnable {
     // el thread.
     std::atomic<bool> _is_alive;
 
+    // Indica si el thread ya fue joineado.
+    std::atomic<bool> _has_been_joined;
+
     // Funcion que implementan quienes heredan de Thread. Es lo que se ejecuta
     // para parar forzozamente al hilo en cuestion. Esta funcion no es llamada
     // desde fuera, unicamente desde Thread
     virtual void stop_custom() {}
 
-    // Funcion que implementan quienes heredan de Thread. Se usa para, si se
-    // genera una excepcion, tener una descripcion de texto de cual tipo de
-    // Thread devolvió el error. (vease main)
-    virtual std::string text_description() = 0;
+    // Donde se almacena la descripcion del thread
+    const std::string _text_description;
 
     // Convertí los siguientes 3 metodos en protected, para que no se pueda, por
     // ejemplo, intentar iniciar un implementador de thread con "run()"
-    Thread() : _keep_running(true), _is_alive(false), thread_ended_event() {}
+
+    // Thread se debe crear con un string que describa el thread
+    Thread(const std::string& text_description)
+        : _keep_running(true),
+          _is_alive(false),
+          thread_ended_event(),
+          _text_description(text_description) {}
 
     void main() {
         try {
@@ -89,7 +96,10 @@ class Thread : public Runnable {
         thread = std::thread(&Thread::main, this);
     }
 
-    void join() override final { thread.join(); }
+    void join() override final {
+        thread.join();
+        _has_been_joined = true;
+    }
 
     // Agrega la opcion de que alguien agrege al thread un evento que notifique
     // cuando el thread terminó.
@@ -129,7 +139,31 @@ class Thread : public Runnable {
     // El thread ya no se está ejecutando.
     bool has_ended() const { return !_keep_running && !_is_alive; }
 
-    virtual ~Thread() {}
+    // El thread ya fue joineado.
+    bool has_been_joined() const { return _has_been_joined; }
+
+    // Devuelve la descripcion del thread
+    const std::string text_description() const { return _text_description; }
+
+    virtual ~Thread() {
+        // Si el thread ya no esta vivo y fue joineado. no hago nada.
+        if (has_been_joined()) return;
+
+            // Si esta en modo debug, aviso que un thread se stopea y joinea por
+            // estar fuera de scope. Convierte el objeto en RAII.
+            // Tal vez no debería ser necesario el aviso, pero lo agrego
+            // temporalmente para poder ver si hay algun thread que no estemos
+            // joineando correctamente.
+#ifndef NDEBUG
+        std::cout << "ALERTA: Thread " << text_description()
+                  << " fue destruido mientras todavía se esta ejecutando.\n"
+                  << "Se procede a forzar la terminación del thread."
+                  << std::endl;
+#endif
+
+        this->stop();
+        this->join();
+    }
 
     Thread(const Thread&) = delete;
     Thread& operator=(const Thread&) = delete;

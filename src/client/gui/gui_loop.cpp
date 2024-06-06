@@ -13,7 +13,8 @@ double get_random() {
     return random[x];
 }
 
-GuiLoop::GuiLoop(Window& window) : tick_actual(0), window_for_render(window) {
+GuiLoop::GuiLoop(Window& window)
+    : Thread("GuiLoop cliente"), tick_actual(0), window_for_render(window) {
     EstadoJugador jugador;
     jugador.direccion = Direccion::Derecha;
     jugador.id = 0;

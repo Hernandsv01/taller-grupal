@@ -1,7 +1,7 @@
 #include "eventlistener.h"
 
 EventListener::EventListener(SDL2pp::Window& window, Socket& socket)
-    : window(window), protocol(socket) {}
+    : Thread("EventListener cliente"), window(window), protocol(socket) {}
 
 void EventListener::run() {
     SDL_Event event;

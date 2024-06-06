@@ -1,6 +1,7 @@
 #include "updater.h"
 
-Updater::Updater(Socket& socket) : protocol(socket) {}
+Updater::Updater(Socket& socket)
+    : Thread("EventListener Cliente"), protocol(socket) {}
 
 void Updater::run() {
     while (this->keep_running()) {
