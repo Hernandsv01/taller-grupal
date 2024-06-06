@@ -1,64 +1,66 @@
 #include "protocololobby.h"
 
-#include <stdexcept>
 #include <arpa/inet.h>
+
 #include <iostream>
+#include <stdexcept>
 
-ProtocoloLobby::ProtocoloLobby(const char* ip,const char* puerto): socket(ip, puerto) {
+LobbyProtocol::LobbyProtocol(const char* ip, const char* port)
+    : socket(ip, port) {}
 
-}
-
-std::vector<Partida> ProtocoloLobby::obtener_partidas() {
+std::vector<GameMatch> LobbyProtocol::getGameMatches() {
     // TODO: MODIFICAR PROTOCOLO
 
     // TODO: ENVIAR PETICION PARTIDAS
-    char peticion[] = "Solicito partidas (4 bytes)";
-    socket.sendall(peticion, sizeof(peticion)-1);
+    char request[] = "Solicito partidas (4 bytes)";
+    socket.sendall(request, sizeof(request) - 1);
 
-    char contenido[5] = {0};
+    char buffer[5] = {0};
 
-    socket.recvall(contenido, 4);
+    socket.recvall(buffer, 4);
 
-    std::string string_partida(contenido);
-    std::vector<Partida> partidas;
+    std::string match_name(buffer);
+    std::vector<GameMatch> gameMatches;
 
     for (uint16_t i = 0; i < 5; i++) {
-        Partida partida = {i, 3, 0,string_partida + std::to_string(i)};
+        GameMatch match = {i, 3, 0, match_name + std::to_string(i)};
 
-        partidas.push_back(partida);
+        gameMatches.push_back(match);
     }
 
-    return partidas;
+    return gameMatches;
 }
 
-void ProtocoloLobby::conectar_a_partida(u_int16_t id) {
-    std::string peticion = "Conectarse a partida " + std::to_string(id) + ". Responder 1 byte";
+void LobbyProtocol::connectToMatch(u_int16_t id) {
+    std::string request =
+        "Conectarse a partida " + std::to_string(id) + ". Responder 1 byte";
 
-    socket.sendall((char*)peticion.c_str(), peticion.length());
+    socket.sendall((char*)request.c_str(), request.length());
 
-    uint8_t respuesta;
-    socket.recvall(&respuesta, 1);
+    uint8_t response;
+    socket.recvall(&response, 1);
 
-    if (respuesta == 0) {
+    if (response == 0) {
         throw std::runtime_error("No se pudo conectar a partida");
     }
 }
 
-uint16_t ProtocoloLobby::crear_partida(Partida partida) {
-    std::string peticion = "Solicito crear partida para " + std::to_string(partida.cantidad_necesaria_jugadores) +
-            " con nombre de partida " + partida.nombre;
+uint16_t LobbyProtocol::createMatch(GameMatch match) {
+    std::string request = "Solicito crear partida para " +
+                          std::to_string(match.requiredPlayersCount) +
+                          " con nombre de partida " + match.name;
 
-    socket.sendall((char*)peticion.c_str(), peticion.length());
+    socket.sendall((char*)request.c_str(), request.length());
 
-    uint16_t respuesta;
-    socket.recvall(&respuesta, 2);
+    uint16_t response;
+    socket.recvall(&response, 2);
 
-    respuesta = ntohs(respuesta);
+    response = ntohs(response);
 
-    if (respuesta == 0) {
+    if (response == 0) {
         throw std::runtime_error("No se pudo crear la partida");
     }
 
-    std::cout << respuesta << std::endl;
-    return respuesta;
+    std::cout << response << std::endl;
+    return response;
 }
