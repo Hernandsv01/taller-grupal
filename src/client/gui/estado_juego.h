@@ -9,124 +9,143 @@
 #include "../../common/Update.h"
 
 typedef uint8_t Id;
-typedef uint8_t PuntosVida;
-typedef uint8_t Puntaje;
+typedef uint8_t HealthPoints;
+typedef uint8_t Score;
 
-struct EstadoJugador;
-struct Proyectil;
-struct Enemigo;
+struct PlayerState;
+struct Projectile;
+struct Enemy;
 struct Item;
 
-struct Posicion {
-    // Modifico a "int", son los pixeles
+struct Position {
+    // La posicion estaría definida en pixeles, para que le sea más util al
+    // renderer.
     int x;
     int y;
 };
-enum Direccion { Izquierda, Derecha };
+// Direccion a la que apunta la entidad (para saber si voltear horizontalmente
+// la textura)
+enum Direction { Left, Right };
 
-struct Entidad {
+// Representacion de una entidad generica.
+struct Entity {
     Id id;
-    Posicion posicion = Posicion{0, 0};
-    Direccion direccion = Direccion::Derecha;
+    Position position = Position{0, 0};
+    Direction direction = Direction::Right;
 };
 
-enum Estado {
-    Parado,
-    Disparando,
-    Saltando,
-    Cayendo,
-    Corriendo,
-    Intoxicado,
-    Muerto,
-    RecibiendoDanio
+// Posibles estados de ¿solo jugador?
+enum State {
+    Idle,
+    Shooting,
+    Jumping,
+    Falling,
+    Running,
+    Intoxicated,
+    Dead,
+    TakingDamage
 };
 
-enum TipoPersonaje { Jazz, Spaz, Lori };
-struct EstadoJugador : public Entidad {
-    TipoPersonaje tipoPersonaje;
-    PuntosVida puntosDeVida;
-    std::vector<Estado> estados;
-    Puntaje puntaje = 0;
+enum CharacterType { Jazz, Spaz, Lori };
+struct PlayerState : public Entity {
+    CharacterType characterType;
+    HealthPoints healthPoints;
+    // suponemos que un jugador podría tener más de un estado.
+    std::vector<State> states;
+    Score score = 0;
     // Faltaría municion y tipo de arma.
     // Tendría que ver que variaciones tendría eso
 };
 
-struct Proyectil : public Entidad {
-    // Faltaría tipo de proyectil
+struct Projectile : public Entity {
+    // Tenemos que averiguar que definiría un proyectil.
+};
+// Esta por definir los tipos de enemigos.
+enum EnemyType { Enemy1, Enemy2, Enemy3 };
+struct Enemy : public Entity {
+    EnemyType enemyType;
 };
 
-enum TipoEnemigo { enemigo1, enemigo2, enemigo3 };
-struct Enemigo : public Entidad {
-    TipoEnemigo tipoEnemigo;
+enum ItemType { Coin, Weapon };
+struct Item : public Entity {
+    ItemType itemType;
 };
 
-enum TipoItem { Moneda, Arma };
-struct Item : public Entidad {
-    TipoItem tipoItem;
-};
-
-struct EstadoJuegoRenderer {
-    EstadoJugador jugadorPrincipal;
-    std::vector<EstadoJugador> jugadores;
-    std::vector<Proyectil> proyectiles;
-    std::vector<Enemigo> enemigos;
+// Representa el estado del juego que se le pasa al renderer.
+struct GameStateRenderer {
+    PlayerState mainPlayer;
+    std::vector<PlayerState> players;
+    std::vector<Projectile> projectiles;
+    std::vector<Enemy> enemies;
     std::vector<Item> items;
 };
 
+// Clase que se encarga de mantener el estado del juego actualizado.
+// Incluye todos los jugadores, proyectiles, enemigos e items, indexado por ID,
+// para ser mas facil su actualizacion.
 class EstadoJuegoActualizable {
-    std::map<Id, EstadoJugador> jugadores;
-    std::map<Id, Proyectil> proyectiles;
-    std::map<Id, Enemigo> enemigos;
+    std::map<Id, PlayerState> players;
+    std::map<Id, Projectile> projectiles;
+    std::map<Id, Enemy> enemies;
     std::map<Id, Item> items;
-    Id id_jugador_principal = 1;
+    Id mainPlayerId = 1;
 
    private:
     //    https://stackoverflow.com/questions/771453/copy-map-values-to-vector-in-stl
+    // Convierte un map a un vector, elimnando los ids. Lo creo como un template
+    // para poder usar el mismo codigo para las distintas entidades.
     template <typename T>
     std::vector<T> get_vector_from(std::map<Id, T> map) {
         std::vector<T> vector;
 
         std::transform(
             map.begin(), map.end(), std::back_inserter(vector),
-            [](const auto &par_id_key) { return par_id_key.second; });
+            [](const auto &pair_id_key) { return pair_id_key.second; });
 
         return vector;
     }
 
    public:
-    void agregar_jugador_principal(EstadoJugador jugador) {
-        this->id_jugador_principal = jugador.id;
-        this->jugadores.insert({jugador.id, jugador});
+    // Agrega un jugador principal al estado del juego
+    void addMainPlayer(PlayerState player) {
+        this->mainPlayerId = player.id;
+        this->addPlayer(player);
     }
 
-    void actualizar(Update update) {
+    void addPlayer(PlayerState player) {
+        this->players.insert({player.id, player});
+    }
+
+    void handleUpdate(Update update) {
         // Incluir logica de que tipo de update es
-        if (jugadores.count(update.id)) {
-            jugadores[update.id].posicion.x = update.value;
+        if (players.count(update.id)) {
+            players[update.id].position.x = update.value;
         }
     }
 
-    EstadoJuegoRenderer obtener_estado() {
-        EstadoJuegoRenderer estado;
+    // Devuelve el estado del juego en el formato para que le sea mas sencillo
+    // al renderer.
+    GameStateRenderer getStateRenderer() {
+        GameStateRenderer state;
 
-        EstadoJugador jugador_principal =
-            this->jugadores.at(id_jugador_principal);
+        PlayerState mainPlayer = this->players.at(mainPlayerId);
 
-        estado.jugadorPrincipal = jugador_principal;
+        state.mainPlayer = mainPlayer;
 
-        // Elimino jugador principal de map
-        this->jugadores.erase(id_jugador_principal);
+        // Elimino jugador principal del map
+        this->players.erase(mainPlayerId);
 
-        estado.jugadores = this->get_vector_from(this->jugadores);
+        // Construyo el vector de jugadores (no principales)
+        state.players = this->get_vector_from(this->players);
 
         // vuelvo a agregar jugador principal a map
-        this->jugadores[id_jugador_principal] = jugador_principal;
+        this->players[mainPlayerId] = mainPlayer;
 
-        estado.items = this->get_vector_from(this->items);
-        estado.enemigos = this->get_vector_from(this->enemigos);
-        estado.proyectiles = this->get_vector_from(this->proyectiles);
+        state.items = this->get_vector_from(this->items);
+        state.enemies = this->get_vector_from(this->enemies);
+        state.projectiles = this->get_vector_from(this->projectiles);
 
-        return estado;
+        return state;
     }
 };
 
