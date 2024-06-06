@@ -21,12 +21,10 @@ int main(int argc, char* argv[]) {
     Socket socket(hostname, servname);
     Client client(std::move(socket), window);
 
+    // Como esta funcion bloquea hasta que el cliente se cierre
+    // (o termine con un error), no es necesario esperar
+    // a que el usuario envíe 'q' para cerrar el cliente.
     client.exec();
-
-    std::string input;
-    do {
-        std::cin >> input;
-    } while (input != "q");
 
     return 0;
     // FINAL  Client main normal

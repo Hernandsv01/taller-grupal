@@ -10,7 +10,6 @@ void EventListener::run() {
         bool success = SDL_WaitEvent(&event);
 
         if (!success || event.type == SDL_QUIT) {
-            std::cout << "Quitting..." << std::endl;
             running = false;
         } else if ((event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) &&
                    event.key.repeat == 0) {
