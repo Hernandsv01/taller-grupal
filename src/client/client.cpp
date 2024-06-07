@@ -9,6 +9,9 @@ Client::Client(Socket socket, SDL2pp::Window& window)
       eventListener(window, this->socket),
       updater(this->socket) {}
 
+/*
+ * Ejecuta los hilos de gui, el updater y el eventListener.
+ */
 void Client::exec() {
     updater.start();
     eventListener.start();

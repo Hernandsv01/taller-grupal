@@ -3,6 +3,7 @@
 
 #include <sstream>
 
+//Enum de acciones, cada accion tiene asignado un valor que es comun para el cliente y el servidor.
 enum ActionType: std::uint8_t {
     NULL_ACTION = 0x00,
 

@@ -3,6 +3,7 @@
 EventListener::EventListener(SDL2pp::Window& window, Socket& socket)
     : window(window), protocol(socket) {}
 
+//hay codigo comentado que utilizamos para debuggear
 void EventListener::run() {
     SDL_Event event;
     bool running = true;
@@ -14,8 +15,8 @@ void EventListener::run() {
                        event.key.repeat == 0) {
                 // DEBUG:
                 // const char* eventType = (event.type == SDL_KEYDOWN)
-                //                             ? "Key pressed: "
-                //                             : "Key released: ";
+                //                             ? "Tecla Presionada: "
+                //                             : "Tecla Liberada: ";
                 // std::cout << eventType <<
                 // SDL_GetKeyName(event.key.keysym.sym)
                 //           << std::endl;
