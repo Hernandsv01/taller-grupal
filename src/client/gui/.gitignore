@@ -7,7 +7,7 @@ main
 CMakeFiles
 cmake_install.*
 CMakeCache.*
-build
+build/
 
 #Vscode
 .vscode
