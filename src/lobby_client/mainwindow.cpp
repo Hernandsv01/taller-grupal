@@ -19,11 +19,11 @@ MainWindow::MainWindow(Lobby& lobby) : lobby(lobby), ui(new Ui::MainWindow) {
 
 MainWindow::~MainWindow() { delete ui; }
 
-void MainWindow::actualizar_partidas_de_lista_partidas() {
-    std::vector<GameMatch> partidas;
+void MainWindow::updateMatchesFromMatchList() {
+    std::vector<GameMatch> matches;
 
     try {
-        partidas = lobby.getServerMatches();
+        matches = lobby.getServerMatches();
     } catch (const std::exception& e) {
         ui->textoErrorElegirPartida->setText(e.what());
         return;
@@ -31,9 +31,9 @@ void MainWindow::actualizar_partidas_de_lista_partidas() {
 
     ui->listaPartidas->clear();
 
-    for (const GameMatch& partida : partidas) {
-        std::string name = partida.name;
-        uint16_t id = partida.id;
+    for (const GameMatch& match : matches) {
+        std::string name = match.name;
+        uint16_t id = match.id;
 
         // Sacado de:
         // https://stackoverflow.com/questions/25452125/is-it-possible-to-add-a-hidden-value-to-every-item-of-qlistwidget
@@ -75,11 +75,11 @@ void MainWindow::on_botonConectar_clicked() {
         return;
     }
 
-    ir_a_seleccionar_partida();
+    goToMatchSelection();
 }
 
-void MainWindow::ir_a_seleccionar_partida() {
-    actualizar_partidas_de_lista_partidas();
+void MainWindow::goToMatchSelection() {
+    updateMatchesFromMatchList();
     ui->stackedWidget->setCurrentIndex(1);
 }
 
@@ -137,5 +137,5 @@ void MainWindow::on_botonCrearPartida_clicked() {
 }
 
 void MainWindow::on_botonCancelarCrearPartida_clicked() {
-    ir_a_seleccionar_partida();
+    goToMatchSelection();
 }

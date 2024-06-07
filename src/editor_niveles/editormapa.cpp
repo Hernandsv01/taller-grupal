@@ -41,31 +41,31 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
     qDebug() << "EVENTO" << event->x() << " " << event->y();
 
     // Calculo en que posicion de la grilla estoy parado.
-    int x_grilla = event->x() / tile_size;
-    int y_grilla = event->y() / tile_size;
+    int x_grid = event->x() / tile_size;
+    int y_grid = event->y() / tile_size;
 
-    qDebug() << "GRILLA" << x_grilla << " " << y_grilla;
+    qDebug() << "GRILLA" << x_grid << " " << y_grid;
 
     // Verifico que no me pase de los limites de la grilla. (puede pasar si
     // moves mouse muy rapido fuera de ventana)
-    if (x_grilla >= x_limit || x_grilla < 0) {
+    if (x_grid >= x_limit || x_grid < 0) {
         qDebug(
             "Se intentó dibujar en x = %d. "
             "Pero solo existe nivel hasta x = %d",
-            x_grilla, x_limit);
+            x_grid, x_limit);
         return;
     }
 
-    if (y_grilla >= y_limit || y_grilla < 0) {
+    if (y_grid >= y_limit || y_grid < 0) {
         qDebug(
             "Se intentó dibujar en y = %d. "
             "Pero solo existe nivel hasta y = %d",
-            y_grilla, y_limit);
+            y_grid, y_limit);
         return;
     }
 
     // Modifico la representacion de la grilla.
-    level[x_grilla][y_grilla] = tile_to_paint;
+    level[x_grid][y_grid] = tile_to_paint;
 
     // Repinto el widget generando un evento de pintado.
     // (Esto llama al metodo MapRenderer::paintEvent())

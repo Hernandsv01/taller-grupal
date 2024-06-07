@@ -20,8 +20,8 @@ class MainWindow : public QMainWindow {
 
    private:
     Lobby& lobby;
-    void actualizar_partidas_de_lista_partidas();
-    void ir_a_seleccionar_partida();
+    void updateMatchesFromMatchList();
+    void goToMatchSelection();
     std::vector<GameMatch> getGameMatches();
 
    private slots:
