@@ -17,7 +17,6 @@ int main(int argc, char* argv[]) {
                           SDL_WINDOWPOS_CENTERED, 800, 600,
                           SDL_WindowFlags::SDL_WINDOW_RESIZABLE);
 
-    // INICIO Client main normal
     Socket socket(hostname, servname);
     Client client(std::move(socket), window);
 
@@ -29,24 +28,6 @@ int main(int argc, char* argv[]) {
     } while (input != "q");
 
     return 0;
-    // FINAL  Client main normal
-
-    // INICIO CLIENT MAIN ONLY RENDER
-    // ¿ESTE LO USO PARA PROBAR PORQUE NO RENDERIZA NADA?
-    // Render render(window);
-
-    // PlayerState personajeJazz;
-    // personajeJazz.position = Position{100, 200};
-    // personajeJazz.direction = Direction::Right;
-    // personajeJazz.characterType = Jazz;
-    // personajeJazz.healthPoints = 10;
-    // personajeJazz.score = 0;
-
-    // while (1) {
-    //     render.presentPlayer(personajeJazz);
-    // }
-    // FINAL CLIENT MAIN ONLY RENDER
-
     // Estructura del main
     /*
      * create_lobby

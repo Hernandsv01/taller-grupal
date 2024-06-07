@@ -15,6 +15,8 @@ class Client_listener : public Thread {
     Socket skt_listener;
     bool is_running;
 
+    std::string text_description() override { return "Client_listener server"; }
+
    public:
     explicit Client_listener(char* port)
         : skt_listener(port), is_running(true) {}

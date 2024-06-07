@@ -77,7 +77,7 @@ void Render::copyPlayer(PlayerState jugador) {
     int xPos = jugador.position.x;
     int yPos = jugador.position.y;
 
-    if (jugador.states[0] == Idle) {
+    if (jugador.states.size() == 0 || jugador.states[0] == Idle) {
         copyEntity(xPos, yPos, JAZZSTANDX, JAZZSTANDY, STANDSPRITELONG,
                    standSpritesJazz);
     } else if (jugador.states[0] == Running) {

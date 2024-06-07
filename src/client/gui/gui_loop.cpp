@@ -5,35 +5,27 @@
 
 #include "../update_queue.h"
 
-double get_random() {
-    static int x = 0;
-    double random[] = {0.90, 1.0, 1.7, 5, 2.6};
-    x = (x + 1) % (sizeof(random) / sizeof(double));
+GuiLoop::GuiLoop(Window& window) : currentTick(0), windowForRender(window) {
+    // Harcodeo un player dummy. En la version final del juego, esto lo
+    // recibiría del servidor.
+    PlayerState player;
+    player.direction = Direction::Right;
+    player.id = 0;
+    player.position = Position{100, 200};
+    player.healthPoints = 10;
+    player.characterType = CharacterType::Jazz;
+    player.score = 0;
 
-    return random[x];
-}
-
-GuiLoop::GuiLoop(Window& window) : tick_actual(0), window_for_render(window) {
-    PlayerState jugador;
-    jugador.direction = Direction::Right;
-    jugador.id = 0;
-    jugador.position = Position{100, 200};
-    jugador.healthPoints = 10;
-    jugador.characterType = CharacterType::Jazz;
-    jugador.score = 0;
-
-    estadoJuegoActualizable.addMainPlayer(jugador);
+    updatableGameState.addMainPlayer(player);
 };
 
-// std::string GuiLoop::text_description() { return "GuiLoop"; }
+void GuiLoop::stop_custom() {
+    // No tengo que hacer nada, ya que ninguna funcion de GuiLoop, es
+    // bloqueando, por lo que el thread va a terminar cuando termine la
+    // iteracion actual, y keep_running() sea false.
+}
 
-// void GuiLoop::stop_custom() {
-//     // No tengo que hacer nada, ya que el GuiLoop se va a terminar de
-//     ejecutar
-//     //  solo cuando termine el proximo tick, y _keep_running sea falso
-// }
-
-void GuiLoop::inicializar_render() { render = new Render(window_for_render); }
+void GuiLoop::initializeRender() { render = new Render(windowForRender); }
 
 GuiLoop::~GuiLoop() {
     delete render;
@@ -59,130 +51,97 @@ void GuiLoop::run() {
     mapInfo.underPosition = positionUnder;
     //////////////
 
-    inicializar_render();
+    // Estoy obligado a construir el renderer acá, porque para que el renderer
+    // pueda dibujar en pantalla, necesita ejecutarse en el mismo thread donde
+    // fue construido.
+    initializeRender();
 
     using namespace std::chrono;
-    time_point INICIO_ABSOLUTO = reloj.now();
-    time_point inicio_tick = INICIO_ABSOLUTO;
-    while (_keep_running) {
+    time_point tickInitialTime = clock.now();
+    while (this->keep_running()) {
         /*
-
-        inicio_tick     final_tick
+    tickInitialTime     tickEndTime
             ↓               ↓
             |-------*-------|
                     ↑
-                tiempo_actual
-
+                currentTime
         */
 
-        // // Procesado de cosas
-        // {
-        //     auto duracion_render = (std::chrono::nanoseconds{
-        //         (int)((SECOND_IN_NANO / FPS) * get_random())});
+        time_point tickEndTime = tickInitialTime + TICK_DURATION;
 
-        //     std::this_thread::sleep_for(duracion_render);
-        // }
+        updateGameState();
 
-        time_point final_tick = inicio_tick + TICK_DURATION;
+        time_point currentTime = clock.now();
+        bool isTimeLeftInTick = currentTime <= tickEndTime;
 
-        actualizar_estado();
-
-        time_point tiempo_actual = reloj.now();
-        bool sobra_tiempo_en_tick = tiempo_actual <= final_tick;
-
-        if (sobra_tiempo_en_tick) {
+        if (isTimeLeftInTick) {
             // Ejecuto el renderer, solamente si todavía me sobra tiempo en el
             // tick actual.
             // En el caso de que ya haya consumido todo el tiempo del tick
             // actual, Decido ni siquiera ejecutar el renderer para , tal vez,
             // llegar al proximo tick a tiempo.
 
-            ejecutar_renderer(mapInfo);
-            // ejecutar_renderer();
+            runRenderer(mapInfo);
         } else {
-            std::cout << "Render cancelled. ";
+#ifndef NDEBUG
+            std::cout << "Render cancelado. ";
+#endif
         }
 
-        tiempo_actual = reloj.now();
-        sobra_tiempo_en_tick = tiempo_actual <= final_tick;
+        currentTime = clock.now();
+        isTimeLeftInTick = currentTime <= tickEndTime;
 
         // Tengo otro if, porque podría haber sobrado tiempo para renderizar,
         // pero haberme pasado del tiempo mientras renderizaba.
         // Por lo que tengo que checkear otra vez
-        if (!sobra_tiempo_en_tick) {
+        if (!isTimeLeftInTick) {
             // Calculo la cantidad de ticks completos que usé
-            uint ticks_extras_transcurridos =
-                (tiempo_actual - inicio_tick) / TICK_DURATION;
+            uint excessTicksElapsed =
+                (currentTime - tickInitialTime) / TICK_DURATION;
 
             // Agrego cantidad de ticks dropeados
-            tick_actual += ticks_extras_transcurridos;
+            currentTick += excessTicksElapsed;
 
-            std::cout << ticks_extras_transcurridos << " dropped ticks\n";
+#ifndef NDEBUG
+            std::cout << excessTicksElapsed << " ticks dropeados\n";
+#endif
 
-            // Agregado cantidad de tiempo salteado ("dropeado")
-            inicio_tick += (TICK_DURATION * ticks_extras_transcurridos);
-            final_tick = inicio_tick + TICK_DURATION;
+            // Agregado cantidad de tiempo excedido ("dropeado")
+            tickInitialTime += (TICK_DURATION * excessTicksElapsed);
+            tickEndTime = tickInitialTime + TICK_DURATION;
         }
 
-        inicio_tick += TICK_DURATION;
-        tick_actual += 1;
-        std::this_thread::sleep_until(final_tick);
+        tickInitialTime += TICK_DURATION;
+        currentTick += 1;
+        std::this_thread::sleep_until(tickEndTime);
     }
 }
 
-/*
-void GuiLoop::ejecutar_renderer() {
-    // TODO: acá matias debería poner el llamado al renderr
-    GameStateRenderer estado_para_renderer =
-        estadoJuegoActualizable.getStateRenderer();
+void GuiLoop::updateGameState() {
+    // Obtener todas las updates encoladas
+    std::vector<Update> all_updates = Update_queue::try_pop_all();
 
-    if (render == nullptr)
-        throw std::runtime_error(
-            "Se debe inicializar el render antes de usarlo");
-
-    render->presentGame(estado_para_renderer);
-
-    // std::cout << "tick: " << tick_actual << "\n";
-    // std::cout << "(" << estado_para_renderer.mainPlayer.position.x
-    // << ", "
-    //           << estado_para_renderer.mainPlayer.position.y << ")"
-    //           << std::endl;
-}
-*/
-
-void GuiLoop::actualizar_estado() {
-    // TODO: Acá deberia codear la manera de actualizar el estado actual
-
-    std::vector<Update> all_updates;
-    std::vector<Update> update_one_tick = Update_queue::try_pop();
-    // Juntar todas las updates en un único vector
-    while (update_one_tick.size() > 0) {
-        all_updates.insert(all_updates.end(), update_one_tick.begin(),
-                           update_one_tick.end());
-
-        update_one_tick = Update_queue::try_pop();
-    }
-
-    // aplicar de a una las updates en orden
+    // aplicar de a una las updates en orden (las ultimas son las más
+    // recientes).
+    // Si no hay ninguna update, no se updatea nada.
     for (Update update : all_updates) {
-        estadoJuegoActualizable.actualizar(update);
+        updatableGameState.handleUpdate(update);
     }
 }
 
-void GuiLoop::ejecutar_renderer(MapInfo& mapInfo) {
-    // TODO: acá matias debería poner el llamado al renderr
-    GameStateRenderer estado_para_renderer =
-        estadoJuegoActualizable.getStateRenderer();
+void GuiLoop::runRenderer(MapInfo& mapInfo) {
+    // Genero un nuevo estado apto para que lo consuma el renderer
+    GameStateRenderer gameStateRenderer = updatableGameState.getStateRenderer();
 
     if (render == nullptr)
         throw std::runtime_error(
             "Se debe inicializar el render antes de usarlo");
 
-    render->presentGame(estado_para_renderer, mapInfo);
+    render->presentGame(gameStateRenderer, mapInfo);
 
     // std::cout << "tick: " << tick_actual << "\n";
-    // std::cout << "(" << estado_para_renderer.mainPlayer.position.x
+    // std::cout << "(" << gameStateRenderer.mainPlayer.position.x
     // << ", "
-    //           << estado_para_renderer.mainPlayer.position.y << ")"
+    //           << gameStateRenderer.mainPlayer.position.y << ")"
     //           << std::endl;
 }

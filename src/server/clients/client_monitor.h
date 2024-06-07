@@ -14,6 +14,7 @@ class Client_Monitor {
     static Server_Client* get(int i);
     static void sendAll(std::vector<Update> updates);
     static std::vector<Server_Client*> getAll() { return list; }
+    ~Client_Monitor();
 };
 
 #endif  // CLIENT_MONITOR_H
