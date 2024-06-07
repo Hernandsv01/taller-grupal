@@ -1,6 +1,7 @@
 #include "Game.h"
 
 Game::Game() : Thread("Game server"), status(Game_status::WAITING) {
+    // Hardcodeado para que se asocie un jugador al único cliente que se conecta
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
 }
 
@@ -61,7 +62,10 @@ void Game::process_action(uint8_t action, int player) {
     if (action == SPECIAL) {
         return;  // Not implemented
     }
-    if (action == STOP_RUN_RIGHT || action == STOP_RUN_LEFT) {
+    if (action == STOP_RUN_RIGHT && entity_pool[player]->getXSpeed() > 0) {
+        entity_pool[player]->setXSpeed(0);
+    }
+    if (action == STOP_RUN_LEFT && entity_pool[player]->getXSpeed() < 0) {
         entity_pool[player]->setXSpeed(0);
     }
 }

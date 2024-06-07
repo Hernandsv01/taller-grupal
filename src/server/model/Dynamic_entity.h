@@ -14,6 +14,8 @@ class Dynamic_entity : public Entity {
     int vel_x;
     int vel_y;
 
+    // esto probablemente sea agregado cuando implementemos física
+    // (para la gravedad seguro y estamos evaluando hacerlo para movimiento en X)
     // int acc_x;
     // int acc_y;
    public:
@@ -32,8 +34,10 @@ class Dynamic_entity : public Entity {
         std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) = 0;
 
     void setXSpeed(int vel_x_param) { vel_x = vel_x_param; }
+    int getXSpeed() { return vel_x; }
 
     void setYSpeed(int vel_y_param) { vel_y = vel_y_param; }
+    int getYSpeed() { return vel_y; }
 };
 
 #endif  // DYNAMIC_ENTITY_H
