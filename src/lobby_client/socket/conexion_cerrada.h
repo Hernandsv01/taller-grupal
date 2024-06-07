@@ -3,12 +3,11 @@
 
 #include <stdexcept>
 
-
-class ConexionCerradaError: public std::exception {
-public:
-    ConexionCerradaError() {}
+class ClosedConnectionError : public std::exception {
+   public:
+    ClosedConnectionError() {}
     virtual const char* what() const noexcept { return "Cerraron la conexion"; }
-    ~ConexionCerradaError() {}
+    ~ClosedConnectionError() {}
 };
 
 #endif

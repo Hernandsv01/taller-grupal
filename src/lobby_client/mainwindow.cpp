@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 
+#include <QDebug>
 #include <iostream>
 
 #include "ui_mainwindow.h"
@@ -83,15 +84,15 @@ void MainWindow::ir_a_seleccionar_partida() {
 }
 
 void MainWindow::on_botonUnirseAPartida_clicked() {
-    ui->textoErrorCrearPartida->setText("");
+    ui->textoErrorElegirPartida->setText("");
     auto items_seleccionados = ui->listaPartidas->selectedItems();
 
     if (items_seleccionados.length() > 1) {
-        ui->textoErrorCrearPartida->setText("Debe elegir una unica partida");
+        ui->textoErrorElegirPartida->setText("Debe elegir una unica partida");
         return;
     }
     if (items_seleccionados.length() < 1) {
-        ui->textoErrorCrearPartida->setText("Debe elegir una partida");
+        ui->textoErrorElegirPartida->setText("Debe elegir una partida");
         return;
     }
 

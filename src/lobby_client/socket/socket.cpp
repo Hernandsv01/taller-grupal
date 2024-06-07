@@ -38,8 +38,7 @@ Socket::Socket(const char* hostname, const char* servname) {
         /* Cerramos el socket si nos quedo abierto de la iteración
          * anterior
          * */
-        if (skt != -1)
-            ::close(skt);
+        if (skt != -1) ::close(skt);
 
         /*
          * Con esta llamada creamos/obtenemos un socket.
@@ -83,8 +82,7 @@ Socket::Socket(const char* hostname, const char* servname) {
      * Si en cambio `skt` es distinto de -1 significa q tenemos
      * un socket abierto.
      * */
-    if (skt != -1)
-        ::close(skt);
+    if (skt != -1) ::close(skt);
 
     throw LibError(saved_errno, "socket construction failed (connect to %s:%s)",
                    (hostname ? hostname : ""), (servname ? servname : ""));
@@ -99,8 +97,7 @@ Socket::Socket(const char* servname) {
     while (resolver.has_next()) {
         struct addrinfo* addr = resolver.next();
 
-        if (skt != -1)
-            ::close(skt);
+        if (skt != -1) ::close(skt);
 
         skt = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
         if (skt == -1) {
@@ -180,8 +177,7 @@ Socket::Socket(const char* servname) {
 
     int saved_errno = errno;
 
-    if (skt != -1)
-        ::close(skt);
+    if (skt != -1) ::close(skt);
 
     throw LibError(saved_errno, "socket construction failed (listen on %s)",
                    (servname ? servname : ""));
@@ -212,8 +208,7 @@ Socket& Socket::operator=(Socket&& other) {
      * a si mismo (`skt = skt;`) simplemente no hacemos
      * nada.
      * */
-    if (this == &other)
-        return *this;
+    if (this == &other) return *this;
 
     /* A diferencia del constructor por movimiento,
      * `this` (nosotros) es un socket completamente creado
@@ -239,7 +234,7 @@ int Socket::recvsome(void* data, unsigned int sz) {
     chk_skt_or_fail();
     int s = recv(this->skt, (char*)data, sz, 0);
     if (s == 0) {
-        throw ConexionCerradaError();
+        throw ClosedConnectionError();
 
     } else if (s == -1) {
         /*
@@ -281,9 +276,10 @@ int Socket::sendsome(const void* data, unsigned int sz) {
          * */
         if (errno == EPIPE) {
             /*
-             * Puede o no ser un error (véase el comentario en `Socket::recvsome`)
+             * Puede o no ser un error (véase el comentario en
+             * `Socket::recvsome`)
              * */
-            throw ConexionCerradaError();
+            throw ClosedConnectionError();
         }
 
         /* En cualquier otro caso supondremos un error
@@ -309,19 +305,23 @@ int Socket::recvall(void* data, unsigned int sz) {
         if (s <= 0) {
             /*
              * Si el socket fue cerrado (`s == 0`) o hubo un error
-             * `Socket::recvsome` ya debería haber lanzado la excepcion ConexionCerradaError
+             * `Socket::recvsome` ya debería haber lanzado la excepcion
+             * ClosedConnectionError
              *
              * Nosotros podemos entonces meramente
-             *  - lanzar excepción si recibimos algunos bytes pero no todos los pedidos
+             *  - lanzar excepción si recibimos algunos bytes pero no todos los
+             * pedidos
              *  - propagar la excepción `Socket::recvsome` si esto falló.
-             *  - retornar end of stream (0) si es lo q recibimos de `Socket::recvsome`
+             *  - retornar end of stream (0) si es lo q recibimos de
+             * `Socket::recvsome`
              * */
 
             // NO DEBERIA LLEGAR A EJECUTARSE NUNCA
             assert(false);
             assert(s == 0);
             if (received)
-                throw LibError(EPIPE, "socket received only %d of %d bytes", received, sz);
+                throw LibError(EPIPE, "socket received only %d of %d bytes",
+                               received, sz);
             else
                 return 0;
         } else {
@@ -336,7 +336,6 @@ int Socket::recvall(void* data, unsigned int sz) {
     return sz;
 }
 
-
 int Socket::sendall(const void* data, unsigned int sz) {
     unsigned int sent = 0;
 
@@ -348,7 +347,8 @@ int Socket::sendall(const void* data, unsigned int sz) {
             assert(false);
             assert(s == 0);
             if (sent)
-                throw LibError(EPIPE, "socket sent only %d of %d bytes", sent, sz);
+                throw LibError(EPIPE, "socket sent only %d of %d bytes", sent,
+                               sz);
             else
                 return 0;
         } else {
@@ -381,15 +381,14 @@ std::optional<Socket> Socket::accept() {
     int peer_skt = ::accept(this->skt, nullptr, nullptr);
     if (peer_skt == -1) {
         int error_number = errno;
-        // En el caso de que haya cerrado manualmente el socket, no quiero que me devuelva un error.
-        // Quiero que me devuelva un optional vacío, que es mas practico para manejar
+        // En el caso de que haya cerrado manualmente el socket, no quiero que
+        // me devuelva un error. Quiero que me devuelva un optional vacío, que
+        // es mas practico para manejar
         if (shutdown_manual and error_number == EINVAL)
             return std::optional<Socket>();
 
-
         throw LibError(error_number, "socket accept failed");
     }
-
 
     /*
      * `peer_skt` es un file descriptor crudo y no queremos
@@ -444,8 +443,9 @@ Socket::~Socket() {
 
 void Socket::chk_skt_or_fail() const {
     if (skt == -1) {
-        throw std::runtime_error("socket with invalid file descriptor (-1), "
-                                 "perhaps you are using a *previously moved* "
-                                 "socket (and therefore invalid).");
+        throw std::runtime_error(
+            "socket with invalid file descriptor (-1), "
+            "perhaps you are using a *previously moved* "
+            "socket (and therefore invalid).");
     }
 }
