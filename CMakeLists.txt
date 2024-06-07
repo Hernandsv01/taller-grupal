@@ -9,8 +9,13 @@ set(CMAKE_CXX_STANDARD 17)
 # Hace que todos los ejecutables queden en el path raiz
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+<<<<<<< HEAD
 # Hace que ejecute el cmakelist del lobby_client
 add_subdirectory(src/lobby_client/)
+=======
+# Hace que ejecute el cmakelist del editor de niveles
+add_subdirectory(src/editor_niveles)
+>>>>>>> 8-crear-editor-de-niveles
 
 
 include_directories(src/client)
@@ -116,6 +121,3 @@ target_link_libraries(client PUBLIC SDL2pp)
 target_link_libraries(testsdl PUBLIC SDL2pp)
 
 add_compile_options(-lpthread)
-
-
-
