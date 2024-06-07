@@ -8,6 +8,7 @@
 namespace YAML {
 template <>
 struct convert<::Map> {
+    // Convierte un objeto Map a un Nodo.
     static Node encode(const ::Map& map) {
         Node node;
 
@@ -17,11 +18,13 @@ struct convert<::Map> {
 
         node["texture_background"] = map.background_texture;
 
-        node["blocks"] = map.bloques;
+        // Esta linea eventualmente llama al encodeo de Block
+        node["blocks"] = map.blocks;
 
         return node;
     }
 
+    // Convierte un Nodo a un objeto Map.
     static bool decode(const Node& node, ::Map& map) {
         map.map_name = node["name"].as<std::string>();
 
@@ -30,7 +33,8 @@ struct convert<::Map> {
 
         map.background_texture = node["texture_background"].as<std::string>();
 
-        map.bloques = node["blocks"].as<std::vector<std::vector<::Block>>>();
+        // Esta linea eventualmente llama al decodeo de Block
+        map.blocks = node["blocks"].as<std::vector<std::vector<::Block>>>();
 
         return true;
     }
@@ -38,19 +42,25 @@ struct convert<::Map> {
 
 template <>
 struct convert<::Block> {
+    // Convierte un objeto Block a un Nodo.
     static Node encode(const ::Block& block) {
         Node node;
+        // Esta linea eventualmente llama al encodeo de Collision
         node.push_back(block.collision);
+
         node.push_back(block.texture);
         return node;
     }
 
+    // Convierte un Nodo a un objeto Block.
     static bool decode(const Node& node, ::Block& block) {
         if (!node.IsSequence() || node.size() != 2) {
             return false;
         }
 
+        // Esta linea eventualmente llama al decodeo de Collision
         block.collision = node[0].as<::Collision>();
+
         block.texture = node[1].as<::IdTexture>();
         return true;
     }
@@ -58,6 +68,7 @@ struct convert<::Block> {
 
 template <>
 struct convert<::Collision> {
+    // Convierte un objeto Collision a un Nodo.
     static Node encode(const ::Collision& blockCollision) {
         // tengo que usar uint porque sino por alguna razon
         // crea el nodo como un string de bytes, en vez de un numero
@@ -66,6 +77,7 @@ struct convert<::Collision> {
         return node;
     }
 
+    // Convierte un Nodo a un objeto Collision.
     static bool decode(const Node& node, ::Collision& block) {
         if (!node.IsScalar()) return false;
 
@@ -83,6 +95,9 @@ Map::Map() {}
 Map Map::fromYaml(const char* path) {
     YAML::Node nodo_mapa = YAML::LoadFile(path);
 
+    // Yaml me devuelve una instancia nueva de mapa.
+    // No encontré como hacer que el constructor devuelva eso,
+    // así que hice el metodo estatico.
     Map mapa_temp = nodo_mapa.as<Map>();
 
     return mapa_temp;
@@ -91,7 +106,7 @@ Map Map::fromYaml(const char* path) {
 Map::Map(uint8_t size_x, uint8_t size_y)
     : size_x(size_x),
       size_y(size_y),
-      bloques(size_y, std::vector<::Block>(size_x)) {}
+      blocks(size_y, std::vector<::Block>(size_x)) {}
 
 std::string Map::get_name() const { return this->map_name; }
 
@@ -100,7 +115,7 @@ std::vector<BlockOnlyCollision> Map::get_all_blocks_collisions() const {
 
     for (uint y = 0; y < size_y; y++) {
         for (uint x = 0; x < size_x; x++) {
-            Block current_block = bloques[y][x];
+            Block current_block = blocks[y][x];
 
             if (!current_block.has_collision()) continue;
 
@@ -119,7 +134,7 @@ Collision Map::get_block_collision(const Coordinate& coord) const {
 }
 
 Collision Map::get_block_collision(uint8_t x, uint8_t y) const {
-    return bloques[y][x].collision;
+    return blocks[y][x].collision;
 }
 
 // TODO:
@@ -132,7 +147,7 @@ std::vector<BlockOnlyTexture> Map::get_all_block_textures() const {
 
     for (uint y = 0; y < size_y; y++) {
         for (uint x = 0; x < size_x; x++) {
-            Block current_block = bloques[y][x];
+            Block current_block = blocks[y][x];
 
             if (!current_block.has_texture()) continue;
 

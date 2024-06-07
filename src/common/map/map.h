@@ -11,6 +11,7 @@
 typedef uint8_t MapId;
 
 // Campaz cambiamos el nombre de los distintos triangulos
+// Tal vex tambien incluya si es un spawn de enemigo/jugador/item
 enum Collision : uint8_t {
     Air,                 // ▢
     Cube,                // ■
@@ -20,6 +21,8 @@ enum Collision : uint8_t {
     TriangleUpperRight   // ◥
 };
 
+// Ubicacion del bloque. Como es uint8_t, el mapa puede tener hasta 255x255
+// bloques.
 struct Coordinate {
     uint8_t x;
     uint8_t y;
@@ -29,6 +32,8 @@ struct Coordinate {
     }
 };
 
+// Por ahora el ID de una textura es un string. Tal vez eso cambie por otra
+// cosa.
 typedef std::string IdTexture;
 
 struct Block {
@@ -41,6 +46,7 @@ struct Block {
     bool has_texture() { return (collision != Collision::Air); }
 };
 
+// Para cuando obtengo todos los bloques con textura
 struct BlockOnlyTexture {
     Coordinate coordinate;
     IdTexture texture;
@@ -51,6 +57,7 @@ struct BlockOnlyTexture {
     }
 };
 
+// Para cuando obtengo todos los bloques con colision
 struct BlockOnlyCollision {
     Coordinate coordinate;
     Collision collision;
@@ -61,6 +68,7 @@ struct BlockOnlyCollision {
     }
 };
 
+// Para cuando obtengo todos los bloques (todavía sin uso)
 struct BlockWithCoordinate {
     Coordinate coordinate;
     Collision collision;
@@ -93,7 +101,7 @@ class Map {
 
     uint8_t size_x;
     uint8_t size_y;
-    std::vector<std::vector<Block>> bloques;
+    std::vector<std::vector<Block>> blocks;
 
     IdTexture background_texture = "undefined";
 
@@ -101,13 +109,18 @@ class Map {
 
    public:
     // Servidor
+
+    // Carga un mapa desde un archivo yaml.
     Map static fromYaml(const char* path);
 
     Map(uint8_t size_x, uint8_t size_y);
 
     std::string get_name() const;
 
+    // Devuelve todos los bloques que tengan alguna colision.
     std::vector<BlockOnlyCollision> get_all_blocks_collisions() const;
+
+    // Devuelve la colision del bloque especificado. (Puede devolver Air)
     Collision get_block_collision(const Coordinate& coordenadas) const;
     Collision get_block_collision(uint8_t x, uint8_t y) const;
 
@@ -117,11 +130,15 @@ class Map {
     // std::vector<Coordinate> get_items_spawns() const;
 
     // Cliente
+
+    // Devuelve todos los bloques que tengan alguna textura. (no incluye los
+    // bloques Air)
     std::vector<BlockOnlyTexture> get_all_block_textures() const;
     IdTexture get_background() const;
 
     // All
 
+    // Devuelve el tamaño en bloques del mapa.
     Coordinate get_map_size() const;
 };
 
