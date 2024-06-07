@@ -71,3 +71,12 @@ Thumbs.db
 *.dll
 *.exe
 
+/CMakeFiles
+/editor_niveles_autogen
+
+/build-editor_niveles-Desktop-Debug
+
+*.cmake
+CMakeCache.txt
+
+editor_niveles

@@ -2,22 +2,20 @@
 #define EDITORMAPA_H
 
 #include <renderizadomapa.h>
+
 #include <QListView>
 
-
-class EditorMapa: public RenderizadoMapa
-{
+class MapEditor : public MapRenderer {
     bool isEditing = false;
     QListView* tile_selection = nullptr;
-    Tile tile_a_pintar = Tile::air;
+    Tile tile_to_paint = Tile::air;
 
-
-public:
-    EditorMapa(QWidget* parent);
+   public:
+    MapEditor(QWidget* parent);
 
     void add_tile_selection(QListView* list_tile_selection);
 
-private slots:
+   private slots:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
@@ -25,4 +23,4 @@ private slots:
     void wheelEvent(QWheelEvent* event);
 };
 
-#endif // EDITORMAPA_H
+#endif  // EDITORMAPA_H

@@ -1,27 +1,28 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <editormapa.h>
+#include <renderizadomapa.h>
+
 #include <QGraphicsScene>
 #include <QGraphicsView>
-#include <renderizadomapa.h>
-#include <editormapa.h>
+#include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui {
+class MainWindow;
+}
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
-
-public:
+   public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private:
+   private:
     Ui::MainWindow *ui;
-    EditorMapa editor;
+    MapEditor editor;
 };
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H
