@@ -34,7 +34,6 @@ client
 server
 testsdl
 lobby_client
-#Para que no excluya la carpeta
 !lobby_client/
 editor_niveles
 !editor_niveles/
@@ -45,18 +44,9 @@ editor_niveles
 # Vscode
 .vscode/
 
-<<<<<<< HEAD
-# CMake
-CMakeFiles/
-CMakeCache.txt
-CMakeFiles
-Makefile
-cmake_install.cmake
-=======
 # CMake generated files
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
->>>>>>> 8-crear-editor-de-niveles
 
