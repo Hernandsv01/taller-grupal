@@ -1,0 +1,27 @@
+name: Mapa Test
+size:
+  x: 2
+  y: 3
+texture_background: texture4
+blocks:
+  -
+    -
+      - 0
+      - textura0
+    -
+      - 1
+      - textura1
+  -
+    -
+      - 1
+      - textura2
+    -
+      - 2
+      - textura3
+  -
+    -
+      - 4
+      - textura4
+    -
+      - 0
+      - textura5

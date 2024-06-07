@@ -4,6 +4,11 @@
 #include "../../src/common/library/socket.h"
 #include "client.h"
 
+/*
+ * Se harcodea un hostname y un servername para generar una conexion.
+ * Hay codigo comentado relacionado al lobby que todavia no esta integrado.
+ * Y uno de prueba que solo usaba el render.
+ */
 int main(int argc, char* argv[]) {
     // std::cout << "Hello client!" << std::endl;
     // Lobby lobby;
@@ -17,36 +22,15 @@ int main(int argc, char* argv[]) {
                           SDL_WINDOWPOS_CENTERED, 800, 600,
                           SDL_WindowFlags::SDL_WINDOW_RESIZABLE);
 
-    // INICIO Client main normal
     Socket socket(hostname, servname);
     Client client(std::move(socket), window);
 
+    // Como esta funcion bloquea hasta que el cliente se cierre
+    // (o termine con un error), no es necesario esperar
+    // a que el usuario envíe 'q' para cerrar el cliente.
     client.exec();
 
-    std::string input;
-    do {
-        std::cin >> input;
-    } while (input != "q");
-
     return 0;
-    // FINAL  Client main normal
-
-    // INICIO CLIENT MAIN ONLY RENDER
-    // ¿ESTE LO USO PARA PROBAR PORQUE NO RENDERIZA NADA?
-    // Render render(window);
-
-    // EstadoJugador personajeJazz;
-    // personajeJazz.posicion = Posicion{100, 200};
-    // personajeJazz.direccion = Direccion::Derecha;
-    // personajeJazz.tipoPersonaje = Jazz;
-    // personajeJazz.puntosDeVida = 10;
-    // personajeJazz.puntaje = 0;
-
-    // while (1) {
-    //     render.presentPlayer(personajeJazz);
-    // }
-    // FINAL CLIENT MAIN ONLY RENDER
-
     // Estructura del main
     /*
      * create_lobby

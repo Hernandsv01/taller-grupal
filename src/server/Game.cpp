@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game() : status(Game_status::WAITING) {
+Game::Game() : Thread("Game server"), status(Game_status::WAITING) {
     // Hardcodeado para que se asocie un jugador al único cliente que se conecta
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
 }

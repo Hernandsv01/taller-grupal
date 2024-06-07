@@ -6,11 +6,19 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Hace que todos los ejecutables queden en el path raiz
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+# Hace que ejecute el cmakelist del lobby_client
+add_subdirectory(src/lobby_client/)
+# Hace que ejecute el cmakelist del editor de niveles
+add_subdirectory(src/editor_niveles)
+
 
 include_directories(src/client)
 include_directories(src/client/gui)
 include_directories(src/client/gui/SDL2pp/SDL2pp)
-include_directories(src/client/gui/SDL2pp/tests)
+#include_directories(src/client/gui/SDL2pp/tests)
 include_directories(src/common)
 include_directories(src/common/library)
 include_directories(src/server)
@@ -24,13 +32,16 @@ include_directories(src/server/model/constants)
 # src/client/gui/testfiles/testJazzStand.cpp
         # src/client/gui/main.cpp
 
-set(SOURCES_TEST_SDL
-        # src/client/gui/testfiles/testJazzRunRight.cpp
-        src/client/gui/testfiles/testJazzStand.cpp
-        src/client/gui/estado_juego.h
-        src/client/gui/render.h
-        src/client/gui/render.cpp
-        )
+
+#set(SOURCES_TEST_SDL
+        #src/client/gui/testfiles/testStand.cpp
+        #src/client/gui/testfiles/testRun.cpp
+        #src/client/gui/testfiles/testIntox.cpp
+        #src/client/gui/testfiles/testMap.cpp
+        #src/client/gui/estado_juego.h
+        #src/client/gui/render.h
+        #src/client/gui/render.cpp
+        #)
 
 set(SOURCES_CLIENT
         src/client/gui/estado_juego.h
@@ -93,12 +104,12 @@ src/server/clients/server_client.cpp
 
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})
 add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
-add_executable(testsdl ${SOURCES_TEST_SDL})
+#add_executable(testsdl ${SOURCES_TEST_SDL})
 
 find_package(Threads REQUIRED)
 target_link_libraries(server PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE Threads::Threads)
-target_link_libraries(testsdl PRIVATE Threads::Threads)
+#target_link_libraries(testsdl PRIVATE Threads::Threads)
 
 
 set(SDL2PP_WITH_IMAGE YES)
@@ -107,9 +118,6 @@ add_subdirectory(src/client/gui/SDL2pp)
 
 
 target_link_libraries(client PUBLIC SDL2pp)
-target_link_libraries(testsdl PUBLIC SDL2pp)
+#target_link_libraries(testsdl PUBLIC SDL2pp)
 
 add_compile_options(-lpthread)
-
-
-

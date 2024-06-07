@@ -18,8 +18,6 @@ class EventListener : public Thread {
     ClientProtocol protocol;
     Mapper mapper;
 
-    std::string text_description() override { return "EventListenerCliente"; }
-
     void process_event(const SDL_Event& event, bool& running);
 
    public:

@@ -16,6 +16,7 @@ class Client {
     GuiLoop gui;
     EventListener eventListener;
     Updater updater;
+    Event any_thread_ended;
 
    public:
     explicit Client(Socket socket, SDL2pp::Window& window);
