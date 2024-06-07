@@ -1,20 +1,20 @@
-#include "../render.h"
 #include "../estado_juego.h"
+#include "../render.h"
 
 int main() {
     int width = 640;
     int height = 480;
-    int pjPosX = width/2;
-    int pjPosY = height/2;
-    std::vector<Estado> personajeEstados = {Parado};
+    int pjPosX = width / 2;
+    int pjPosY = height / 2;
+    std::vector<State> personajeEstados = {Idle};
 
-    EstadoJugador personajeJazz;
-    personajeJazz.posicion = Posicion{pjPosX, pjPosY};
-    personajeJazz.direccion = Direccion::Derecha;
-    personajeJazz.tipoPersonaje = Jazz;
-    personajeJazz.puntosDeVida = 10;
-    personajeJazz.estados = personajeEstados;
-    personajeJazz.puntaje = 0;
+    PlayerState personajeJazz;
+    personajeJazz.position = Position{pjPosX, pjPosY};
+    personajeJazz.direction = Direction::Right;
+    personajeJazz.characterType = Jazz;
+    personajeJazz.healthPoints = 10;
+    personajeJazz.states = personajeEstados;
+    personajeJazz.score = 0;
 
     Window window("DEMO", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                   width, height, SDL_WINDOW_RESIZABLE);
@@ -24,7 +24,7 @@ int main() {
     while (1) {
         render.presentPlayer(personajeJazz);
 
-        //Simulate 30 fps, 33.333 milliseconds
+        // Simulate 30 fps, 33.333 milliseconds
         render.sleep(34);
     }
 

@@ -13,7 +13,7 @@ class Render {
 
     explicit Render(Window& window);
 
-    void presentPlayer(struct EstadoJugador);
+    void presentPlayer(struct PlayerState);
 
     void sleep(int milliSecond);
 
