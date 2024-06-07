@@ -24,8 +24,6 @@ class MapRenderer : public QWidget {
     explicit MapRenderer(QWidget* parent = nullptr);
     ~MapRenderer();
 
-    void addTiles(QStandardItem* tiles);
-
     void paintEvent(QPaintEvent* event);
     void addTileModel(QStandardItemModel* newTiles);
 

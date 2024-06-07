@@ -12,10 +12,11 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), editor(this) {
     ui->setupUi(this);
 
+    // Creo una modelo de lista de tiles, para almacenar los distintos tipos y
+    // sus texturas
     QStandardItemModel *tiles = new QStandardItemModel();
 
-    // QDirIterator it(":", {"*.png"} , QDir::Files);
-
+    // itero sobre la carpeta de tiles, con el :/ para que busque en el qrc
     QDirIterator it(":/Tiles", QDirIterator::Subdirectories);
     while (it.hasNext()) {
         QString file_path = it.next();
@@ -24,12 +25,13 @@ MainWindow::MainWindow(QWidget *parent)
 
         QString fileName = it.fileName();
 
+        // Creo el item y le asigno como icono la textura
         QStandardItem *tile_item = new QStandardItem(fileName);
         tile_item->setIcon(QIcon(file_path));
 
         QImage image(file_path);
 
-        tile_item->setData(file_path);
+        // Le seteo como la data la imagen.
         tile_item->setData(image, Qt::UserRole + 2);
 
         Tile tile_enum;
@@ -44,13 +46,18 @@ MainWindow::MainWindow(QWidget *parent)
             tile_enum = Tile::air;
         }
 
+        // Le asigno como data el tipo de tile, para despues utilizarla en la
+        // grilla del mapa.
         tile_item->setData(tile_enum, Qt::UserRole + 3);
 
         tiles->appendRow(tile_item);
     }
 
+    // Agrego los items a la interfaz
     ui->listView->setModel(tiles);
 
+    // Agrego los tiles y vista de la lista al editor, para poder obtener cual
+    // tile se esta seleccionando.
     editor.addTileModel(tiles);
     editor.add_tile_selection(ui->listView);
 
