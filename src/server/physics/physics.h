@@ -1,5 +1,5 @@
-#ifndef FISICAS_H
-#define FISICAS_H
+#ifndef PHYSICS_H
+#define PHYSICS_H
 
 #include <iostream>
 #include <vector>
