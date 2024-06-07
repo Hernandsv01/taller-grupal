@@ -83,7 +83,7 @@ struct GameStateRenderer {
 // Clase que se encarga de mantener el estado del juego actualizado.
 // Incluye todos los jugadores, proyectiles, enemigos e items, indexado por ID,
 // para ser mas facil su actualizacion.
-class EstadoJuegoActualizable {
+class UpdatableGameState {
     std::map<Id, PlayerState> players;
     std::map<Id, Projectile> projectiles;
     std::map<Id, Enemy> enemies;

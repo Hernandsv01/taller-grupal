@@ -20,7 +20,7 @@ class GuiLoop : public Thread {
     Window& windowForRender;
     Render* render = nullptr;
 
-    EstadoJuegoActualizable updatableGameState;
+    UpdatableGameState updatableGameState;
 
     uint32_t currentTick;
 
