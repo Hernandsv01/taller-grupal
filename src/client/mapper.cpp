@@ -2,6 +2,10 @@
 
 Mapper::Mapper() {}
 
+/*
+ * Mapea las teclas presionadas a la accion que corresponde.
+ * Por ahora aceptan las flechas y la barra espaciadora.
+ */
 ActionType Mapper::map_key_event(const SDL_Event& event){
     ActionType action = NULL_ACTION;
     if(event.type == SDL_KEYDOWN){

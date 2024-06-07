@@ -4,6 +4,9 @@
 #include "../../src/common/library/socket.h"
 #include "client.h"
 
+/*
+ * Se harcodea un hostname y un servername para generar una conexion.
+ */
 int main(int argc, char* argv[]) {
     // std::cout << "Hello client!" << std::endl;
     // Lobby lobby;
