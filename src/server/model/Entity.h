@@ -9,6 +9,8 @@ protected:
     int width;
     int height;
 
+    // esto lo usamos para diferenciar una bala de un jugador, si no hace daño se setea en 0
+    // (para evitar tener 2 atributos, uno boolean y otro con el valor)
     bool is_damageable;
     int damage_on_contact;
 public:

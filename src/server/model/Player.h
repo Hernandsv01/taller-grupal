@@ -15,7 +15,7 @@ class Player : public Dynamic_entity {
         if (vel_x != 0) {
             pos_x += vel_x;
 
-            // falta verificar colisión
+            // falta verificar colisión antes de agregar el update
 
             Update update{static_cast<uint16_t>(id), Updateables::POSITION_X,
                           static_cast<uint32_t>(pos_x)};
@@ -24,7 +24,7 @@ class Player : public Dynamic_entity {
         if (vel_y != 0) {
             pos_y += vel_y;
 
-            // falta verificar colisión
+            // falta verificar colisión antes de agregar el update
 
             Update update{static_cast<uint16_t>(id), Updateables::POSITION_Y,
                           static_cast<uint32_t>(pos_y)};

@@ -4,6 +4,7 @@
 #include "clients/client_listener.h"
 
 int main(int argc, char* argv[]) {
+    // Puerto hardcodeado para mas comodidad de ejecución y pruebas
     // if (argc != 2) {
     //     std::cerr << "Bad program call. Expected " << argv[0] << " <port>\n";
     //     return -1;
