@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../../common/Update.h"
+#include "../../common/updateables.h"
 
 typedef uint8_t Id;
 typedef uint8_t HealthPoints;
@@ -112,7 +113,7 @@ class UpdatableGameState {
 
         std::transform(
             map.begin(), map.end(), std::back_inserter(vector),
-            [](const auto &pair_id_key) { return pair_id_key.second; });
+            [](const auto& pair_id_key) { return pair_id_key.second; });
 
         return vector;
     }
@@ -124,19 +125,71 @@ class UpdatableGameState {
         this->addPlayer(player);
     }
 
+    PlayerState& getPlayerStateReferenceById(Id id) {
+        return this->players.at(id);
+    }
+
+    Entity& getEntityReferenceById(Id id) {
+        if (this->players.count(id)) {
+            return this->players.at(id);
+        } else if (this->projectiles.count(id)) {
+            return this->projectiles.at(id);
+        } else if (this->enemies.count(id)) {
+            return this->enemies.at(id);
+        } else if (this->items.count(id)) {
+            return this->items.at(id);
+        }
+
+        // No se encontró la ID. Devuelvo algun tipo de error;
+        return this->items.at(id);
+    }
+
     void addPlayer(PlayerState player) {
         this->players.insert({player.id, player});
     }
 
     void handleUpdate(Update update) {
         // Incluir logica de que tipo de update es
-        if (players.count(update.id)) {
-            players[update.id].position.x = update.value;
+        switch (update.key) {
+            case Updateables::HEALTH: {
+                // Solo jugador
+                PlayerState& playerToModify = this->players.at(update.id);
+                playerToModify.healthPoints = update.value;
+                break;
+            }
+
+            case Updateables::POSITION_X: {
+                // Cualquier entidad
+                Entity& entityToModify =
+                    this->getEntityReferenceById(update.id);
+                entityToModify.position.x = update.value;
+                break;
+            }
+
+            case Updateables::POSITION_Y: {
+                // Cualquier entidad
+                Entity& entityToModify =
+                    this->getEntityReferenceById(update.id);
+                entityToModify.position.y = update.value;
+                break;
+            }
+
+            case Updateables::BULLETS: {
+                // Solo jugador
+                std::cout << "No estoy seguro que debería hacer este updatable"
+                          << std::endl;
+                //  TODO: que sería esto?
+                break;
+            }
+
+            default:
+                std::cerr << "Tipo de update no implementado" << std::endl;
+                break;
         }
     }
 
-    // Devuelve el estado del juego en el formato para que le sea mas sencillo
-    // al renderer.
+    // Devuelve el estado del juego en el formato para que le sea mas
+    // sencillo al renderer.
     GameStateRenderer getStateRenderer() {
         GameStateRenderer state;
 
