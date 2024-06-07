@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game() : status(Game_status::WAITING) {
+Game::Game() : Thread("Game server"), status(Game_status::WAITING) {
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
 }
 

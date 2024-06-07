@@ -14,8 +14,6 @@ class Updater : public Thread {
    private:
     ClientProtocol protocol;
 
-    std::string text_description() override { return "Updater Cliente"; }
-
    public:
     explicit Updater(Socket& socket);
 

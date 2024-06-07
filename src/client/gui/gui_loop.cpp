@@ -5,7 +5,8 @@
 
 #include "../update_queue.h"
 
-GuiLoop::GuiLoop(Window& window) : currentTick(0), windowForRender(window) {
+GuiLoop::GuiLoop(Window& window)
+    : Thread("GuiLoop cliente"), currentTick(0), windowForRender(window) {
     // Harcodeo un player dummy. En la version final del juego, esto lo
     // recibiría del servidor.
     PlayerState player;
