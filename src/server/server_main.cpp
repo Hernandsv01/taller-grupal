@@ -27,4 +27,14 @@ int main(int argc, char* argv[]) {
     do {
         std::cin >> input;
     } while (input != "q");
+
+    // Se para y joinea los threads del listener y game
+
+    listener.kill();
+
+    listener.stop();
+    listener.join();
+
+    game.stop();
+    game.join();
 }

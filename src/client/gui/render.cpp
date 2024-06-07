@@ -37,12 +37,12 @@ Render::Render(Window& window)
     window.SetPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 }
 
-void Render::presentPlayer(EstadoJugador jugador) {
+void Render::presentPlayer(PlayerState jugador) {
     renderer.Clear();
-    int xPos = jugador.posicion.x;
-    int yPos = jugador.posicion.y;
+    int xPos = jugador.position.x;
+    int yPos = jugador.position.y;
 
-    if (jugador.estados.size() == 0 || jugador.estados[0] == Parado) {
+    if (jugador.states.size() == 0 || jugador.states[0] == Idle) {
         copyEntity(xPos, yPos, JAZZSTANDX, JAZZSTANDY, STANDSPRITELONG,
                    standSpritesJazz);
     } else {

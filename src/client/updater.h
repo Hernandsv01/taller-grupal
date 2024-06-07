@@ -8,12 +8,13 @@
 #include "protocol.h"
 #include "update_queue.h"
 
-// Escucha el server y actualiza los estados de las entidades del juego.
+// Escucha el server y actualiza los states de las entidades del juego.
 //
 class Updater : public Thread {
    private:
     ClientProtocol protocol;
-    bool is_running = true;
+
+    std::string text_description() override { return "Updater Cliente"; }
 
    public:
     explicit Updater(Socket& socket);
@@ -21,7 +22,7 @@ class Updater : public Thread {
     // envia la informacion actualizada al
     void run() override;
 
-    void stop() override;
+    void stop_custom() override;
 };
 
 #endif  // UPDATER_H

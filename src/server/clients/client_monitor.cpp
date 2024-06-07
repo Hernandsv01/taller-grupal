@@ -11,3 +11,11 @@ void Client_Monitor::sendAll(std::vector<Update> updates) {
         i->getSender().addToQueue(updates);
     }
 }
+
+Client_Monitor::~Client_Monitor() {
+    // Agregado destructor para los puntero a erver_Client
+    while (Client_Monitor::list.size() > 0) {
+        delete Client_Monitor::list.back();
+        Client_Monitor::list.pop_back();
+    }
+}

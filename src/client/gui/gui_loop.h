@@ -15,16 +15,16 @@
 #include "render.h"
 
 class GuiLoop : public Thread {
-    std::chrono::steady_clock reloj;
+    std::chrono::steady_clock clock;
 
-    Window& window_for_render;
+    Window& windowForRender;
     Render* render = nullptr;
 
-    // TODO: estado que Mariano debe actualizar,
-    // TODO: a partir de las updates que recibe de un Queue?
-    EstadoJuegoActualizable estadoJuegoActualizable;
+    UpdatableGameState updatableGameState;
 
-    uint32_t tick_actual;
+    uint32_t currentTick;
+
+    std::string text_description() override { return "GuiLoop cliente"; }
 
    public:
     // GuiLoop();
@@ -34,15 +34,13 @@ class GuiLoop : public Thread {
    private:
     void run() override;
 
-    void inicializar_render();
+    void initializeRender();
 
-    // void stop_custom() override;
+    void stop_custom() override;
 
-    // std::string text_description() override;
+    void runRenderer();
 
-    void ejecutar_renderer();
-
-    void actualizar_estado();
+    void updateGameState();
 };
 
 #endif

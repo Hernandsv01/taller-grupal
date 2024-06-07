@@ -3,13 +3,10 @@
 Updater::Updater(Socket& socket) : protocol(socket) {}
 
 void Updater::run() {
-    while (is_running) {
+    while (this->keep_running()) {
         std::vector<Update> updated_info = protocol.receive_ticks();
         Update_queue::push(updated_info);
     }
 }
 
-void Updater::stop() {
-    this->is_running = false;
-    protocol.kill();
-}
+void Updater::stop_custom() { protocol.kill(); }
