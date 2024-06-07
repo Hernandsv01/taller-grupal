@@ -15,17 +15,25 @@ set(SDL2PP_WITH_IMAGE YES)
 set(SDL2PP_WITH_TTF YES)
 add_subdirectory(SDL2pp)
 
-add_executable(client_gui ${TARGET_SRC})
+#add_executable(client_gui ${TARGET_SRC})
 
 # add compilation flags
 SET(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
-add_definitions(-DDATA_PATH="${PROJECT_SOURCE_DIR}/data")
+add_definitions(-DDATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data")
 include_directories(${SDL2PP_INCLUDE_DIRS})
 
 # define targets
-add_executable(testJazzStand testfiles/testJazzStand.cpp render.cpp)
-target_link_libraries(testJazzStand PUBLIC SDL2pp)
+add_executable(testStand testfiles/testStand.cpp render.cpp)
+target_link_libraries(testStand PUBLIC SDL2pp)
 
-add_executable(testJazzRunRight testfiles/testJazzRunRight.cpp render.cpp)
-target_link_libraries(testJazzRunRight PUBLIC SDL2pp)
+add_executable(testRun testfiles/testRun.cpp render.cpp)
+target_link_libraries(testRun PUBLIC SDL2pp)
+
+add_executable(testIntox testfiles/testIntox.cpp render.cpp)
+target_link_libraries(testIntox PUBLIC SDL2pp)
+
+add_executable(testMap testfiles/testMap.cpp render.cpp)
+target_link_libraries(testMap PUBLIC SDL2pp)
+
+

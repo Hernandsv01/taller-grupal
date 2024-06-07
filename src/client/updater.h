@@ -8,7 +8,8 @@
 #include "protocol.h"
 #include "update_queue.h"
 
-// Escucha el server y actualiza los estados de las entidades del juego.
+// Escucha el server y actualiza los states de las entidades del juego.
+//
 class Updater : public Thread {
    private:
     ClientProtocol protocol;

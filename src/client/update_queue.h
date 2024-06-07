@@ -16,6 +16,7 @@ class Update_queue {
     static void try_push(std::vector<Update>& update);
     static std::vector<Update> pop();
     static std::vector<Update> try_pop();
+    static std::vector<Update> try_pop_all();
 };
 
 #endif  // UPDATE_MONITOR_H
