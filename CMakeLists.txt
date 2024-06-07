@@ -6,6 +6,12 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Hace que todos los ejecutables queden en el path raiz
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+# Hace que ejecute el cmakelist del lobby_client
+add_subdirectory(src/lobby_client/lobby_src/)
+
 
 include_directories(src/client)
 include_directories(src/client/gui)

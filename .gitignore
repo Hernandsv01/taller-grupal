@@ -33,6 +33,9 @@
 client
 server
 testsdl
+lobby_client
+#Para que no excluya la carpeta
+!lobby_client/
 
 # Idea
 .idea/

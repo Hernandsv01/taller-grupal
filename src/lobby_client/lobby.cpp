@@ -2,7 +2,7 @@
 
 Lobby::Lobby() : lobbyProtocol() {}
 
-LobbyProtocol& Lobby::getProtocolOrError(char* error) {
+LobbyProtocol& Lobby::getProtocolOrError(const char* error) {
     std::string str_error = "Primero debe conectarse a un servidor, antes de ";
     str_error += error;
 

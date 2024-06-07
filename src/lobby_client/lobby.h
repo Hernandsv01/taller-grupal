@@ -8,7 +8,7 @@
 class Lobby {
     std::optional<LobbyProtocol> lobbyProtocol;
 
-    LobbyProtocol& getProtocolOrError(char* error);
+    LobbyProtocol& getProtocolOrError(const char* error);
 
    public:
     Lobby();
