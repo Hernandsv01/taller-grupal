@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+// Incluyo este duplicado de socket, porque es una implementacion ligeramente
+// modificada. Todavía hay que unificarlo.
 #include "socket/socket.h"
 
 struct GameMatch {

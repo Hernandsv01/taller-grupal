@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # Hace que ejecute el cmakelist del lobby_client
-add_subdirectory(src/lobby_client/lobby_src/)
+add_subdirectory(src/lobby_client/)
 
 
 include_directories(src/client)

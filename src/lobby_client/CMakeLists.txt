@@ -24,14 +24,16 @@ set(PROJECT_SOURCES
         protocololobby.cpp
         protocololobby.h
         socket/conexion_cerrada.h
-        socket/liberror.cpp
-        socket/liberror.h
-        socket/resolver.cpp
-        socket/resolver.h
-        socket/resolvererror.cpp
-        socket/resolvererror.h
         socket/socket.cpp
         socket/socket.h
+
+        
+        ../common/library/liberror.cpp
+        ../common/library/liberror.h
+        ../common/library/resolver.cpp
+        ../common/library/resolver.h
+        ../common/library/resolvererror.cpp
+        ../common/library/resolvererror.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

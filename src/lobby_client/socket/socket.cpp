@@ -1,7 +1,5 @@
 #include "socket.h"
 
-#include <stdexcept>
-
 #include <arpa/inet.h>
 #include <assert.h>
 #include <errno.h>
@@ -12,9 +10,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <stdexcept>
+
+#include "../../common/library/liberror.h"
+#include "../../common/library/resolver.h"
 #include "conexion_cerrada.h"
-#include "liberror.h"
-#include "resolver.h"
 
 Socket::Socket(const char* hostname, const char* servname) {
     Resolver resolver(hostname, servname, false);
