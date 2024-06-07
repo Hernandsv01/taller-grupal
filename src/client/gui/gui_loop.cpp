@@ -34,6 +34,24 @@ GuiLoop::~GuiLoop() {
 }
 
 void GuiLoop::run() {
+    ////////   Harcodeo un mapa   ////////
+    int groundPosY = 300;
+    std::vector<Position> positionGround;
+    for (int i = 0; i < 640; i += 32) {
+        positionGround.push_back(Position{i, groundPosY});
+    }
+    std::vector<Position> positionUnder;
+    for (int i = 0; i < 640; i += 32) {
+        positionUnder.push_back(Position{i, 364});
+    }
+    MapInfo mapInfo;
+    mapInfo.mapTexture = Diamond;
+    mapInfo.typeOfGround = RightSign;
+    mapInfo.groundPosition = positionGround;
+    mapInfo.typeOfUnder = RedDiamond;
+    mapInfo.underPosition = positionUnder;
+    //////////////
+
     // Estoy obligado a construir el renderer acá, porque para que el renderer
     // pueda dibujar en pantalla, necesita ejecutarse en el mismo thread donde
     // fue construido.
@@ -63,7 +81,8 @@ void GuiLoop::run() {
             // En el caso de que ya haya consumido todo el tiempo del tick
             // actual, Decido ni siquiera ejecutar el renderer para , tal vez,
             // llegar al proximo tick a tiempo.
-            runRenderer();
+
+            runRenderer(mapInfo);
         } else {
 #ifndef NDEBUG
             std::cout << "Render cancelado. ";
@@ -99,17 +118,6 @@ void GuiLoop::run() {
     }
 }
 
-void GuiLoop::runRenderer() {
-    // Genero un nuevo estado apto para que lo consuma el render.
-    GameStateRenderer gameStateRenderer = updatableGameState.getStateRenderer();
-
-    if (render == nullptr)
-        throw std::runtime_error(
-            "Se debe inicializar el render antes de usarlo");
-
-    render->presentPlayer(gameStateRenderer.mainPlayer);
-}
-
 void GuiLoop::updateGameState() {
     // Obtener todas las updates encoladas
     std::vector<Update> all_updates = Update_queue::try_pop_all();
@@ -120,4 +128,21 @@ void GuiLoop::updateGameState() {
     for (Update update : all_updates) {
         updatableGameState.handleUpdate(update);
     }
+}
+
+void GuiLoop::runRenderer(MapInfo& mapInfo) {
+    // Genero un nuevo estado apto para que lo consuma el renderer
+    GameStateRenderer gameStateRenderer = updatableGameState.getStateRenderer();
+
+    if (render == nullptr)
+        throw std::runtime_error(
+            "Se debe inicializar el render antes de usarlo");
+
+    render->presentGame(gameStateRenderer, mapInfo);
+
+    // std::cout << "tick: " << tick_actual << "\n";
+    // std::cout << "(" << gameStateRenderer.mainPlayer.position.x
+    // << ", "
+    //           << gameStateRenderer.mainPlayer.position.y << ")"
+    //           << std::endl;
 }

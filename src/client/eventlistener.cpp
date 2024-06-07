@@ -3,6 +3,7 @@
 EventListener::EventListener(SDL2pp::Window& window, Socket& socket)
     : Thread("EventListener cliente"), window(window), protocol(socket) {}
 
+//hay codigo comentado que utilizamos para debuggear
 void EventListener::run() {
     SDL_Event event;
     bool running = true;

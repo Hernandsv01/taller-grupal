@@ -36,7 +36,7 @@ class GuiLoop : public Thread {
 
     void stop_custom() override;
 
-    void runRenderer();
+    void runRenderer(MapInfo& mapInfo);
 
     void updateGameState();
 };

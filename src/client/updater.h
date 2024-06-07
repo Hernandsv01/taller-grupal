@@ -17,7 +17,6 @@ class Updater : public Thread {
    public:
     explicit Updater(Socket& socket);
 
-    // envia la informacion actualizada al
     void run() override;
 
     void stop_custom() override;

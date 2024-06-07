@@ -10,7 +10,10 @@ Client::Client(Socket socket, SDL2pp::Window& window)
       updater(this->socket),
       any_thread_ended() {}
 
-// Ejecuta el cliente. Esta fucion bloquea hasta que el cliente termine.
+/*
+ * Ejecuta los hilos de gui, el updater y el eventListener. 
+ * Esta funcion bloquea hasta que alguno de los hilos termine.
+ */
 void Client::exec() {
     // Agrego el evento de si algun thread terminó.
     updater.add_thread_ended_event(&any_thread_ended);

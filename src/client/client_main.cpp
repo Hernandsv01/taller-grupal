@@ -4,6 +4,11 @@
 #include "../../src/common/library/socket.h"
 #include "client.h"
 
+/*
+ * Se harcodea un hostname y un servername para generar una conexion.
+ * Hay codigo comentado relacionado al lobby que todavia no esta integrado.
+ * Y uno de prueba que solo usaba el render.
+ */
 int main(int argc, char* argv[]) {
     // std::cout << "Hello client!" << std::endl;
     // Lobby lobby;

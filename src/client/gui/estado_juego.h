@@ -42,6 +42,7 @@ enum State {
     Falling,
     Running,
     Intoxicated,
+    IntoxWalking,
     Dead,
     TakingDamage
 };
@@ -78,6 +79,17 @@ struct GameStateRenderer {
     std::vector<Projectile> projectiles;
     std::vector<Enemy> enemies;
     std::vector<Item> items;
+};
+
+enum TypeOfMaps { Diamond };
+enum TypeOfGround { RightSign = 2 };
+enum TypeOfUnderG { RedDiamond = 0 };
+struct MapInfo {
+    TypeOfMaps mapTexture;
+    TypeOfGround typeOfGround;
+    std::vector<Position> groundPosition;
+    TypeOfUnderG typeOfUnder;
+    std::vector<Position> underPosition;
 };
 
 // Clase que se encarga de mantener el estado del juego actualizado.
