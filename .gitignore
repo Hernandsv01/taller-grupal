@@ -30,11 +30,16 @@
 *.exe
 *.out
 *.app
+client
+server
+testsdl
+editor_niveles
 
 # Idea
 .idea/
 
-.vscode
+# Vscode
+.vscode/
 
 # CMake generated files
 CMakeFiles/
@@ -42,5 +47,3 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 
-
-editor_niveles
