@@ -55,3 +55,6 @@ nc -l 15500
 Siendo 15500 el puerto que el cliente lobby usa por defecto.
 Por la terminal de netcat recibirá instrucciones de que debe enviar para actuar como servidor, y probar las variaciones del programa.
 En particular, se le va a pedir que ingrese 4 letras para indicar el nombre de las "partidas", y luego, indicar si quiere que una solicitud de una accion sea exitosa (enviando cualquier caracter), o falle (enviando una `N`).
+
+## Deuda técnica
+En este [link](https://docs.google.com/document/d/1cAM50_shCD-DaLTSx-vbpt86DAvjiX_lNHMQ8J0z_og/edit) esta la lista de cosas hechas y que nos faltan hacer a modo general
