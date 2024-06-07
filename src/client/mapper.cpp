@@ -4,7 +4,8 @@ Mapper::Mapper() {}
 
 /*
  * Mapea las teclas presionadas a la accion que corresponde.
- * Por ahora aceptan las flechas y la barra espaciadora.
+ * Por ahora aceptan las flechas, la barra espaciadora, el return y la tecla m.
+ * Falta definir que teclas se utilizaran y si ademas vamos a permitir el movimiento con awsd.
  */
 ActionType Mapper::map_key_event(const SDL_Event& event){
     ActionType action = NULL_ACTION;
