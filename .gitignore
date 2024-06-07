@@ -33,15 +33,20 @@
 client
 server
 testsdl
+lobby_client
+!lobby_client/
+editor_niveles
+!editor_niveles/
 
 # Idea
 .idea/
 
-CMakeCache.txt
-
-CMakeFiles
-
-Makefile
-cmake_install.cmake
-
+# Vscode
 .vscode/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
