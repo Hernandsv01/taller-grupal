@@ -35,12 +35,12 @@ int main(int argc, char* argv[]) {
     // ¿ESTE LO USO PARA PROBAR PORQUE NO RENDERIZA NADA?
     // Render render(window);
 
-    // EstadoJugador personajeJazz;
-    // personajeJazz.posicion = Posicion{100, 200};
-    // personajeJazz.direccion = Direccion::Derecha;
-    // personajeJazz.tipoPersonaje = Jazz;
-    // personajeJazz.puntosDeVida = 10;
-    // personajeJazz.puntaje = 0;
+    // PlayerState personajeJazz;
+    // personajeJazz.position = Position{100, 200};
+    // personajeJazz.direction = Direction::Right;
+    // personajeJazz.characterType = Jazz;
+    // personajeJazz.healthPoints = 10;
+    // personajeJazz.score = 0;
 
     // while (1) {
     //     render.presentPlayer(personajeJazz);

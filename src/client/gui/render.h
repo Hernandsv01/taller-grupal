@@ -8,41 +8,39 @@
 using namespace SDL2pp;
 
 class Render {
-    
-    public:
-        explicit Render(Window& window);
+   public:
+    explicit Render(Window& window);
 
-        void presentGame(EstadoJuegoRenderer, MapInfo mapInfo);
+    void presentGame(GameStateRenderer, MapInfo mapInfo);
 
-        void copyPlayer(EstadoJugador jugador);
-        void copyMap(MapInfo mapInfo);
+    void copyPlayer(PlayerState jugador);
+    void copyMap(MapInfo mapInfo);
 
-        void presentImage();
+    void presentImage();
 
-        void sleep(int millisecond);
+    void sleep(int millisecond);
 
-    private:
-        Window& window;
-        Renderer renderer;
+   private:
+    Window& window;
+    Renderer renderer;
 
-        Texture mapsTexture;
-        Texture standSpritesJazz;
-        Texture runSpritesJazz;
-        Texture intoxJazz;
-        Texture intoxWalkJazz;
-        
+    Texture mapsTexture;
+    Texture standSpritesJazz;
+    Texture runSpritesJazz;
+    Texture intoxJazz;
+    Texture intoxWalkJazz;
 
-        int xCenter;
-        int yCenter;
-        int xReference;
-        int yReference;
-        int frame;
-    
-        void copyMapPart(int typeOfPart ,int part, std::vector<Posicion> positions);
-        
-        void copyWall();
+    int xCenter;
+    int yCenter;
+    int xReference;
+    int yReference;
+    int frame;
 
-        void copyEntity(int posX, int posY, int spriteLong, int spriteHigh,
+    void copyMapPart(int typeOfPart, int part, std::vector<Position> positions);
+
+    void copyWall();
+
+    void copyEntity(int posX, int posY, int spriteLong, int spriteHigh,
                     int animationLong, Texture& sprite);
 };
 

@@ -14,15 +14,15 @@ double get_random() {
 }
 
 GuiLoop::GuiLoop(Window& window) : tick_actual(0), window_for_render(window) {
-    EstadoJugador jugador;
-    jugador.direccion = Direccion::Derecha;
+    PlayerState jugador;
+    jugador.direction = Direction::Right;
     jugador.id = 0;
-    jugador.posicion = Posicion{100, 200};
-    jugador.puntosDeVida = 10;
-    jugador.tipoPersonaje = TipoPersonaje::Jazz;
-    jugador.puntaje = 0;
+    jugador.position = Position{100, 200};
+    jugador.healthPoints = 10;
+    jugador.characterType = CharacterType::Jazz;
+    jugador.score = 0;
 
-    estadoJuegoActualizable.agregar_jugador_principal(jugador);
+    estadoJuegoActualizable.addMainPlayer(jugador);
 };
 
 // std::string GuiLoop::text_description() { return "GuiLoop"; }
@@ -43,13 +43,13 @@ GuiLoop::~GuiLoop() {
 void GuiLoop::run() {
     ////////   Harcodeo un mapa   ////////
     int groundPosY = 300;
-    std::vector<Posicion> positionGround;
-    for (int i= 0; i<640; i+= 32) {
-        positionGround.push_back(Posicion{i, groundPosY});
+    std::vector<Position> positionGround;
+    for (int i = 0; i < 640; i += 32) {
+        positionGround.push_back(Position{i, groundPosY});
     }
-    std::vector<Posicion> positionUnder;
-    for (int i= 0; i<640; i+= 32) {
-        positionUnder.push_back(Posicion{i, 364});
+    std::vector<Position> positionUnder;
+    for (int i = 0; i < 640; i += 32) {
+        positionUnder.push_back(Position{i, 364});
     }
     MapInfo mapInfo;
     mapInfo.mapTexture = Diamond;
@@ -98,7 +98,7 @@ void GuiLoop::run() {
             // llegar al proximo tick a tiempo.
 
             ejecutar_renderer(mapInfo);
-            //ejecutar_renderer();
+            // ejecutar_renderer();
         } else {
             std::cout << "Render cancelled. ";
         }
@@ -133,8 +133,8 @@ void GuiLoop::run() {
 /*
 void GuiLoop::ejecutar_renderer() {
     // TODO: acá matias debería poner el llamado al renderr
-    EstadoJuegoRenderer estado_para_renderer =
-        estadoJuegoActualizable.obtener_estado();
+    GameStateRenderer estado_para_renderer =
+        estadoJuegoActualizable.getStateRenderer();
 
     if (render == nullptr)
         throw std::runtime_error(
@@ -143,13 +143,12 @@ void GuiLoop::ejecutar_renderer() {
     render->presentGame(estado_para_renderer);
 
     // std::cout << "tick: " << tick_actual << "\n";
-    // std::cout << "(" << estado_para_renderer.jugadorPrincipal.posicion.x
+    // std::cout << "(" << estado_para_renderer.mainPlayer.position.x
     // << ", "
-    //           << estado_para_renderer.jugadorPrincipal.posicion.y << ")"
+    //           << estado_para_renderer.mainPlayer.position.y << ")"
     //           << std::endl;
 }
 */
-
 
 void GuiLoop::actualizar_estado() {
     // TODO: Acá deberia codear la manera de actualizar el estado actual
@@ -170,11 +169,10 @@ void GuiLoop::actualizar_estado() {
     }
 }
 
-
-void GuiLoop::ejecutar_renderer(MapInfo &mapInfo) {
+void GuiLoop::ejecutar_renderer(MapInfo& mapInfo) {
     // TODO: acá matias debería poner el llamado al renderr
-    EstadoJuegoRenderer estado_para_renderer =
-        estadoJuegoActualizable.obtener_estado();
+    GameStateRenderer estado_para_renderer =
+        estadoJuegoActualizable.getStateRenderer();
 
     if (render == nullptr)
         throw std::runtime_error(
@@ -183,8 +181,8 @@ void GuiLoop::ejecutar_renderer(MapInfo &mapInfo) {
     render->presentGame(estado_para_renderer, mapInfo);
 
     // std::cout << "tick: " << tick_actual << "\n";
-    // std::cout << "(" << estado_para_renderer.jugadorPrincipal.posicion.x
+    // std::cout << "(" << estado_para_renderer.mainPlayer.position.x
     // << ", "
-    //           << estado_para_renderer.jugadorPrincipal.posicion.y << ")"
+    //           << estado_para_renderer.mainPlayer.position.y << ")"
     //           << std::endl;
 }

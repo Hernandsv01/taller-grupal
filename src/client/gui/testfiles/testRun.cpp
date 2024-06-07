@@ -1,22 +1,22 @@
-#include "../render.h"
 #include "../estado_juego.h"
+#include "../render.h"
 
 #define XPICPIX 134
 #define RUNSPEED 10
-//Jazz run dimension (134, 34) pix
+// Jazz run dimension (134, 34) pix
 
 int main() {
     int width = 640;
     int height = 480;
 
-    //Map
-    std::vector<Posicion> positionGround;
-    for (int i= 0; i<640; i+= 32) {
-        positionGround.push_back(Posicion{i, 300});
+    // Map
+    std::vector<Position> positionGround;
+    for (int i = 0; i < 640; i += 32) {
+        positionGround.push_back(Position{i, 300});
     }
-    std::vector<Posicion> positionUnder;
-    for (int i= 0; i<640; i+= 32) {
-        positionUnder.push_back(Posicion{i, 364});
+    std::vector<Position> positionUnder;
+    for (int i = 0; i < 640; i += 32) {
+        positionUnder.push_back(Position{i, 364});
     }
     MapInfo mapInfo;
     mapInfo.mapTexture = Diamond;
@@ -26,39 +26,37 @@ int main() {
     mapInfo.underPosition = positionUnder;
 
     SDL sdl(SDL_INIT_VIDEO);
-    Window window("SDL2pp demo",
-			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-			640, 480,
-			SDL_WINDOW_RESIZABLE);
+    Window window("SDL2pp demo", SDL_WINDOWPOS_UNDEFINED,
+                  SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_RESIZABLE);
     Render render(window);
     int pjPosX = 0;
     int pjPosY = 300;
-    
+
     while (pjPosX <= width) {
-        //Main player
-        std::vector<Estado> personajeEstados = {Corriendo};
+        // Main player
+        std::vector<State> personajeEstados = {Running};
 
-        EstadoJugador personajeJazz;
-        personajeJazz.posicion = Posicion{pjPosX, pjPosY};
-        personajeJazz.direccion = Direccion::Derecha;
-        personajeJazz.tipoPersonaje = Jazz;
-        personajeJazz.puntosDeVida = 10;
-        personajeJazz.estados = personajeEstados;
-        personajeJazz.puntaje = 0;
+        PlayerState personajeJazz;
+        personajeJazz.position = Position{pjPosX, pjPosY};
+        personajeJazz.direction = Direction::Right;
+        personajeJazz.characterType = Jazz;
+        personajeJazz.healthPoints = 10;
+        personajeJazz.states = personajeEstados;
+        personajeJazz.score = 0;
 
-        //Game status
-        EstadoJuegoRenderer gameCondition;
-        gameCondition.jugadorPrincipal = personajeJazz;
+        // Game status
+        GameStateRenderer gameCondition;
+        gameCondition.mainPlayer = personajeJazz;
 
         render.presentGame(gameCondition, mapInfo);
-        //int xPosBefore = personajeJazz.posicion.x;
-        //int yPosBefore = personajeJazz.posicion.y;
-        //personajeJazz.posicion = Posicion{xPosBefore+10, yPosBefore};
-        //Simulate 30 fps, 33.333 milliseconds
+        // int xPosBefore = personajeJazz.position.x;
+        // int yPosBefore = personajeJazz.position.y;
+        // personajeJazz.position = Position{xPosBefore+10, yPosBefore};
+        // Simulate 30 fps, 33.333 milliseconds
         pjPosX += 10;
-		render.sleep(33);
-	}
+        render.sleep(33);
+    }
 
-	// Here all resources are automatically released and library deinitialized
-	return 0;
+    // Here all resources are automatically released and library deinitialized
+    return 0;
 }
