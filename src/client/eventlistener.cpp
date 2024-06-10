@@ -24,7 +24,12 @@ void EventListener::run() {
 
             ActionType action = this->mapper.map_key_event(event);
 
-            protocol.send_action(action);
+            try {
+                protocol.send_action(action);
+            } catch (const ClosedConnectionError& e) {
+                running = false;
+                // TODO: Habria que implementar algo para manejar el error.
+            }
         }
     }
 }

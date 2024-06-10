@@ -414,7 +414,17 @@ Socket Socket::accept() {
 // }
 
 // Cierra y apaga el socket
+#include <iostream>
+
 void Socket::close_and_shutdown() {
+    if (this->closed) {
+#ifndef NDEBUG
+        std::cout << "Socket::close_and_shutdown() called on a closed socket"
+                  << std::endl;
+#endif
+        return;
+    };
+
     chk_skt_or_fail();
     shutdown_manual = true;
 

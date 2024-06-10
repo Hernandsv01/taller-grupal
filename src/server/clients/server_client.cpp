@@ -5,11 +5,14 @@ void Client_sender::run() {
         std::vector<Update> result;
         try {
             result = outputQueue.pop();
+            protocol.sendData(result);
         } catch (const ClosedQueue& e) {
             is_running = false;
             break;
+        } catch (const ClosedConnectionError& e) {
+            is_running = false;
+            break;
         }
-        protocol.sendData(result);
     }
 }
 
