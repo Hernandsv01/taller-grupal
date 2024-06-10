@@ -123,6 +123,10 @@ Collision Map::get_block_collision(const Coordinate& coord) const {
 }
 
 Collision Map::get_block_collision(coord_unit x, coord_unit y) const {
+    if (x >= size_x || y >= size_y) {
+        throw OutsideMapLimitsError();
+    }
+
     return blocks[y][x].collision;
 }
 
@@ -182,4 +186,12 @@ IdTexture Map::get_background() const { return this->background_texture; }
 
 Coordinate Map::get_map_size() const {
     return Coordinate{this->size_x, this->size_y};
+}
+
+void Map::add_block(const Coordinate& coordinate, const Block& block) {
+    if (coordinate.x >= size_x || coordinate.y >= size_y) {
+        throw OutsideMapLimitsError();
+    }
+
+    blocks[coordinate.y][coordinate.x] = block;
 }

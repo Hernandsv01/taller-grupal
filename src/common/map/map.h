@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "outside_map_limits_error.h"
 #include "yaml-cpp/yaml.h"
 
 typedef uint8_t MapId;
@@ -161,6 +162,9 @@ class Map {
 
     // Devuelve el tamaño en bloques del mapa.
     Coordinate get_map_size() const;
+
+    // Editor mapa
+    void add_block(const Coordinate& coordinate, const Block& block);
 };
 
 #endif
