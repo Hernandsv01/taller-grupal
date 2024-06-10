@@ -10,10 +10,10 @@
 class Socket {
    public:
     int skt;
-    int number_shutdown = 0;
 
    private:
     bool closed;
+    bool connected;
     bool shutdown_manual = false;
 
     /*

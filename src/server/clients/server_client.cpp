@@ -20,8 +20,11 @@ void Client_sender::addToQueue(std::vector<Update> const& result) {
 void Client_receiver::run() {
     while (is_running) {
         ActionType action;
-        bool successful = protocol.receiveData(&action);
-        if (!successful) {
+
+        try {
+            protocol.receiveData(&action);
+        } catch (const ClosedConnectionError& e) {
+            // si se cerró la conexion, paro el thread.
             is_running = false;
             break;
         }

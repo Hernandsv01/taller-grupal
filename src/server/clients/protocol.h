@@ -13,14 +13,12 @@
 class Protocol {
    private:
     Socket& skt;
-    bool was_closed;
 
    public:
-    explicit Protocol(Socket& skt) : skt(skt), was_closed(false) {}
+    explicit Protocol(Socket& skt) : skt(skt) {}
 
-    bool sendData(std::vector<Update> payload);
-    bool receiveData(ActionType* result);
-    bool connectionClosed();
+    void sendData(std::vector<Update> payload);
+    void receiveData(ActionType* result);
 };
 
 #endif  // PROTOCOL_H
