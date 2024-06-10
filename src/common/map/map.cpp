@@ -28,8 +28,8 @@ struct convert<::Map> {
     static bool decode(const Node& node, ::Map& map) {
         map.map_name = node["name"].as<std::string>();
 
-        map.size_x = node["size"]["x"].as<uint>();
-        map.size_y = node["size"]["y"].as<uint>();
+        map.size_x = static_cast<coord_unit>(node["size"]["x"].as<uint>());
+        map.size_y = static_cast<coord_unit>(node["size"]["y"].as<uint>());
 
         map.background_texture = node["texture_background"].as<std::string>();
 
@@ -103,7 +103,7 @@ Map Map::fromYaml(const char* path) {
     return mapa_temp;
 }
 
-Map::Map(uint8_t size_x, uint8_t size_y)
+Map::Map(coord_unit size_x, coord_unit size_y)
     : size_x(size_x),
       size_y(size_y),
       blocks(size_y, std::vector<::Block>(size_x)) {}
@@ -111,54 +111,71 @@ Map::Map(uint8_t size_x, uint8_t size_y)
 std::string Map::get_name() const { return this->map_name; }
 
 std::vector<BlockOnlyCollision> Map::get_all_blocks_collisions() const {
-    std::vector<BlockOnlyCollision> block_collisions;
-
-    for (uint y = 0; y < size_y; y++) {
-        for (uint x = 0; x < size_x; x++) {
-            Block current_block = blocks[y][x];
-
-            if (!current_block.has_collision()) continue;
-
-            Coordinate coord{static_cast<uint8_t>(x), static_cast<uint8_t>(y)};
-
-            block_collisions.emplace_back(
-                BlockOnlyCollision{coord, current_block.collision});
-        }
-    }
-
-    return block_collisions;
+    return get_blocks_with_condition_and_constructor<BlockOnlyCollision>(
+        [](const Block& block) { return block.has_collision(); },
+        [](const Coordinate coordinate, const Block& block) {
+            return BlockOnlyCollision{coordinate, block.collision};
+        });
 }
 
 Collision Map::get_block_collision(const Coordinate& coord) const {
     return Map::get_block_collision(coord.x, coord.y);
 }
 
-Collision Map::get_block_collision(uint8_t x, uint8_t y) const {
+Collision Map::get_block_collision(coord_unit x, coord_unit y) const {
     return blocks[y][x].collision;
 }
 
-// TODO:
-// std::vector<Coordinate> Map::get_player_spawns() const;
-// std::vector<Coordinate> Map::get_enemy_spawns() const;
-// std::vector<Coordinate> Map::get_items_spawns() const;
+template <typename T>
+std::vector<T> Map::get_blocks_with_condition_and_constructor(
+    bool (*condition)(const Block&),
+    T (*constructor)(const Coordinate, const Block&)) const {
+    std::vector<T> coords;
 
-std::vector<BlockOnlyTexture> Map::get_all_block_textures() const {
-    std::vector<BlockOnlyTexture> block_textures;
-
-    for (uint y = 0; y < size_y; y++) {
-        for (uint x = 0; x < size_x; x++) {
+    for (coord_unit y = 0; y < size_y; y++) {
+        for (coord_unit x = 0; x < size_x; x++) {
             Block current_block = blocks[y][x];
 
-            if (!current_block.has_texture()) continue;
-
-            Coordinate coord{static_cast<uint8_t>(x), static_cast<uint8_t>(y)};
-
-            block_textures.emplace_back(
-                BlockOnlyTexture{coord, current_block.texture});
+            if (condition(current_block)) {
+                coords.emplace_back(
+                    constructor(Coordinate{x, y}, current_block));
+            }
         }
     }
 
-    return block_textures;
+    return coords;
+}
+
+std::vector<Coordinate> Map::get_coord_of_blocks_with_condition(
+    bool (*condition)(const Block&)) const {
+    return get_blocks_with_condition_and_constructor<Coordinate>(
+        condition, [](const Coordinate coordinate, const Block& block) {
+            return coordinate;
+        });
+}
+
+std::vector<Coordinate> Map::get_player_spawns() const {
+    return get_coord_of_blocks_with_condition([](const Block& block) {
+        return block.collision == Collision::PlayerSpawn;
+    });
+}
+std::vector<Coordinate> Map::get_enemy_spawns() const {
+    return get_coord_of_blocks_with_condition([](const Block& block) {
+        return block.collision == Collision::EnemySpawn;
+    });
+}
+std::vector<Coordinate> Map::get_items_spawns() const {
+    return get_coord_of_blocks_with_condition([](const Block& block) {
+        return block.collision == Collision::ItemSpawn;
+    });
+}
+
+std::vector<BlockOnlyTexture> Map::get_all_block_textures() const {
+    return get_blocks_with_condition_and_constructor<BlockOnlyTexture>(
+        [](const Block& block) { return block.has_texture(); },
+        [](const Coordinate coordinate, const Block& block) {
+            return BlockOnlyTexture{coordinate, block.texture};
+        });
 }
 
 IdTexture Map::get_background() const { return this->background_texture; }

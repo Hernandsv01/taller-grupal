@@ -9,6 +9,7 @@
 #include "yaml-cpp/yaml.h"
 
 typedef uint8_t MapId;
+typedef uint8_t coord_unit;
 
 // Campaz cambiamos el nombre de los distintos triangulos
 // Tal vex tambien incluya si es un spawn de enemigo/jugador/item
@@ -18,14 +19,17 @@ enum Collision : uint8_t {
     TriangleLowerRight,  // ◢
     TriangleLowerLeft,   // ◣
     TriangleUpperLeft,   // ◤
-    TriangleUpperRight   // ◥
+    TriangleUpperRight,  // ◥
+    ItemSpawn,
+    PlayerSpawn,
+    EnemySpawn
 };
 
 // Ubicacion del bloque. Como es uint8_t, el mapa puede tener hasta 255x255
 // bloques.
 struct Coordinate {
-    uint8_t x;
-    uint8_t y;
+    coord_unit x;
+    coord_unit y;
 
     bool operator==(const Coordinate& other) const {
         return (other.x == this->x) && (other.y == this->y);
@@ -41,9 +45,19 @@ struct Block {
     IdTexture texture;
 
     // Por ahora uso estas definiciones de si tiene textura y colision
-    bool has_collision() { return (collision != Collision::Air); }
+    bool has_collision() const {
+        return (collision != Collision::Air &&
+                collision != Collision::ItemSpawn &&
+                collision != Collision::PlayerSpawn &&
+                collision != Collision::EnemySpawn);
+    }
 
-    bool has_texture() { return (collision != Collision::Air); }
+    bool has_texture() const {
+        return (collision != Collision::Air &&
+                collision != Collision::ItemSpawn &&
+                collision != Collision::PlayerSpawn &&
+                collision != Collision::EnemySpawn);
+    }
 };
 
 // Para cuando obtengo todos los bloques con textura
@@ -99,13 +113,21 @@ class Map {
 
     std::string map_name = "unnamed";
 
-    uint8_t size_x;
-    uint8_t size_y;
+    coord_unit size_x;
+    coord_unit size_y;
     std::vector<std::vector<Block>> blocks;
 
     IdTexture background_texture = "undefined";
 
     Map();
+
+    template <typename T>
+    std::vector<T> get_blocks_with_condition_and_constructor(
+        bool (*condition)(const Block&),
+        T (*constructor)(const Coordinate coordinate, const Block&)) const;
+
+    std::vector<Coordinate> get_coord_of_blocks_with_condition(
+        bool (*condition)(const Block&)) const;
 
    public:
     // Servidor
@@ -113,7 +135,7 @@ class Map {
     // Carga un mapa desde un archivo yaml.
     Map static fromYaml(const char* path);
 
-    Map(uint8_t size_x, uint8_t size_y);
+    Map(coord_unit size_x, coord_unit size_y);
 
     std::string get_name() const;
 
@@ -122,17 +144,16 @@ class Map {
 
     // Devuelve la colision del bloque especificado. (Puede devolver Air)
     Collision get_block_collision(const Coordinate& coordenadas) const;
-    Collision get_block_collision(uint8_t x, uint8_t y) const;
+    Collision get_block_collision(coord_unit x, coord_unit y) const;
 
-    // TODO:
-    // std::vector<Coordinate> get_player_spawns() const;
-    // std::vector<Coordinate> get_enemy_spawns() const;
-    // std::vector<Coordinate> get_items_spawns() const;
+    std::vector<Coordinate> get_player_spawns() const;
+    std::vector<Coordinate> get_enemy_spawns() const;
+    std::vector<Coordinate> get_items_spawns() const;
 
     // Cliente
 
     // Devuelve todos los bloques que tengan alguna textura. (no incluye los
-    // bloques Air)
+    // bloques Air y de spawn)
     std::vector<BlockOnlyTexture> get_all_block_textures() const;
     IdTexture get_background() const;
 
