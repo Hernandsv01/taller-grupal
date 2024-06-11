@@ -1,6 +1,7 @@
 #ifndef LOBBY_H
 #define LOBBY_H
 
+#include <optional>
 #include <stdexcept>
 
 #include "protocololobby.h"

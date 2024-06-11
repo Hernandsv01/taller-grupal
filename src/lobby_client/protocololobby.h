@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "../common/library/socket.h"
 #include "../common/lobbyprotocol.h"
-#include "socket/socket.h"
 
 // (desde punto de vista del cliente)
 // - Crear partida:
@@ -73,63 +73,11 @@ class LobbyProtocol {
    public:
     LobbyProtocol(const char* ip, const char* port);
 
-    match_id createMatch(const std::string& match_name) {
-        if (match_name.length() > 16) {
-            throw std::runtime_error(
-                "El nombre de la partida es demasiado largo. Maximo 16"
-                "caracteres.");
-        }
+    match_id createMatch(const std::string& match_name);
 
-        MessageType type = CREATE;
-        socket.sendall(&type, sizeof(type));
+    uint16_t joinMatch(match_id id);
 
-        uint8_t buffer[16] = {0};
-        memcpy(buffer, match_name.c_str(), match_name.length());
-
-        socket.sendall(buffer, sizeof(buffer));
-
-        match_id id;
-        socket.recvall(&id, sizeof(id));
-
-        return id;
-    }
-
-    uint16_t joinMatch(match_id id) {
-        MessageType type = JOIN;
-        socket.sendall(&type, sizeof(type));
-
-        socket.sendall(&id, sizeof(id));
-
-        // Recibir id jugador
-        uint16_t player_id;
-        socket.recvall(&player_id, sizeof(player_id));
-        player_id = ntohs(player_id);
-
-        // Recibir mapa (CUANDO DECIDAMOS)
-
-        return player_id;
-    }
-
-    std::vector<GameMatch> getGameMatches() {
-        MessageType type = GET_GAMES;
-        socket.sendall(&type, sizeof(type));
-
-        uint8_t games_count;
-        socket.recvall(&games_count, sizeof(games_count));
-
-        std::vector<GameMatch> games(games_count);
-        for (uint8_t i = 0; i < games_count; i++) {
-            match_id id;
-            socket.recvall(&id, sizeof(id));
-
-            char buffer[17] = {0};
-            socket.recvall(buffer, sizeof(buffer) - 1);
-
-            games[i] = GameMatch{id, std::string(buffer)};
-        }
-
-        return games;
-    }
+    std::vector<GameMatch> getGameMatches();
 };
 
 #endif  // PROTOCOLOLOBBY_H

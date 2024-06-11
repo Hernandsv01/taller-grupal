@@ -24,6 +24,9 @@ void MainWindow::updateMatchesFromMatchList() {
 
     try {
         matches = lobby.getServerMatches();
+    } catch (const ClosedConnectionError& e) {
+        closedConnectionError();
+        return;
     } catch (const std::exception& e) {
         ui->textoErrorElegirPartida->setText(e.what());
         return;
@@ -70,6 +73,9 @@ void MainWindow::on_botonConectar_clicked() {
 
     try {
         lobby.connectToServer(ip_servidor, puerto_servidor);
+    } catch (const ClosedConnectionError& e) {
+        closedConnectionError();
+        return;
     } catch (const std::exception& e) {
         ui->textoErrorConectarseServidor->setText(e.what());
         return;
@@ -79,8 +85,8 @@ void MainWindow::on_botonConectar_clicked() {
 }
 
 void MainWindow::goToMatchSelection() {
-    updateMatchesFromMatchList();
     ui->stackedWidget->setCurrentIndex(1);
+    updateMatchesFromMatchList();
 }
 
 void MainWindow::on_botonUnirseAPartida_clicked() {
@@ -103,6 +109,9 @@ void MainWindow::on_botonUnirseAPartida_clicked() {
 
     try {
         lobby.connectToMatch(id);
+    } catch (const ClosedConnectionError& e) {
+        closedConnectionError();
+        return;
     } catch (const std::exception& e) {
         ui->textoErrorElegirPartida->setText(e.what());
     }
@@ -127,6 +136,9 @@ void MainWindow::on_botonCrearPartida_clicked() {
         uint16_t id_partida = lobby.createMatch(
             mapa_seleccionado, cantidad_jugadores, nombre_partida);
         lobby.connectToMatch(id_partida);
+    } catch (const ClosedConnectionError& e) {
+        closedConnectionError();
+        return;
     } catch (const std::exception& e) {
         ui->textoErrorCrearPartida->setText(e.what());
     }
@@ -138,4 +150,10 @@ void MainWindow::on_botonCrearPartida_clicked() {
 
 void MainWindow::on_botonCancelarCrearPartida_clicked() {
     goToMatchSelection();
+}
+
+void MainWindow::closedConnectionError() {
+    ui->textoErrorConectarseServidor->setText(
+        "La conexion con el servidor se cerró de manera inesperada");
+    ui->stackedWidget->setCurrentIndex(0);
 }

@@ -23,9 +23,6 @@ set(PROJECT_SOURCES
         mainwindow.ui
         protocololobby.cpp
         protocololobby.h
-        socket/conexion_cerrada.h
-        socket/socket.cpp
-        socket/socket.h
 
         
         ../common/library/liberror.cpp
@@ -34,6 +31,9 @@ set(PROJECT_SOURCES
         ../common/library/resolver.h
         ../common/library/resolvererror.cpp
         ../common/library/resolvererror.h
+        ../common/library/closedconectionerror.h
+        ../common/library/socket.cpp
+        ../common/library/socket.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

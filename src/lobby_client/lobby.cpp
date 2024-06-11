@@ -31,7 +31,7 @@ void Lobby::connectToMatch(u_int16_t id) {
     LobbyProtocol& validProtocol =
         getProtocolOrError("conectarse a una partida.");
 
-    validProtocol.connectToMatch(id);
+    validProtocol.joinMatch(id);
 }
 
 // Devuelve ID de partida creada
@@ -39,7 +39,5 @@ uint16_t Lobby::createMatch(const std::string& selected_map,
                             uint8_t playerCount, std::string matchName) {
     LobbyProtocol& validProtocol = getProtocolOrError("crear una partida.");
 
-    GameMatch match = {0, playerCount, 0, matchName};
-
-    return validProtocol.createMatch(match);
+    return validProtocol.createMatch(matchName);
 }

@@ -23,6 +23,7 @@ class MainWindow : public QMainWindow {
     void updateMatchesFromMatchList();
     void goToMatchSelection();
     std::vector<GameMatch> getGameMatches();
+    void closedConnectionError();
 
    private slots:
 
