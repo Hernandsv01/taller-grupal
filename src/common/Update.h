@@ -133,3 +133,33 @@ class update_value : public update_complex {
    public:
     uint8_t value;
 };
+
+// Usando variants
+
+struct update_variant_value {
+    uint16_t id;
+    update_type key;
+    uint8_t value;
+};
+
+struct update_variant_position {
+    uint16_t id;
+    float x;
+    float y;
+};
+
+struct update_variant_create_entity {
+    uint16_t id;
+    entity_type type;
+    entity_subtype subtype;
+};
+
+#include <variant>
+
+typedef std::variant<update_variant_value, update_variant_position,
+                     update_variant_create_entity>
+    update_variant;
+
+std::vector<uint8_t> serialize(const update_variant& update);
+
+update_variant deserialize(const std::vector<uint8_t>& data);

@@ -212,3 +212,72 @@ std::vector<uint8_t> update_value::serialize() const {
     data.push_back(value);
     return data;
 }
+
+// usando variants
+
+std::vector<uint8_t> serialize(const update_variant& update) {
+    std::vector<uint8_t> data;
+    std::visit(
+        [&data](auto&& arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, update_variant_value>) {
+                data.push_back(arg.key);
+                // Serialize id as uint8_t
+                uint8_t* id_8bits = (uint8_t*)(&(arg.id));
+                data.push_back(id_8bits[0]);
+                data.push_back(id_8bits[1]);
+                data.push_back(arg.value);
+            } else if constexpr (std::is_same_v<T, update_variant_position>) {
+                data.push_back(update_type::Position);
+                // Serialize id as uint8_t
+                uint8_t* id_8bits = (uint8_t*)(&(arg.id));
+                data.push_back(id_8bits[0]);
+                data.push_back(id_8bits[1]);
+
+                const uint8_t* floatData =
+                    reinterpret_cast<const uint8_t*>(&arg.x);
+                data.insert(data.end(), floatData, floatData + sizeof(float));
+                floatData = reinterpret_cast<const uint8_t*>(&arg.y);
+                data.insert(data.end(), floatData, floatData + sizeof(float));
+
+            } else if constexpr (std::is_same_v<T,
+                                                update_variant_create_entity>) {
+                data.push_back(update_type::CreateEntity);
+                // Serialize id as uint8_t
+                uint8_t* id_8bits = (uint8_t*)(&(arg.id));
+                data.push_back(id_8bits[0]);
+                data.push_back(id_8bits[1]);
+
+                data.push_back(arg.type);
+                data.push_back(arg.subtype);
+            }
+        },
+        update);
+    return data;
+}
+
+update_variant deserialize(const std::vector<uint8_t>& data) {
+    if (data.size() < 2) {
+        throw std::runtime_error("Invalid data size");
+    }
+
+    update_type decoded_type = (update_type)data[0];
+    uint16_t decoded_id;
+    memccpy(&decoded_id, &data[1], sizeof(uint16_t), sizeof(uint16_t));
+
+    switch (decoded_type) {
+        case update_type::Position: {
+            float x, y;
+            memccpy(&x, &data[3], sizeof(float), sizeof(float));
+            memccpy(&y, &data[7], sizeof(float), sizeof(float));
+            return update_variant_position{decoded_id, x, y};
+        }
+        case update_type::CreateEntity: {
+            return update_variant_create_entity{
+                decoded_id, (entity_type)data[3], (entity_subtype)data[4]};
+        }
+        default: {
+            return update_variant_value{decoded_id, decoded_type, data[3]};
+        }
+    }
+}
