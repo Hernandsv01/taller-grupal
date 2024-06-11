@@ -13,6 +13,5 @@ void Client_listener::run() {
 
 void Client_listener::kill() {
     is_running = false;
-    skt_listener.shutdown(SHUTDOWN_MODE);
-    skt_listener.close();
+    skt_listener.close_and_shutdown();
 }
