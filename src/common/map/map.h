@@ -9,7 +9,6 @@
 #include "outside_map_limits_error.h"
 #include "yaml-cpp/yaml.h"
 
-typedef uint8_t MapId;
 typedef uint8_t coord_unit;
 
 // Campaz cambiamos el nombre de los distintos triangulos
@@ -101,8 +100,6 @@ struct BlockWithCoordinate {
 };
 
 class Map {
-    MapId id = 1;
-
     // Para que al crearse un mapa a partir de un nodo,
     // se pueda inicializar el objeto mapa vacío (lo requiere la api de
     // yaml-cpp)
