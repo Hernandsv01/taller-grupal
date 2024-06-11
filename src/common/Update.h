@@ -37,6 +37,56 @@ enum entity_subtype : uint8_t {
     Weapon
 };
 
+struct entity_type_and_subtype {
+    entity_type type;
+    entity_subtype subtype;
+};
+
+struct position {
+    float x;
+    float y;
+};
+
+// USANDO OBJETO PRACTICAMENTE VACIO
+class update_simple {
+   public:
+    uint16_t id;
+    update_type update_type_value;
+
+   private:
+    // Create entity
+    entity_type entity_type_value = Player;
+    entity_subtype entity_subtype_value = Jazz;
+
+    // Position
+    float x = 0;
+    float y = 0;
+
+    // Value
+    uint8_t value = 0;
+
+   public:
+    static update_simple deserialize(const std::vector<uint8_t>& data);
+
+    std::vector<uint8_t> serialize() const;
+
+    static update_simple create_create_entity(
+        uint16_t id, entity_type entity_type_value,
+        entity_subtype entity_subtype_value);
+
+    static update_simple create_position(uint16_t id, float x, float y);
+
+    static update_simple create_value(uint16_t id, update_type key,
+                                      uint8_t value);
+
+    uint8_t get_value() const;
+
+    entity_type_and_subtype get_entity_type_and_subtype() const;
+
+    position get_position() const;
+};
+
+// USANDO HERENCIA
 class update_complex {
    protected:
     update_complex(update_type update_type_value, uint16_t id);
@@ -44,7 +94,7 @@ class update_complex {
    public:
     virtual std::vector<uint8_t> serialize() const;
 
-    static update_complex deserialize(const std::vector<uint8_t>& data);
+    static update_complex* deserialize(const std::vector<uint8_t>& data);
 
    public:
     update_type update_type_value;
