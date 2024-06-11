@@ -13,6 +13,7 @@ typedef uint8_t match_id;
 struct GameMatch {
     match_id id;
     std::string name;
+    std::string map;
 };
 
 enum MessageType : uint8_t { CREATE, JOIN, GET_GAMES };
