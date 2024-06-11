@@ -1,11 +1,12 @@
-#ifndef PROTOCOLOLOBBY_H
-#define PROTOCOLOLOBBY_H
+#ifndef PROTOCOLOLOBBYCLIENT_H
+#define PROTOCOLOLOBBYCLIENT_H
 
 #include <stdint.h>
 
 #include <string>
 #include <vector>
 
+#include "../common/lobbyprotocol.h"
 #include "socket/socket.h"
 
 // (desde punto de vista del cliente)
