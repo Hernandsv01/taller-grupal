@@ -27,17 +27,16 @@ int main() {
     mapInfo.underPosition = positionUnder;
 
     // Jugador principal
-    std::vector<State> playerState = {Idle};
 
     PlayerState mainPlayer;
     mainPlayer.characterType = Jazz;
     mainPlayer.healthPoints = 10;
-    mainPlayer.states = playerState;
+    mainPlayer.state.state = Idle;
     mainPlayer.score = 0;
     mainPlayer.position = Position{pjPosX, pjPosY};
     mainPlayer.direction = Direction::Right;
 
-    // State del juego
+    // State_enum del juego
     GameStateRenderer gameCondition;
     gameCondition.mainPlayer = mainPlayer;
 

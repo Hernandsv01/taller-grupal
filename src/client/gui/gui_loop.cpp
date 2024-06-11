@@ -16,6 +16,7 @@ GuiLoop::GuiLoop(Window& window)
     player.healthPoints = 10;
     player.characterType = CharacterType::Jazz;
     player.score = 0;
+    player.state = State();
 
     updatableGameState.addMainPlayer(player);
 };
@@ -132,7 +133,8 @@ void GuiLoop::updateGameState() {
 
 void GuiLoop::runRenderer(MapInfo& mapInfo) {
     // Genero un nuevo estado apto para que lo consuma el renderer
-    GameStateRenderer gameStateRenderer = updatableGameState.getStateRenderer();
+    GameStateRenderer gameStateRenderer =
+        updatableGameState.getStateRenderer(currentTick);
 
     if (render == nullptr)
         throw std::runtime_error(

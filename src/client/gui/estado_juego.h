@@ -36,7 +36,7 @@ struct Entity {
 };
 
 // Posibles estados de ¿solo jugador?
-enum State {
+enum State_enum {
     Idle,
     Shooting,
     Jumping,
@@ -48,12 +48,30 @@ enum State {
     TakingDamage
 };
 
+struct State {
+   private:
+    uint32_t start_tick = 0;
+
+   public:
+    State_enum state = State_enum::Idle;
+    uint32_t current_tick = 0;
+    // Tiempo que lleva en ese estado.
+
+    void updateTick(uint32_t tick) {
+        this->current_tick = tick - this->start_tick;
+    }
+
+    bool operator==(const State_enum& stateEnum) {
+        return this->state == stateEnum;
+    }
+};
+
 enum CharacterType { Jazz, Spaz, Lori };
 struct PlayerState : public Entity {
     CharacterType characterType;
     HealthPoints healthPoints;
-    // suponemos que un jugador podría tener más de un estado.
-    std::vector<State> states;
+    // suponemos que un jugador tiene un solo estado
+    State state;
     Score score = 0;
     // Faltaría municion y tipo de arma.
     // Tendría que ver que variaciones tendría eso
@@ -190,10 +208,11 @@ class UpdatableGameState {
 
     // Devuelve el estado del juego en el formato para que le sea mas
     // sencillo al renderer.
-    GameStateRenderer getStateRenderer() {
+    GameStateRenderer getStateRenderer(uint32_t tick) {
         GameStateRenderer state;
 
         PlayerState mainPlayer = this->players.at(mainPlayerId);
+        mainPlayer.state.updateTick(tick);
 
         state.mainPlayer = mainPlayer;
 
@@ -209,6 +228,10 @@ class UpdatableGameState {
         state.items = this->get_vector_from(this->items);
         state.enemies = this->get_vector_from(this->enemies);
         state.projectiles = this->get_vector_from(this->projectiles);
+
+        for (PlayerState& player : state.players) {
+            player.state.updateTick(tick);
+        }
 
         return state;
     }

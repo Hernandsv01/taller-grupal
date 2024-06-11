@@ -34,14 +34,13 @@ int main() {
 
     while (pjPosX <= width) {
         // Main player
-        std::vector<State> personajeEstados = {Running};
 
         PlayerState personajeJazz;
         personajeJazz.position = Position{pjPosX, pjPosY};
         personajeJazz.direction = Direction::Right;
         personajeJazz.characterType = Jazz;
         personajeJazz.healthPoints = 10;
-        personajeJazz.states = personajeEstados;
+        personajeJazz.state.state = Running;
         personajeJazz.score = 0;
 
         // Game status
