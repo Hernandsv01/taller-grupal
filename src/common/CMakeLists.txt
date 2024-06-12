@@ -10,7 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 set(SOURCES_UPDATE
     Update.h
-    update.cpp
+    Update.cpp
     test_update.cpp)
 
 add_executable(update_test ${SOURCES_UPDATE})

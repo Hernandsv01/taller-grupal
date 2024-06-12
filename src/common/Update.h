@@ -1,20 +1,11 @@
 #ifndef COMMON_DTOS_H
 #define COMMON_DTOS_H
 
-#include <sstream>
+#include <string>
 #include <vector>
 
-// packete de actualizacion: se utiliza el id, una clave del elemento
-// actualizabel y el valor.
-// struct Update {
-//     uint16_t id;
-//     uint8_t key;
-//     uint32_t value;
-// } __attribute__((packed));
-
-#endif  // COMMON_DTOS_H
-
-enum update_type : uint8_t {
+namespace Update {
+enum UpdateType : uint8_t {
     CreateEntity = 0,
     Position = 1,
     Direction = 2,
@@ -24,9 +15,9 @@ enum update_type : uint8_t {
     DeleteEntity = 6
 };
 
-enum entity_type : uint8_t { Player = 0, Bullet = 1, Wall = 2, Item = 3 };
+enum EntityType : uint8_t { Player = 0, Bullet = 1, Enemy = 2, Item = 3 };
 
-enum entity_subtype : uint8_t {
+enum EntitySubtype : uint8_t {
     Jazz,
     Spaz,
     Lori,
@@ -37,26 +28,30 @@ enum entity_subtype : uint8_t {
     Weapon
 };
 
-struct entity_type_and_subtype {
-    entity_type type;
-    entity_subtype subtype;
+struct EntityTypeAndSubtype {
+    EntityType type;
+    EntitySubtype subtype;
 };
 
-struct position {
+struct PositionFloat {
     float x;
     float y;
 };
 
 // USANDO OBJETO PRACTICAMENTE VACIO
-class update_simple {
+class Update_new {
    public:
-    uint16_t id;
-    update_type update_type_value;
+    uint16_t id = 0;
+    Update::UpdateType update_type_value = Update::CreateEntity;
 
    private:
+    // Estas propiedades tienen valores default para poder crear una instancia
+    // "vacia". Luego se completaran las propiedades petrinentes, al tipo de
+    // update utilizado.
+
     // Create entity
-    entity_type entity_type_value = Player;
-    entity_subtype entity_subtype_value = Jazz;
+    Update::EntityType entity_type_value = Update::EntityType::Player;
+    Update::EntitySubtype entity_subtype_value = Update::EntitySubtype::Jazz;
 
     // Position
     float x = 0;
@@ -66,22 +61,27 @@ class update_simple {
     uint8_t value = 0;
 
    public:
-    static update_simple deserialize(const std::vector<uint8_t>& data);
+    static std::vector<Update_new> deserialize_all(std::vector<uint8_t> data);
+
+    static Update_new deserialize(const std::vector<uint8_t> &data);
 
     std::vector<uint8_t> serialize() const;
 
-    static update_simple create_create_entity(
-        uint16_t id, entity_type entity_type_value,
-        entity_subtype entity_subtype_value);
+    static Update_new create_create_entity(
+        uint16_t id, Update::EntityType entity_type_value,
+        Update::EntitySubtype entity_subtype_value);
 
-    static update_simple create_position(uint16_t id, float x, float y);
+    static Update_new create_position(uint16_t id, float x, float y);
 
-    static update_simple create_value(uint16_t id, update_type key,
-                                      uint8_t value);
+    static Update_new create_value(uint16_t id, Update::UpdateType key,
+                                   uint8_t value);
 
     uint8_t get_value() const;
 
-    entity_type_and_subtype get_entity_type_and_subtype() const;
+    Update::EntityTypeAndSubtype get_entity_type_and_subtype() const;
 
-    position get_position() const;
+    Update::PositionFloat get_position() const;
 };
+}  // namespace Update
+
+#endif  // COMMON_DTOS_H
