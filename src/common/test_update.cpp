@@ -3,12 +3,12 @@
 #include "Update.h"
 
 void print_update_simple(Update::Update_new update) {
-    std::cout << "Update id: " << std::to_string(update.id) << std::endl;
+    std::cout << "Update id: " << std::to_string(update.get_id()) << std::endl;
 
-    std::cout << "Update type: " << std::to_string(update.update_type_value)
+    std::cout << "Update type: " << std::to_string(update.get_update_type())
               << std::endl;
 
-    switch (update.update_type_value) {
+    switch (update.get_update_type()) {
         case Update::CreateEntity: {
             Update::EntityTypeAndSubtype tipo_y_subtipo =
                 update.get_entity_type_and_subtype();

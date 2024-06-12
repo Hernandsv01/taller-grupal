@@ -24,6 +24,7 @@ float htonf(float f) {
 #define SIZE_UPDATE_CREATE 5
 #define SIZE_UPDATE_POSITION 11
 #define SIZE_UPDATE_VALUE 4
+#define SIZE_UPDATE_DELETE 3
 
 // USANDO OBJETO PRACTICAMENTE VACIO
 using namespace Update;
@@ -35,10 +36,12 @@ std::vector<Update_new> Update_new::deserialize_all(std::vector<uint8_t> data) {
         Update_new update = Update_new::deserialize(data);
         updates.push_back(update);
 
-        if (update.update_type_value == CreateEntity) {
+        if (update.get_update_type() == CreateEntity) {
             data.erase(data.begin(), data.begin() + SIZE_UPDATE_CREATE);
-        } else if (update.update_type_value == Position) {
+        } else if (update.get_update_type() == Position) {
             data.erase(data.begin(), data.begin() + SIZE_UPDATE_POSITION);
+        } else if (update.get_update_type() == DeleteEntity) {
+            data.erase(data.begin(), data.begin() + SIZE_UPDATE_DELETE);
         } else {
             data.erase(data.begin(), data.begin() + SIZE_UPDATE_VALUE);
         }
@@ -71,6 +74,7 @@ Update_new Update_new::deserialize(const std::vector<uint8_t> &data) {
             update.y = ntohf(update.y);
             break;
         case DeleteEntity:
+            break;
         case Direction:
         case State:
         case Health:
@@ -118,7 +122,6 @@ std::vector<uint8_t> Update_new::serialize() const {
             data.push_back(y_8bits[3]);
             break;
         }
-        case DeleteEntity:
         case Direction:
         case State:
         case Health:
@@ -126,6 +129,8 @@ std::vector<uint8_t> Update_new::serialize() const {
             data.push_back(value);
             break;
         }
+        case DeleteEntity:
+            break;
     }
 
     return data;
@@ -134,8 +139,6 @@ std::vector<uint8_t> Update_new::serialize() const {
 Update_new Update_new::create_create_entity(
     uint16_t id, EntityType entity_type_value,
     EntitySubtype entity_subtype_value) {
-    using namespace Update;
-
     Update_new update;
     update.update_type_value = CreateEntity;
     update.id = id;
@@ -144,9 +147,14 @@ Update_new Update_new::create_create_entity(
     return update;
 }
 
-Update_new Update_new::create_position(uint16_t id, float x, float y) {
-    using namespace Update;
+Update_new Update_new::create_delete_entity(uint16_t id) {
+    Update_new update;
+    update.update_type_value = DeleteEntity;
+    update.id = id;
+    return update;
+}
 
+Update_new Update_new::create_position(uint16_t id, float x, float y) {
     Update_new update;
     update.update_type_value = Position;
     update.id = id;
@@ -164,9 +172,11 @@ Update_new Update_new::create_value(uint16_t id, UpdateType key,
     return update;
 }
 
-uint8_t Update_new::get_value() const {
-    using namespace Update;
+uint16_t Update_new::get_id() const { return id; }
 
+UpdateType Update_new::get_update_type() const { return update_type_value; }
+
+uint8_t Update_new::get_value() const {
     if (update_type_value != UpdateType::Score &&
         update_type_value != UpdateType::Health &&
         update_type_value != UpdateType::State &&
@@ -177,8 +187,6 @@ uint8_t Update_new::get_value() const {
 }
 
 EntityTypeAndSubtype Update_new::get_entity_type_and_subtype() const {
-    using namespace Update;
-
     if (update_type_value != UpdateType::CreateEntity) {
         throw std::runtime_error("Invalid update type");
     }
@@ -186,8 +194,6 @@ EntityTypeAndSubtype Update_new::get_entity_type_and_subtype() const {
 }
 
 PositionFloat Update_new::get_position() const {
-    using namespace Update;
-
     if (update_type_value != UpdateType::Position) {
         throw std::runtime_error("Invalid update type");
     }
