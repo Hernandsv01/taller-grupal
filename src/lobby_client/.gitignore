@@ -1,1 +1,6 @@
 /lobby_client_autogen
+/moc_server_autogen
+/build-lobby_client-Desktop-Debug
+CMakeLists.txt.user
+
+moc_server

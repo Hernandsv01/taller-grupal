@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 
 #include <QDebug>  // Include the appropriate header for qDebug
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 
@@ -21,16 +22,23 @@ std::vector<GameMatch> LobbyProtocol::getGameMatches() {
         match_id id;
         socket.recvall(&id, sizeof(id));
 
-        char buffer[17] = {0};
-        socket.recvall(buffer, sizeof(buffer) - 1);
+        char buffer_match_name[17] = {0};
+        socket.recvall(buffer_match_name, sizeof(buffer_match_name) - 1);
 
-        games[i] = GameMatch{id, std::string(buffer)};
+        std::string match_name(buffer_match_name);
+
+        char buffer_map_name[33] = {0};
+        socket.recvall(buffer_map_name, sizeof(buffer_map_name) - 1);
+
+        std::string map_name(buffer_map_name);
+
+        games[i] = GameMatch{id, match_name, map_name};
     }
 
     return games;
 }
 
-uint16_t LobbyProtocol::joinMatch(match_id id) {
+std::pair<uint16_t, std::string> LobbyProtocol::joinMatch(match_id id) {
     MessageType type = JOIN;
     socket.sendall(&type, sizeof(type));
 
@@ -43,10 +51,16 @@ uint16_t LobbyProtocol::joinMatch(match_id id) {
 
     // Recibir mapa (CUANDO DECIDAMOS)
 
-    return player_id;
+    char buffer_map_name[33] = {0};
+    socket.recvall(buffer_map_name, sizeof(buffer_map_name) - 1);
+
+    std::string map_name(buffer_map_name);
+
+    return std::make_pair(player_id, map_name);
 }
 
-match_id LobbyProtocol::createMatch(const std::string& match_name) {
+match_id LobbyProtocol::createMatch(const std::string& match_name,
+                                    const std::string& map_name) {
     if (match_name.length() > 16) {
         throw std::runtime_error(
             "El nombre de la partida es demasiado largo. El máximo es de "
@@ -56,10 +70,13 @@ match_id LobbyProtocol::createMatch(const std::string& match_name) {
     MessageType type = CREATE;
     socket.sendall(&type, sizeof(type));
 
-    uint8_t buffer[16] = {0};
-    memcpy(buffer, match_name.c_str(), match_name.length());
+    uint8_t buffer_match_name[16] = {0};
+    memcpy(buffer_match_name, match_name.c_str(), match_name.length());
+    socket.sendall(buffer_match_name, sizeof(buffer_match_name));
 
-    socket.sendall(buffer, sizeof(buffer));
+    uint8_t buffer_map_name[32] = {0};
+    memcpy(buffer_map_name, map_name.c_str(), map_name.length());
+    socket.sendall(buffer_map_name, sizeof(buffer_map_name));
 
     match_id id;
     socket.recvall(&id, sizeof(id));

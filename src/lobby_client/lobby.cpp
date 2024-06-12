@@ -2,42 +2,52 @@
 
 Lobby::Lobby() : lobbyProtocol() {}
 
-LobbyProtocol& Lobby::getProtocolOrError(const char* error) {
+void Lobby::checkProtocolOrError(const char* error) {
     std::string str_error = "Primero debe conectarse a un servidor, antes de ";
     str_error += error;
 
-    if (!lobbyProtocol.has_value()) {
+    if (!lobbyProtocol) {
         throw std::logic_error(str_error.c_str());
     }
-
-    return lobbyProtocol.value();
 }
 
 void Lobby::connectToServer(const std::string& ip, const std::string& port) {
-    if (lobbyProtocol.has_value()) {
+    if (lobbyProtocol) {
         throw std::logic_error("Ya se encuentra conectado a un servidor");
     }
 
-    lobbyProtocol.emplace(LobbyProtocol(ip.c_str(), port.c_str()));
+    lobbyProtocol = new LobbyProtocol(ip.c_str(), port.c_str());
+}
+
+void Lobby::desconnectFromServer() {
+    checkProtocolOrError("desconectarse de él.");
+
+    delete lobbyProtocol;
+    lobbyProtocol = nullptr;
 }
 
 std::vector<GameMatch> Lobby::getServerMatches() {
-    LobbyProtocol& validProtocol = getProtocolOrError("solicitar partidas.");
+    checkProtocolOrError("solicitar partidas.");
 
-    return validProtocol.getGameMatches();
+    return lobbyProtocol->getGameMatches();
 }
 
 void Lobby::connectToMatch(u_int16_t id) {
-    LobbyProtocol& validProtocol =
-        getProtocolOrError("conectarse a una partida.");
+    checkProtocolOrError("conectarse a una partida.");
 
-    validProtocol.joinMatch(id);
+    lobbyProtocol->joinMatch(id);
 }
 
 // Devuelve ID de partida creada
 uint16_t Lobby::createMatch(const std::string& selected_map,
-                            uint8_t playerCount, std::string matchName) {
-    LobbyProtocol& validProtocol = getProtocolOrError("crear una partida.");
+                            const std::string& matchName) {
+    checkProtocolOrError("crear una partida.");
 
-    return validProtocol.createMatch(matchName);
+    return lobbyProtocol->createMatch(matchName, selected_map);
+}
+
+Lobby::~Lobby() {
+    if (lobbyProtocol) {
+        delete lobbyProtocol;
+    }
 }

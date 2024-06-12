@@ -36,11 +36,13 @@ void MainWindow::updateMatchesFromMatchList() {
 
     for (const GameMatch& match : matches) {
         std::string name = match.name;
+        std::string map = match.map;
         uint16_t id = match.id;
 
         // Sacado de:
         // https://stackoverflow.com/questions/25452125/is-it-possible-to-add-a-hidden-value-to-every-item-of-qlistwidget
-        auto* item = new QListWidgetItem(QString::fromStdString(name));
+        auto* item = new QListWidgetItem(QString::fromStdString(name) + " - " +
+                                         QString::fromStdString(map));
         QVariant variant_id;
         variant_id.setValue(id);
 
@@ -128,13 +130,13 @@ void MainWindow::on_botonIrACrearPartida_clicked() {
 void MainWindow::on_botonCrearPartida_clicked() {
     std::string mapa_seleccionado =
         ui->selectorMapa->currentText().toStdString();
-    uint8_t cantidad_jugadores = ui->selectorCantidadJugadores->value();
+
     std::string nombre_partida =
         get_text_or_placeholder(ui->selectorNombrePartida);
 
     try {
-        uint16_t id_partida = lobby.createMatch(
-            mapa_seleccionado, cantidad_jugadores, nombre_partida);
+        uint16_t id_partida =
+            lobby.createMatch(mapa_seleccionado, nombre_partida);
         lobby.connectToMatch(id_partida);
     } catch (const ClosedConnectionError& e) {
         closedConnectionError();
@@ -155,5 +157,9 @@ void MainWindow::on_botonCancelarCrearPartida_clicked() {
 void MainWindow::closedConnectionError() {
     ui->textoErrorConectarseServidor->setText(
         "La conexion con el servidor se cerró de manera inesperada");
+
+    lobby.desconnectFromServer();
     ui->stackedWidget->setCurrentIndex(0);
 }
+
+void MainWindow::on_botonRecargarPartidas_clicked() { goToMatchSelection(); }

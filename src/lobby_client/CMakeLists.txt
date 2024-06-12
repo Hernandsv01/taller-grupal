@@ -72,3 +72,14 @@ set_target_properties(lobby_client PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(lobby_client)
 endif()
+
+
+add_executable(moc_server moc_server.cpp ../common/library/liberror.cpp
+../common/library/liberror.h
+../common/library/resolver.cpp
+../common/library/resolver.h
+../common/library/resolvererror.cpp
+../common/library/resolvererror.h
+../common/library/closedconectionerror.h
+../common/library/socket.cpp
+../common/library/socket.h)

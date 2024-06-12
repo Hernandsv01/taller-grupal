@@ -53,29 +53,16 @@
 //       - id_partida (uint8_t)
 //       - nombre_partida (sizeof(char)*16)
 
-// class LobbyProtocol {
-//     Socket socket;
-
-//    public:
-//     LobbyProtocol(const char* ip, const char* port);
-
-//     std::vector<GameMatch> getGameMatches();
-
-//     void connectToMatch(u_int16_t id);
-
-//     // Devuelve el id de la partida creada
-//     uint16_t createMatch(GameMatch match);
-// };
-
 class LobbyProtocol {
     Socket socket;
 
    public:
     LobbyProtocol(const char* ip, const char* port);
 
-    match_id createMatch(const std::string& match_name);
+    match_id createMatch(const std::string& match_name,
+                         const std::string& map_name);
 
-    uint16_t joinMatch(match_id id);
+    std::pair<uint16_t, std::string> joinMatch(match_id id);
 
     std::vector<GameMatch> getGameMatches();
 };
