@@ -8,7 +8,6 @@
 #include "../../common/library/thread.h"
 #include "clients/client_monitor.h"
 #include "model/Dynamic_entity.h"
-#include "model/Entity.h"
 #include "model/Player.h"
 #include "model/constants/game_status.h"
 #include "server_client.h"

@@ -93,11 +93,12 @@ src/server/clients/server_client.cpp
         src/server/model/constants/game_status.h
         src/server/model/Dynamic_entity.h
         src/server/model/Enemy.h
-        src/server/model/Entity.h
         src/server/model/Player.h
         src/server/Game.cpp
         src/server/Game.h      
         src/server/server_main.cpp
+        src/server/physics/physics.h
+        src/server/physics/physics.cpp
         # src/server/physics/physics.h
         # src/server/physics/physics.cpp
         )
