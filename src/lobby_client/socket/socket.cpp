@@ -63,6 +63,7 @@ Socket::Socket(const char* hostname, const char* servname) {
         /*
          * Conexión exitosa!
          * */
+        this->connected = true;
         this->closed = false;
         this->skt = skt;
         return;
@@ -94,6 +95,7 @@ Socket::Socket(const char* servname) {
     int s = -1;
     int skt = -1;
     this->closed = true;
+    this->connected = false;
     while (resolver.has_next()) {
         struct addrinfo* addr = resolver.next();
 
@@ -216,7 +218,6 @@ Socket& Socket::operator=(Socket&& other) {
      * el recurso con el que le robaremos al otro socket (`other`)
      * */
     if (not this->closed) {
-        number_shutdown++;
         ::shutdown(this->skt, 2);
         ::close(this->skt);
     }
@@ -420,7 +421,6 @@ void Socket::close_and_shutdown() {
     chk_skt_or_fail();
     shutdown_manual = true;
 
-    number_shutdown++;
     if (::shutdown(this->skt, 2) == -1) {
         throw LibError(errno, "socket shutdown failed");
     }
@@ -435,7 +435,6 @@ Socket::~Socket() {
     if (not this->closed) {
         this->closed = true;
         shutdown_manual = true;
-        number_shutdown++;
         ::shutdown(this->skt, 2);
         ::close(this->skt);
     }

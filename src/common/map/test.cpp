@@ -48,10 +48,78 @@ void test03PuedeObtenerTexturas() {
     assert(texturas == esperados);
 }
 
+void test04lanzaExcepcionCuandoIntentoAccederOAgregarBloqueFueraDeMapa() {
+    Map mapa(5, 5);
+
+    try {
+        mapa.get_block_collision(Coordinate{5, 3});
+        assert(false);
+    } catch (const OutsideMapLimitsError& e) {
+        assert(true);
+    }
+
+    try {
+        mapa.get_block_collision(Coordinate{2, 5});
+        assert(false);
+    } catch (const OutsideMapLimitsError& e) {
+        assert(true);
+    }
+
+    try {
+        mapa.get_block_collision(Coordinate{5, 5});
+        assert(false);
+    } catch (const OutsideMapLimitsError& e) {
+        assert(true);
+    }
+
+    try {
+        mapa.get_block_collision(Coordinate{10, 15});
+        assert(false);
+    } catch (const OutsideMapLimitsError& e) {
+        assert(true);
+    }
+
+    try {
+        mapa.add_block(Coordinate{10, 15}, Block{Collision::Cube, "textura1"});
+        assert(false);
+    } catch (const OutsideMapLimitsError& e) {
+        assert(true);
+    }
+}
+
+void test05siAgregoUnBloqueSoloSeAgregaEseBloque() {
+    Map mapa(5, 5);
+
+    mapa.add_block(Coordinate{2, 3}, Block{Collision::Cube, "textura1"});
+
+    assert(mapa.get_block_collision(Coordinate{2, 3}) == Collision::Cube);
+    assert(mapa.get_all_blocks_collisions().size() == 1);
+
+    assert(mapa.get_all_block_textures().size() == 1);
+    assert(mapa.get_all_block_textures()[0] ==
+           (BlockOnlyTexture{Coordinate{2, 3}, "textura1"}));
+}
+
+void test06siAgregoUnBloqueNuevoEncimaDeBloqueSeSobreescribe() {
+    Map mapa(5, 5);
+
+    mapa.add_block(Coordinate{2, 3}, Block{Collision::Cube, "textura1"});
+    mapa.add_block(Coordinate{2, 3},
+                   Block{Collision::TriangleLowerRight, "textura2"});
+    assert(mapa.get_block_collision(Coordinate{2, 3}) ==
+           Collision::TriangleLowerRight);
+
+    assert(mapa.get_all_block_textures()[0] ==
+           (BlockOnlyTexture{Coordinate{2, 3}, "textura2"}));
+}
+
 int main() {
     test01GuardaBienParametrosSimples();
     test02PuedeAccederBienABloques();
     test03PuedeObtenerTexturas();
+    test04lanzaExcepcionCuandoIntentoAccederOAgregarBloqueFueraDeMapa();
+    test05siAgregoUnBloqueSoloSeAgregaEseBloque();
+    test06siAgregoUnBloqueNuevoEncimaDeBloqueSeSobreescribe();
 
     std::cout << "PASARON LOS TESTS" << std::endl;
 }

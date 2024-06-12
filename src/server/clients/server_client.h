@@ -74,8 +74,7 @@ class Server_Client {
     Client_receiver& getReceiver() { return receiver; }
     int get_player_position() { return player_position; }
     ~Server_Client() {
-        skt.shutdown(2);
-        skt.close();
+        skt.close_and_shutdown();
 
         receiver.stop();
         receiver.join();
