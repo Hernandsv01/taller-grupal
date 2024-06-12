@@ -37,6 +37,7 @@ lobby_client
 !lobby_client/
 editor_niveles
 !editor_niveles/
+moc_server
 
 # Idea
 .idea/
