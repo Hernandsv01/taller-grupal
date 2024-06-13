@@ -8,20 +8,19 @@
 #include "mainwindow.h"
 
 class GuiLobby {
+    // Como application recibe argc como una referencia a un int, tengo que
+    // guardarlo dentro de la clase GuiLobby, para que cuando application
+    // intente usar el parametro, todavía siga existiendo.
+    int argc_gui;
     QApplication application;
     Lobby lobby;
     MainWindow mainWindow;
 
    public:
     GuiLobby(int argc, char* argv[])
-        : application(argc, argv), mainWindow(lobby) {}
+        : argc_gui(argc), application(argc_gui, argv), mainWindow(lobby) {}
 
     void execute() {
-        // MAGIA NEGRA: por alguna razon, si llamo a mainWindow.show() sin
-        // agregar la siguiente variable, el programa tira segfault.
-        // Supongo que tiene que ver con alguna alineacion del stack.
-        uint8_t align_stack = 0;
-
         mainWindow.show();
         application.exec();
     }
