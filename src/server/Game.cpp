@@ -1,8 +1,9 @@
 #include "Game.h"
 
-Game::Game() : Thread("Game server"), status(Game_status::WAITING) {
+Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_status::WAITING) {
     // Hardcodeado para que se asocie un jugador al único cliente que se conecta
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
+    //mapa
 }
 
 // Agregado para poder parar el loop del servidor, antes de joinear este thread
@@ -69,3 +70,18 @@ void Game::process_action(uint8_t action, int player) {
         entity_pool[player]->setXSpeed(0);
     }
 }
+
+uint16_t Game::add_player() {
+    uint16_t id_player = entity_pool.size();
+    entity_pool.push_back(std::make_unique<Player>(id_player, 0, 0));
+    return id_player;
+}
+
+uint8_t Game::get_id() {
+    return id;
+}
+
+void Game::set_id(uint8_t game_id) {
+    this->id = game_id;
+}
+

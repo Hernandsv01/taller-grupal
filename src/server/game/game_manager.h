@@ -6,16 +6,18 @@
 #include "../../common/library/socket.h"
 #include "lobby_protocol.h"
 #include "../Game.h"
+#include "../../common/map/map.h"
 
 class GameManager : public Thread{
 private:
     LobbyProtocol protocol;
     bool is_running;
     std::vector<std::unique_ptr<Game>> game_pool;
+    std::vector<Map> map_list;
 
-    uint16_t create_game(GameMatch& match_info);
+    uint8_t create_game(GameMatch& match_info);
 
-    void join_game();
+    uint16_t join_game(uint8_t game_id);
 
 
 public:
@@ -24,6 +26,8 @@ public:
     void run() override;
 
     void process_command(MessageType& command);
+
+   void kill();
 
 };
 

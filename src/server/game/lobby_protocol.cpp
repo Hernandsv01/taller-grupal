@@ -19,7 +19,7 @@ GameMatch LobbyProtocol::receive_create_match() {
     return match_data;
 }
 
-void LobbyProtocol::send_created_match(uint16_t& match_id) {
+void LobbyProtocol::send_created_match(uint8_t& match_id) {
     socket.sendall(&match_id, sizeof(uint16_t));
 }
 
