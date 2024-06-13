@@ -77,8 +77,7 @@ src/common/library/liberror.cpp
         src/common/library/socket.h
         src/common/library/thread.h
         src/common/Update.h
-        
-        src/common/updateables.h
+        src/common/Update.cpp
 )
 
 set(SOURCES_SERVER

@@ -31,7 +31,7 @@ class Client_receiver : public Thread {
 class Client_sender : public Thread {
    private:
     Protocol protocol;
-    Queue<std::vector<Update>> outputQueue;
+    Queue<std::vector<Update::Update_new>> outputQueue;
     bool is_running;
 
    public:
@@ -41,9 +41,9 @@ class Client_sender : public Thread {
           outputQueue(),
           is_running(true) {}
     void run() override;
-    void addToQueue(std::vector<Update> const& result);
+    void addToQueue(std::vector<Update::Update_new> const &result);
     void kill() {
-        std::vector<Update> result;
+        std::vector<Update::Update_new> result;
         bool has_stuff;
         do {
             has_stuff = outputQueue.try_pop(result);

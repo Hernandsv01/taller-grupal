@@ -12,7 +12,7 @@ class Client_Monitor {
    public:
     static void add(Server_Client* client);
     static Server_Client* get(int i);
-    static void sendAll(std::vector<Update> updates);
+    static void sendAll(std::vector<Update::Update_new> updates);
     static std::vector<Server_Client*> getAll() { return list; }
     ~Client_Monitor();
 };
