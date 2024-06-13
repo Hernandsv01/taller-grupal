@@ -59,7 +59,7 @@ match_id Lobby::createMatch(const std::string& selected_map,
 }
 bool Lobby::isConnectedToMatch() const { return hasConnectedToMatch; }
 
-Socket Lobby::getMatchConnection() {
+Socket Lobby::extractMatchConnection() {
     checkProtocolOrError("obtener la conexión a la partida.");
     checkIsConnectedToMatch();
 

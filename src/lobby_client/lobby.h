@@ -33,7 +33,7 @@ class Lobby {
 
     bool isConnectedToMatch() const;
 
-    Socket getMatchConnection();
+    Socket extractMatchConnection();
 
     std::pair<uint16_t, std::string> getPlayerIdAndMapName();
 

@@ -30,7 +30,7 @@ class GuiLobby {
         return lobby.getPlayerIdAndMapName();
     }
 
-    Socket getMatchConnection() { return lobby.getMatchConnection(); }
+    Socket extractMatchConnection() { return lobby.extractMatchConnection(); }
 
     ~GuiLobby() {}
 };

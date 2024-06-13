@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
         }
 
         playerIdAndMap = gui_lobby.getPlayerIdAndMapName();
-        socket_a_usar = gui_lobby.getMatchConnection();
+        socket_a_usar = gui_lobby.extractMatchConnection();
 
     } else {
         const char* hostname = "127.0.0.1";
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
         lobby.connectToMatch(1);
 
         playerIdAndMap = lobby.getPlayerIdAndMapName();
-        socket_a_usar = lobby.getMatchConnection();
+        socket_a_usar = lobby.extractMatchConnection();
     }
 
     SDL2pp::SDL sdl(SDL_INIT_VIDEO);
