@@ -30,8 +30,11 @@
 *.exe
 *.out
 *.app
+
 client
+!client/
 server
+!server/
 testsdl
 lobby_client
 !lobby_client/
