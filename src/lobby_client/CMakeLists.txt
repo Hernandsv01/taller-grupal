@@ -17,12 +17,13 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 set(PROJECT_SOURCES
         lobby.cpp
         lobby.h
-        main.cpp
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
         protocololobby.cpp
         protocololobby.h
+
+        gui_lobby.h
 
         
         ../common/library/liberror.cpp
@@ -35,6 +36,9 @@ set(PROJECT_SOURCES
         ../common/library/socket.cpp
         ../common/library/socket.h
 )
+
+set(EJECUTABLE_SOURCE
+    main.cpp)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(lobby_client
@@ -54,11 +58,14 @@ else()
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(lobby_client
-            ${PROJECT_SOURCES}
+            ${PROJECT_SOURCES} ${EJECUTABLE_SOURCE}
         )
     endif()
 endif()
 
+add_library(GuiLobby STATIC ${PROJECT_SOURCES})
+
+target_link_libraries(GuiLobby PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(lobby_client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 set_target_properties(lobby_client PROPERTIES

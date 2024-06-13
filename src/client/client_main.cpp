@@ -2,6 +2,7 @@
 
 // #include "lobby/lobby.h"
 #include "../../src/common/library/socket.h"
+#include "../lobby_client/gui_lobby.h"
 #include "client.h"
 
 /*
@@ -15,6 +16,10 @@ int main(int argc, char* argv[]) {
     // lobby.exec();
     // Socket&& socket = lobby.get_socket(); //ver si puedo agregar esto.
     // harcodear socket
+
+    GuiLobby gui_lobby(argc, argv);
+    gui_lobby.ejecutar(argc, argv);
+
     const char* hostname = "127.0.0.1";
     const char* servname = "15500";
     SDL2pp::SDL sdl(SDL_INIT_VIDEO);
