@@ -8,8 +8,13 @@
 
 class Lobby {
     LobbyProtocol* lobbyProtocol = nullptr;
+    bool hasConnectedToMatch = false;
+    uint16_t assigned_player_id = 0;
+    std::string assigned_map_name = "";
 
-    void checkProtocolOrError(const char* error);
+    void checkProtocolOrError(const char* error) const;
+
+    void checkIsConnectedToMatch() const;
 
    public:
     Lobby();
@@ -23,8 +28,14 @@ class Lobby {
 
     void connectToMatch(u_int16_t id);
 
-    uint16_t createMatch(const std::string& selected_map,
+    match_id createMatch(const std::string& selected_map,
                          const std::string& matchName);
+
+    bool isConnectedToMatch() const;
+
+    Socket getMatchConnection();
+
+    std::pair<uint16_t, std::string> getPlayerIdAndMapName();
 
     Lobby(const Lobby&) = delete;
     Lobby& operator=(const Lobby&) = delete;
