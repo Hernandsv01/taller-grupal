@@ -16,6 +16,9 @@ class GuiLobby {
     GuiLobby(int argc, char* argv[])
         : application(argc, argv), mainWindow(lobby) {}
 
+    // MAGIA NEGRA: Si no agrego los parametros de argc y argv,
+    //  la linea de mainWindow.show() tira segfault.
+    //  Los parametros no se usan para absolutamente nada.
     void ejecutar(int argc, char* argv[]) {
         mainWindow.show();
         application.exec();

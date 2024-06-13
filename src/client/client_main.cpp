@@ -18,6 +18,7 @@ int main(int argc, char* argv[]) {
     // harcodear socket
 
     GuiLobby gui_lobby(argc, argv);
+    // MAGIA NEGRA: revisar implementacion guilooby
     gui_lobby.ejecutar(argc, argv);
 
     const char* hostname = "127.0.0.1";
