@@ -16,10 +16,12 @@ class GuiLobby {
     GuiLobby(int argc, char* argv[])
         : application(argc, argv), mainWindow(lobby) {}
 
-    // MAGIA NEGRA: Si no agrego los parametros de argc y argv,
-    //  la linea de mainWindow.show() tira segfault.
-    //  Los parametros no se usan para absolutamente nada.
-    void execute(int argc, char* argv[]) {
+    void execute() {
+        // MAGIA NEGRA: por alguna razon, si llamo a mainWindow.show() sin
+        // agregar la siguiente variable, el programa tira segfault.
+        // Supongo que tiene que ver con alguna alineacion del stack.
+        uint8_t align_stack = 0;
+
         mainWindow.show();
         application.exec();
     }

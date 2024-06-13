@@ -19,8 +19,7 @@ int main(int argc, char* argv[]) {
 
     if (argc == 2 && std::string(argv[1]) == "manual") {
         GuiLobby gui_lobby(argc, argv);
-        // MAGIA NEGRA: revisar implementacion guilooby
-        gui_lobby.execute(argc, argv);
+        gui_lobby.execute();
 
         if (!gui_lobby.isConnectedToMatch()) {
             return 0;
