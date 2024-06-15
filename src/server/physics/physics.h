@@ -50,11 +50,6 @@ protected:
     float y_size;
 
 private:
-    float x_min() const;
-    float x_max() const;
-    float y_min() const;
-    float y_max() const;
-
     float x_center() const;
     float y_center() const;
 
@@ -90,6 +85,11 @@ private:
     void decolisionar_vertical_con(const RigidBox& other);
 
 public:
+    float x_min() const;
+    float x_max() const;
+    float y_min() const;
+    float y_max() const;
+
     // Crea una RigidBox con
     RigidBox(float x_pos, float y_pos, float x_size, float y_size);
 

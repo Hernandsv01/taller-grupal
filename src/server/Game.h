@@ -18,13 +18,12 @@
 
 class Game : public Thread {
    private:
-    std::chrono::steady_clock reloj;
-
     Game_status status;
+    Map map;
     std::vector<std::unique_ptr<Dynamic_entity>> entity_pool;
 
    public:
-    explicit Game();
+    explicit Game(Map map);
     void run() override;
     void run_iteration();
     void process_action(uint8_t action, int player);

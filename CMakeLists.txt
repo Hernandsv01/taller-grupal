@@ -79,6 +79,8 @@ src/common/library/liberror.cpp
         src/common/Update.h
         
         src/common/updateables.h
+        src/common/map/map.h
+        src/common/map/map.cpp
 )
 
 set(SOURCES_SERVER
@@ -99,6 +101,7 @@ src/server/clients/server_client.cpp
         src/server/server_main.cpp
         src/server/physics/physics.h
         src/server/physics/physics.cpp
+        src/server/model/Bullet.h
         # src/server/physics/physics.h
         # src/server/physics/physics.cpp
         )

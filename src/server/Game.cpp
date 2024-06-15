@@ -1,6 +1,8 @@
 #include "Game.h"
 
-Game::Game() : Thread("Game server"), status(Game_status::WAITING) {
+#include <utility>
+
+Game::Game(Map map) : Thread("Game server"), status(Game_status::WAITING), map(std::move(map)) {
     // Hardcodeado para que se asocie un jugador al único cliente que se conecta
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
 }
@@ -10,8 +12,7 @@ void Game::stop_custom() { status = Game_status::STOPPED; }
 
 void Game::run() {
     status = Game_status::RUNNING;
-    std::chrono::steady_clock::time_point INICIO_ABSOLUTO = reloj.now();
-    std::chrono::steady_clock::time_point inicio_tick = INICIO_ABSOLUTO;
+    std::chrono::steady_clock::time_point inicio_tick = std::chrono::steady_clock::now();
     while (status == Game_status::RUNNING) {
         std::chrono::steady_clock::time_point final_tick =
             inicio_tick + TICK_DURATION;
@@ -35,7 +36,7 @@ void Game::run_iteration() {
     std::vector<Update> total_updates;
     std::vector<Update> tick_updates;
     for (std::unique_ptr<Dynamic_entity>& entity_ptr : entity_pool) {
-        tick_updates = entity_ptr->tick(&entity_pool);
+        tick_updates = entity_ptr->tick(map, &entity_pool);
         total_updates.insert(total_updates.end(), tick_updates.begin(),
                              tick_updates.end());
     }
@@ -51,10 +52,10 @@ void Game::process_action(uint8_t action, int player) {
         return;  // Not implemented
     }
     if (action == RUN_LEFT) {
-        entity_pool[player]->setXSpeed(-1);
+        entity_pool[player]->setXSpeed(-3);
     }
     if (action == RUN_RIGHT) {
-        entity_pool[player]->setXSpeed(1);
+        entity_pool[player]->setXSpeed(3);
     }
     if (action == SHOOT) {
         return;  // Not implemented
