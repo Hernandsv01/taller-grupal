@@ -1,21 +1,57 @@
-#ifndef PROTOCOLOLOBBY_H
-#define PROTOCOLOLOBBY_H
+#ifndef PROTOCOLOLOBBYCLIENT_H
+#define PROTOCOLOLOBBYCLIENT_H
 
 #include <stdint.h>
 
 #include <string>
 #include <vector>
 
-// Incluyo este duplicado de socket, porque es una implementacion ligeramente
-// modificada. Todavía hay que unificarlo.
-#include "socket/socket.h"
+#include "../common/library/socket.h"
+#include "../common/lobbyprotocol.h"
 
-struct GameMatch {
-    uint16_t id;
-    uint8_t requiredPlayersCount;
-    uint8_t currentPlayerCount;
-    std::string name;
-};
+// (desde punto de vista del cliente)
+// - Crear partida:
+//   - envía: Nombre de partida, mapa.
+//   - recive: id partida.
+
+// - Unirse partida:
+//   - envia: id partida.
+//   - recive: id_jugador (antes, despues, Mensaje de creacion de entidades. No
+//   se si es del manager, del gameloop, o de quien), mapa.
+
+// - Obtener lista partidas:
+//   - envía: nada?
+//   - recive: vector de ids de partidas, y nombres de esas partidas.
+
+// Bytes de los mensajes:
+// - CREATE
+//   - envia:
+//     - magic number (uint8_t)
+//     - bytes de letras (sizeof(char)*16)
+//     - Mapa ¿Como lo enviamos? (POR AHORA SIN IMPLEMENTAR)
+
+//   - recive:
+//     - id_partida (uint16_t)
+
+// - JOIN
+//  - envia:
+//     - magic number (uint8_t)
+//     - id_partida (uint16_t)
+
+//  - recibe:
+//     - id_jugador (uint16_t)
+//     - Mapa ¿Como lo enviamos? (POR AHORA SIN IMPLEMENTAR)
+//     - ¿Todas las updates pertinentes para inicializar partida?
+
+// - GET_GAMES
+//   - envia:
+//     - magic number (uint8_t)
+
+//   - recibe:
+//     - cantidad_partidas (uint8_t)
+//     - vector:
+//       - id_partida (uint8_t)
+//       - nombre_partida (sizeof(char)*16)
 
 class LobbyProtocol {
     Socket socket;
@@ -23,12 +59,12 @@ class LobbyProtocol {
    public:
     LobbyProtocol(const char* ip, const char* port);
 
+    match_id createMatch(const std::string& match_name,
+                         const std::string& map_name);
+
+    std::pair<uint16_t, std::string> joinMatch(match_id id);
+
     std::vector<GameMatch> getGameMatches();
-
-    void connectToMatch(u_int16_t id);
-
-    // Devuelve el id de la partida creada
-    uint16_t createMatch(GameMatch match);
 };
 
 #endif  // PROTOCOLOLOBBY_H
