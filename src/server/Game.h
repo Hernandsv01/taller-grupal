@@ -26,6 +26,8 @@ class Game : public Thread {
     std::chrono::steady_clock reloj;
     uint8_t id;
     Game_status status;
+    Map map;
+    std::string name;
 
     std::vector<std::unique_ptr<Dynamic_entity>> entity_pool;
 
@@ -38,6 +40,8 @@ class Game : public Thread {
     uint16_t add_player();
     uint8_t get_id();
     void set_id(uint8_t id);
+    std::string get_match_name();
+    std::string get_map_name();
 };
 
 #endif  // GAME_H

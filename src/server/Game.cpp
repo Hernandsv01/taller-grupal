@@ -1,6 +1,6 @@
 #include "Game.h"
 
-Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_status::WAITING) {
+Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_status::WAITING), map(map), name(name) {
     // Hardcodeado para que se asocie un jugador al único cliente que se conecta
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
     //mapa
@@ -84,4 +84,13 @@ uint8_t Game::get_id() {
 void Game::set_id(uint8_t game_id) {
     this->id = game_id;
 }
+
+std::string Game::get_match_name() {
+    return this->name;
+}
+
+std::string Game::get_map_name(){
+    return this->map.get_name();
+}
+
 
