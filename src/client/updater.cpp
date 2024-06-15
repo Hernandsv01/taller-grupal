@@ -10,7 +10,7 @@ Updater::Updater(Socket& socket)
 void Updater::run() {
     while (this->keep_running()) {
         try {
-            std::vector<Update> updated_info = protocol.receive_ticks();
+            std::vector<Update::Update_new> updated_info = protocol.receive_ticks();
             Update_queue::push(updated_info);
         } catch (const ClosedConnectionError& e) {
             break;

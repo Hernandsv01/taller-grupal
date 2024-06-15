@@ -38,14 +38,12 @@ int main() {
     int cantMaxFrames = 50;
 
     for (int i = 0; i < cantMaxFrames; i++) {
-        std::vector<State> personajeEstados = {Intoxicated};
-
         PlayerState personajeJazz;
         personajeJazz.position = Position{pjPosX, pjPosY};
         personajeJazz.direction = Direction::Right;
         personajeJazz.characterType = Jazz;
         personajeJazz.healthPoints = 10;
-        personajeJazz.states = personajeEstados;
+        personajeJazz.state.state = Intoxicated;
         personajeJazz.score = 0;
 
         // Game status
@@ -59,14 +57,13 @@ int main() {
 
     while (pjPosX <= width) {
         // Main player
-        std::vector<State> personajeEstados = {IntoxWalking};
 
         PlayerState personajeJazz;
         personajeJazz.position = Position{pjPosX, pjPosY};
         personajeJazz.direction = Direction::Right;
         personajeJazz.characterType = Jazz;
         personajeJazz.healthPoints = 10;
-        personajeJazz.states = personajeEstados;
+        personajeJazz.state.state = IntoxWalking;
         personajeJazz.score = 0;
 
         // Game status

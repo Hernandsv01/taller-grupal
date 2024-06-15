@@ -17,7 +17,7 @@ class Protocol {
    public:
     explicit Protocol(Socket& skt) : skt(skt) {}
 
-    void sendData(std::vector<Update> payload);
+    void sendData(std::vector<Update::Update_new> payload);
     void receiveData(ActionType* result);
 };
 
