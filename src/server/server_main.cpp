@@ -52,9 +52,9 @@ int main(int argc, char* argv[]) {
     Client_listener listener(socket);
     listener.start();
 
-    while (Client_Monitor::getAll().empty()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    }
+   // while (Client_Monitor::getAll().empty()) {
+   //    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+   // }
 
     std::string input;
     do {
