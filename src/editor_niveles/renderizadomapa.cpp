@@ -9,6 +9,26 @@
 #define MAX_TILE_SIZE 120.0
 #define MIN_TILE_SIZE 10.0
 
+void MapRenderer::drawBackground(QPainter& painter) {
+    if (background == nullptr) {
+        return;
+    }
+
+    painter.setBackgroundMode(Qt::BGMode::OpaqueMode);
+    painter.setBackground(QBrush(*background));
+
+    painter.setBrush(QBrush(*background));
+    QRect rectangle(camera_reference, QSize(this->x_limit * this->tile_size,
+                                            this->y_limit * this->tile_size));
+
+    painter.drawRect(rectangle);
+}
+
+void MapRenderer::setBackground(QImage* image) {
+    if (background) delete background;
+    background = image;
+}
+
 void MapRenderer::drawGrid(QPainter& painter) {
     QVector<QLine> lineas;
 
@@ -43,6 +63,13 @@ QString get_tile_name(Tile unTile) {
             return "stone.png";
         case Tile::water:
             return "water.png";
+        case Tile::spawn_enemy:
+            return "spawn_enemy.png";
+        case Tile::spawn_player:
+            return "spawn_player.png";
+        case Tile::spawn_item:
+            return "spawn_item.png";
+
         case Tile::air:
         default:
             qDebug("Case tile air: Deberia ser un error");
@@ -72,6 +99,7 @@ MapRenderer::MapRenderer(QWidget* parent) : QWidget{parent}, tiles{nullptr} {
 
 MapRenderer::~MapRenderer() {
     if (tiles) delete tiles;
+    if (background) delete background;
 }
 
 void MapRenderer::addTileModel(QStandardItemModel* newTiles) {
@@ -83,6 +111,8 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
 
     int width = this->width();
     int height = this->height();
+
+    drawBackground(painter);
 
     // Loop para recorrer la grilla de tiles y dibujarlos
     for (uint y = 0; y <= y_limit; y++) {
@@ -172,7 +202,7 @@ void MapRenderer::wheelEvent(QWheelEvent* event) {
 
     tile_size = round(tile_size + modify * numSteps);
 
-    qDebug() << "Tile size: " << tile_size << " modify: " << modify;
+    // qDebug() << "Tile size: " << tile_size << " modify: " << modify;
 
     this->repaint();
 }

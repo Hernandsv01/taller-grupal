@@ -49,8 +49,6 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
     int x_grid = (event->x() - camera_reference.x()) / tile_size;
     int y_grid = (event->y() - camera_reference.y()) / tile_size;
 
-    qDebug() << "x: " << x_grid << " y: " << y_grid;
-
     // Verifico que no me pase de los limites de la grilla. (puede pasar si
     // moves mouse muy rapido fuera de ventana)
     if (x_grid >= x_limit || x_grid < 0) {
@@ -88,3 +86,5 @@ void MapEditor::mouseReleaseEvent(QMouseEvent* event) {
 void MapEditor::wheelEvent(QWheelEvent* event) {
     this->MapRenderer::wheelEvent(event);
 }
+
+MapEditor::~MapEditor() {}

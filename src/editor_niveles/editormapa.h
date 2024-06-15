@@ -13,6 +13,7 @@ class MapEditor : public MapRenderer {
 
    public:
     MapEditor(QWidget* parent);
+    virtual ~MapEditor();
 
     void add_tile_selection(QListView* list_tile_selection);
 
