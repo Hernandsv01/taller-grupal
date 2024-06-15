@@ -15,10 +15,11 @@ GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
     PlayerState player;
     player.direction = Direction::Right;
     player.id = player_id;
-    player.position = Position{100, 200};
+    player.position = Position{0, 0};
     player.healthPoints = 10;
     player.characterType = CharacterType::Jazz;
     player.score = 0;
+    player.state = State(Idle, 0);
 
     updatableGameState.addMainPlayer(player);
 };
@@ -38,14 +39,14 @@ GuiLoop::~GuiLoop() {
 
 void GuiLoop::run() {
     ////////   Harcodeo un mapa   ////////
-    int groundPosY = 300;
+    int groundPosY = 0;
     std::vector<Position> positionGround;
     for (int i = 0; i < 640; i += 32) {
         positionGround.push_back(Position{i, groundPosY});
     }
     std::vector<Position> positionUnder;
     for (int i = 0; i < 640; i += 32) {
-        positionUnder.push_back(Position{i, 364});
+        positionUnder.push_back(Position{i, 64});
     }
     MapInfo mapInfo;
     mapInfo.mapTexture = Diamond;
@@ -123,19 +124,19 @@ void GuiLoop::run() {
 
 void GuiLoop::updateGameState() {
     // Obtener todas las updates encoladas
-    std::vector<Update> all_updates = Update_queue::try_pop_all();
+    std::vector<Update::Update_new> all_updates = Update_queue::try_pop_all();
 
     // aplicar de a una las updates en orden (las ultimas son las más
     // recientes).
     // Si no hay ninguna update, no se updatea nada.
-    for (Update update : all_updates) {
-        updatableGameState.handleUpdate(update);
+    for (Update::Update_new update : all_updates) {
+        updatableGameState.handleUpdate(update, currentTick);
     }
 }
 
-void GuiLoop::runRenderer(MapInfo& mapInfo) {
+void GuiLoop::runRenderer(MapInfo &mapInfo) {
     // Genero un nuevo estado apto para que lo consuma el renderer
-    GameStateRenderer gameStateRenderer = updatableGameState.getStateRenderer();
+    GameStateRenderer gameStateRenderer = updatableGameState.getStateRenderer(currentTick);
 
     if (render == nullptr)
         throw std::runtime_error(

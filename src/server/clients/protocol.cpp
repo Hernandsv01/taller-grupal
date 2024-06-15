@@ -7,18 +7,20 @@
  * @param payload
  * @return void
  */
-void Protocol::sendData(std::vector<Update> payload) {
-    for (int i = 0; i < payload.size(); ++i) {
-        payload[i].id = htons(payload[i].id);
-        payload[i].value = htonl(payload[i].value);
+void Protocol::sendData(std::vector<Update::Update_new> payload) {
+    std::vector<uint8_t> buffer;
+
+    for (Update::Update_new update : payload) {
+        std::vector<uint8_t> parcial_buffer = update.serialize();
+        buffer.insert(buffer.end(), parcial_buffer.begin(),
+                      parcial_buffer.end());
     }
 
-    uint8_t size = payload.size();
+    uint16_t size = buffer.size();
+    size = htons(size);
     skt.sendall(&size, sizeof(size));
 
-    for (int i = 0; i < payload.size(); ++i) {
-        skt.sendall(&payload[i], sizeof(payload[i]));
-    }
+    skt.sendall(buffer.data(), buffer.size());
 }
 
 /**

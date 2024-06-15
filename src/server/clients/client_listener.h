@@ -5,20 +5,20 @@
 
 #include "client_monitor.h"
 #include "server_client.h"
-#include "socket.h"
-#include "thread.h"
+#include "../../common/library/socket.h"
+#include "../../common/library/thread.h"
 
 #define SHUTDOWN_MODE 2
 
 class Client_listener : public Thread {
    private:
-    Socket skt_listener;
+    Socket& skt_listener;
     bool is_running;
 
    public:
-    explicit Client_listener(char* port)
+    explicit Client_listener(Socket& socket)
         : Thread("Client_listener server"),
-          skt_listener(port),
+          skt_listener(socket),
           is_running(true) {}
 
     void run() override;
