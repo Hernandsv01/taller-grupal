@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <vector>
+#include <cmath>
 
 #include "Game.h"
 #include "physics/physics.h"
@@ -30,12 +31,11 @@ protected:
     int health;
 public:
     Dynamic_entity(int id, float pos_x, float pos_y, float width, float height, float vel_x, float vel_y,
-                   /*, int acc_x,*/ float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health)
+                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health)
         : id(id),
           RigidBox(pos_x, pos_y, width, height),
           vel_x(vel_x),
           vel_y(vel_y),
-          //acc_x(acc_x),
           acc_y(acc_y),
           is_damageable(is_damageable),
           damage_on_contact(damage_on_contact),
@@ -43,7 +43,7 @@ public:
           health(health)
           {};
 
-    virtual std::vector<Update> tick(Map map,
+    virtual std::vector<Update> tick(const Map& map,
         std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) = 0;
 
     void setXSpeed(float vel_x_param) { vel_x = vel_x_param; }
@@ -64,6 +64,22 @@ public:
         health -= damage;
         return health <= 0;
     };
+    bool collides_with_map(const Map& map) {
+        int x_min = static_cast<int>(std::floor(this->x_min()));
+        int x_max = static_cast<int>(std::floor(this->x_max()));
+        int y_min = static_cast<int>(std::floor(this->y_min()));
+        int y_max = static_cast<int>(std::floor(this->y_max()));
+
+        for (int x = x_min; x <= x_max; ++x) {
+            for (int y = y_min; y <= y_max; ++y) {
+                Collision collision = map.get_block_collision({static_cast<uint8_t>(x), static_cast<uint8_t>(y)});
+                if (collision != Collision::Air) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 };
 
 #endif  // DYNAMIC_ENTITY_H

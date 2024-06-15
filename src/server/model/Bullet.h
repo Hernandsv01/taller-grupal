@@ -11,7 +11,7 @@ public:
     Bullet(int id, float x_spawn, float y_spawn, float x_speed, float y_speed)
             : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT, x_speed, y_speed, 0, false, 5, false, 0) {};
 
-    std::vector<Update> tick(Map map,
+    std::vector<Update> tick(const Map& map,
                              std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) override {
         std::vector<Update> updates;
 
@@ -21,7 +21,7 @@ public:
 
             bool collides = false;
 
-            for (float i = this->x_min(); i < this->x_max() && !collides; i++) {
+            for (float i = this->x_min(); i <= this->x_max() && !collides; i++) {
                 for (float j = this->y_min(); j < this->y_max() && !collides; j++) {
                     Collision collision = map.get_block_collision({static_cast<uint8_t>(std::floor(i)),static_cast<uint8_t>(std::floor(j))});
                     if (collision != Collision::Air) {
@@ -51,7 +51,7 @@ public:
 
             bool collides = false;
 
-            for (float i = this->x_min(); i < this->x_max() && !collides; i++) {
+            for (float i = this->x_min(); i <= this->x_max() && !collides; i++) {
                 for (float j = this->y_min(); j < this->y_max() && !collides; j++) {
                     Collision collision = map.get_block_collision({static_cast<uint8_t>(std::floor(i)),static_cast<uint8_t>(std::floor(j))});
                     if (collision != Collision::Air) {

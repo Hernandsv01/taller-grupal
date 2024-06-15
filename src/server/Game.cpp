@@ -30,7 +30,8 @@ void Game::run() {
 void Game::run_iteration() {
     for (Server_Client* client : Client_Monitor::getAll()) {
         uint8_t action = client->getReceiver().get_next_action();
-        process_action(action, client->get_player_position());
+        auto* player = dynamic_cast<Player*>(entity_pool[client->get_player_position()].get());
+        player->process_action(action);
     }
 
     std::vector<Update> total_updates;
@@ -42,31 +43,4 @@ void Game::run_iteration() {
     }
 
     Client_Monitor::sendAll(total_updates);
-}
-
-void Game::process_action(uint8_t action, int player) {
-    if (action == NULL_ACTION) {
-        return;
-    }
-    if (action == JUMP) {
-        return;  // Not implemented
-    }
-    if (action == RUN_LEFT) {
-        entity_pool[player]->setXSpeed(-3);
-    }
-    if (action == RUN_RIGHT) {
-        entity_pool[player]->setXSpeed(3);
-    }
-    if (action == SHOOT) {
-        return;  // Not implemented
-    }
-    if (action == SPECIAL) {
-        return;  // Not implemented
-    }
-    if (action == STOP_RUN_RIGHT && entity_pool[player]->getXSpeed() > 0) {
-        entity_pool[player]->setXSpeed(0);
-    }
-    if (action == STOP_RUN_LEFT && entity_pool[player]->getXSpeed() < 0) {
-        entity_pool[player]->setXSpeed(0);
-    }
 }

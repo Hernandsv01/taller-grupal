@@ -26,7 +26,6 @@ class Game : public Thread {
     explicit Game(Map map);
     void run() override;
     void run_iteration();
-    void process_action(uint8_t action, int player);
     void stop_custom() override;
 };
 
