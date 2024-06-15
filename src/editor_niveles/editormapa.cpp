@@ -12,10 +12,11 @@ void MapEditor::add_tile_selection(QListView* list_tile_selection) {
 }
 
 void MapEditor::mousePressEvent(QMouseEvent* event) {
-    // Defino que se está editando la grilla.
-    this->isEditing = true;
+    // Ejecuta a al funcion padre por si quiere hacer algo con el evento;
+    this->MapRenderer::mousePressEvent(event);
 
-    if (event->button() == Qt::LeftButton) {
+    if (event->button() == Qt::MouseButton::LeftButton) {
+        this->isEditing = true;
         // Si se clickeo con el boton izquierdo, busco cual es el tile
         // seleccionado en el Widget
         auto index_selected_tile = this->tile_selection->currentIndex();
@@ -24,9 +25,13 @@ void MapEditor::mousePressEvent(QMouseEvent* event) {
         tile_to_paint = this->tiles->itemFromIndex(index_selected_tile)
                             ->data(Qt::UserRole + 3)
                             .value<Tile>();
-    } else {
-        // Si se clickeo con el boton derecho, se pinta aire (osea, se borra).
+    } else if (event->button() == Qt::MouseButton::RightButton) {
+        // Si se clickeo con el boton derecho, se pinta aire (osea, se
+        // borra).
+        this->isEditing = true;
         tile_to_paint = Tile::air;
+    } else {
+        return;
     }
 
     // Llamo al evento de mouseMove, que es el que realmente realiza la accion
@@ -35,16 +40,16 @@ void MapEditor::mousePressEvent(QMouseEvent* event) {
 }
 
 void MapEditor::mouseMoveEvent(QMouseEvent* event) {
+    this->MapRenderer::mouseMoveEvent(event);
+
     // Si no estoy editando, no quiero modificar nada.
     if (!this->isEditing) return;
 
-    qDebug() << "EVENTO" << event->x() << " " << event->y();
-
     // Calculo en que posicion de la grilla estoy parado.
-    int x_grid = event->x() / tile_size;
-    int y_grid = event->y() / tile_size;
+    int x_grid = (event->x() - camera_reference.x()) / tile_size;
+    int y_grid = (event->y() - camera_reference.y()) / tile_size;
 
-    qDebug() << "GRILLA" << x_grid << " " << y_grid;
+    qDebug() << "x: " << x_grid << " y: " << y_grid;
 
     // Verifico que no me pase de los limites de la grilla. (puede pasar si
     // moves mouse muy rapido fuera de ventana)
@@ -72,11 +77,14 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
     this->repaint();
 }
 void MapEditor::mouseReleaseEvent(QMouseEvent* event) {
+    this->MapRenderer::mouseReleaseEvent(event);
     // Si suelto el mouse, dejo de editar
-    isEditing = false;
+
+    if (event->button() == Qt::MouseButton::LeftButton ||
+        event->button() == Qt::MouseButton::RightButton)
+        this->isEditing = false;
 }
 
 void MapEditor::wheelEvent(QWheelEvent* event) {
-    // Tal vez implemente zoom en el futuro?
-    return;
+    this->MapRenderer::wheelEvent(event);
 }

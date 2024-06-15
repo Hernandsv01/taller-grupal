@@ -1,20 +1,31 @@
 #include "renderizadomapa.h"
 
+#include <QDebug>
 #include <QVector>
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 
-void dibujar_cuadricula(QPainter& painter, int tile_size, int width,
-                        int height) {
+#define MAX_TILE_SIZE 120.0
+#define MIN_TILE_SIZE 10.0
+
+void MapRenderer::drawGrid(QPainter& painter) {
     QVector<QLine> lineas;
 
+    int first_x = 0 + camera_reference.x();
+    int last_x = (this->x_limit * this->tile_size) + camera_reference.x();
+
+    int first_y = 0 + camera_reference.y();
+    int last_y = (this->y_limit * this->tile_size) + camera_reference.y();
+
     // Agrego a un vector todas las lineas horizontales y verticales a dibujar
-    for (int x = 0; x <= width; x += tile_size) {
-        QLine linea(x, 0, x, height);
+    for (int x = first_x; x <= last_x; x += this->tile_size) {
+        QLine linea(x, first_y, x, last_y);
         lineas.push_back(linea);
     }
 
-    for (int y = 0; y <= height; y += tile_size) {
-        QLine linea(0, y, width, y);
+    for (int y = first_y; y <= last_y; y += this->tile_size) {
+        QLine linea(first_x, y, last_x, y);
         lineas.push_back(linea);
     }
 
@@ -74,12 +85,12 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
     int height = this->height();
 
     // Loop para recorrer la grilla de tiles y dibujarlos
-    for (uint y = 0; y <= (height / tile_size); y++) {
+    for (uint y = 0; y <= y_limit; y++) {
         // En el caso de que quiera renderizar algo
         // que este fuera de lo definido por level
         if (y >= y_limit) break;
 
-        for (uint x = 0; x <= (width / tile_size); x++) {
+        for (uint x = 0; x <= x_limit; x++) {
             // En el caso de que quiera renderizar algo
             // que este fuera de lo definido por level
             if (x >= x_limit) break;
@@ -103,13 +114,65 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
             QImage image = image_variant.value<QImage>();
 
             // Dibujo el tile en la posicion correcta.
-            QRect rectangle_to_draw(x * tile_size, y * tile_size, tile_size,
-                                    tile_size);
+            QRect rectangle_to_draw(x * tile_size + camera_reference.x(),
+                                    y * tile_size + camera_reference.y(),
+                                    tile_size, tile_size);
 
             painter.drawImage(rectangle_to_draw, image);
         }
     }
 
     // Dibujo encima las lineas que definen la cuadricula
-    dibujar_cuadricula(painter, this->tile_size, width, height);
+    drawGrid(painter);
+}
+
+void MapRenderer::set_camera_reference(QPoint camera_reference) {
+    this->camera_reference = camera_reference;
+}
+
+void MapRenderer::modify_camera_reference(QPoint delta) {
+    this->camera_reference += delta;
+}
+
+void MapRenderer::mousePressEvent(QMouseEvent* event) {
+    // Defino que se está editando la grilla.
+    if (event->button() == Qt::MouseButton::MiddleButton) {
+        this->moving_camera = true;
+        mouse_clicked_reference = event->pos();
+    }
+}
+
+void MapRenderer::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::MouseButton::MiddleButton) {
+        this->moving_camera = false;
+    }
+}
+
+void MapRenderer::mouseMoveEvent(QMouseEvent* event) {
+    if (this->moving_camera) {
+        QPoint current_mouse_position = event->pos();
+        QPoint delta = current_mouse_position - mouse_clicked_reference;
+
+        this->modify_camera_reference(delta);
+
+        mouse_clicked_reference = current_mouse_position;
+        this->repaint();
+    }
+}
+
+void MapRenderer::wheelEvent(QWheelEvent* event) {
+    int numDegrees = event->angleDelta().y() / 8;
+    int numSteps = numDegrees / 15;
+
+    float modify = 3;
+
+    if (tile_size + modify * numSteps > MAX_TILE_SIZE ||
+        tile_size + modify * numSteps < MIN_TILE_SIZE)
+        return;
+
+    tile_size = round(tile_size + modify * numSteps);
+
+    qDebug() << "Tile size: " << tile_size << " modify: " << modify;
+
+    this->repaint();
 }
