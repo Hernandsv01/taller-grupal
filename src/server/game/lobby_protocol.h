@@ -18,7 +18,7 @@ public:
     //read CREATE
     GameMatch receive_create_match();
     //send CREATE
-    void send_created_match(uint8_t& match_id);
+    void send_created_match(match_id& id);
 
     //read JOIN
     match_id receive_join_game();

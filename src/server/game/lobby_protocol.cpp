@@ -13,16 +13,16 @@ MessageType LobbyProtocol::receive_command() {
 GameMatch LobbyProtocol::receive_create_match() {
     GameMatch match_data;
     char buffer_name[17] = {0};
-    socket.recvall(buffer_name, sizeof(buffer_name));
+    socket.recvall(buffer_name, sizeof(buffer_name) - 1);
     char buffer_map_name[33] = {0};
-    socket.recvall(buffer_map_name, sizeof(buffer_map_name));
+    socket.recvall(buffer_map_name, sizeof(buffer_map_name) - 1);
     match_data.name = buffer_name;
     match_data.map = buffer_map_name;
     return match_data;
 }
 
-void LobbyProtocol::send_created_match(uint8_t& match_id) {
-    socket.sendall(&match_id, sizeof(uint16_t));
+void LobbyProtocol::send_created_match(match_id& id) {
+    socket.sendall(&id, sizeof(match_id));
 }
 
 match_id LobbyProtocol::receive_join_game() {
