@@ -21,8 +21,12 @@ class MainWindow : public QMainWindow {
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+   private slots:
+    void on_changeBackgroundButton_clicked();
+
    private:
     Ui::MainWindow *ui;
     MapEditor editor;
+    QVector<QImage> backgrounds;
 };
 #endif  // MAINWINDOW_H

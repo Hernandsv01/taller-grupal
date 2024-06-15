@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QStandardItemModel>
 #include <QWidget>
+#include <optional>
 
 enum Tile { air, dirt, stone, water, spawn_enemy, spawn_player, spawn_item };
 
@@ -22,7 +23,7 @@ class MapRenderer : public QWidget {
     QPoint camera_reference = QPoint(0, 0);
     QPoint mouse_clicked_reference = QPoint(0, 0);
     bool moving_camera = false;
-    QImage* background = nullptr;
+    std::optional<QImage> background;
 
    public:
     explicit MapRenderer(QWidget* parent = nullptr);
@@ -37,7 +38,7 @@ class MapRenderer : public QWidget {
     void set_camera_reference(QPoint reference);
     void modify_camera_reference(QPoint delta);
 
-    virtual void setBackground(QImage* image);
+    virtual void setBackground(QImage image);
 
    protected:
     void mousePressEvent(QMouseEvent* event);

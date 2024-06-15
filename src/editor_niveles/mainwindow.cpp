@@ -3,6 +3,7 @@
 #include <qstandarditemmodel.h>
 
 #include <QDebug>
+#include <QDialog>
 #include <QDirIterator>
 
 #include "./ui_mainwindow.h"
@@ -16,14 +17,25 @@ MainWindow::MainWindow(QWidget *parent)
     // sus texturas
     QStandardItemModel *tiles = new QStandardItemModel();
 
+    {
+        QDirIterator it(":/textures/backgrounds", QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString file_path = it.next();
+
+            qDebug() << it.fileName() << file_path;
+
+            QString fileName = it.fileName();
+
+            QImage image(file_path);
+
+            backgrounds.append(image);
+        }
+    }
+
     // itero sobre la carpeta de tiles, con el :/ para que busque en el qrc
-    QDirIterator it(":/Tiles", QDirIterator::Subdirectories);
+    QDirIterator it(":/textures/tiles", QDirIterator::Subdirectories);
     while (it.hasNext()) {
         QString file_path = it.next();
-
-        if (it.fileName() == "background_beach_world.png") {
-            continue;
-        }
 
         qDebug() << it.fileName() << file_path;
 
@@ -62,6 +74,8 @@ MainWindow::MainWindow(QWidget *parent)
         tiles->appendRow(tile_item);
     }
 
+    on_changeBackgroundButton_clicked();
+
     // Agrego los items a la interfaz
     ui->listView->setModel(tiles);
 
@@ -71,10 +85,21 @@ MainWindow::MainWindow(QWidget *parent)
     editor.addTileModel(tiles);
     editor.add_tile_selection(ui->listView);
 
-    QImage *background = new QImage(":/Tiles/background_beach_world.png");
-    editor.setBackground(background);
+    if (ui->editorContainer->layout() == nullptr) {
+        ui->editorContainer->setLayout(new QHBoxLayout());
+    }
 
     ui->editorContainer->layout()->addWidget(&editor);
 }
 
 MainWindow::~MainWindow() { delete ui; }
+
+void MainWindow::on_changeBackgroundButton_clicked() {
+    QImage aBackground = backgrounds.last();
+    backgrounds.pop_back();
+    backgrounds.push_front(aBackground);
+
+    editor.setBackground(aBackground);
+
+    editor.update();
+}

@@ -10,9 +10,7 @@
 #define MIN_TILE_SIZE 10.0
 
 void MapRenderer::drawBackground(QPainter& painter) {
-    if (background == nullptr) {
-        return;
-    }
+    if (!background.has_value()) return;
 
     painter.setBackgroundMode(Qt::BGMode::OpaqueMode);
     painter.setBackground(QBrush(*background));
@@ -24,10 +22,7 @@ void MapRenderer::drawBackground(QPainter& painter) {
     painter.drawRect(rectangle);
 }
 
-void MapRenderer::setBackground(QImage* image) {
-    if (background) delete background;
-    background = image;
-}
+void MapRenderer::setBackground(QImage image) { background = image; }
 
 void MapRenderer::drawGrid(QPainter& painter) {
     QVector<QLine> lineas;
@@ -99,7 +94,6 @@ MapRenderer::MapRenderer(QWidget* parent) : QWidget{parent}, tiles{nullptr} {
 
 MapRenderer::~MapRenderer() {
     if (tiles) delete tiles;
-    if (background) delete background;
 }
 
 void MapRenderer::addTileModel(QStandardItemModel* newTiles) {

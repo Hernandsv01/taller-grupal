@@ -1,11 +1,13 @@
 <RCC>
     <qresource prefix="/">
-        <file>Tiles/dirt.png</file>
-        <file>Tiles/stone.png</file>
-        <file>Tiles/water.png</file>
-        <file>Tiles/spawn_enemy.png</file>
-        <file>Tiles/spawn_item.png</file>
-        <file>Tiles/spawn_player.png</file>
-        <file>Tiles/background_beach_world.png</file>
+        <file>textures/tiles/dirt.png</file>
+        <file>textures/tiles/stone.png</file>
+        <file>textures/tiles/water.png</file>
+        <file>textures/tiles/spawn_enemy.png</file>
+        <file>textures/tiles/spawn_item.png</file>
+        <file>textures/tiles/spawn_player.png</file>
+        <file>textures/backgrounds/beach_world.png</file>
+        <file>textures/backgrounds/grass.jpg</file>
+        <file>textures/backgrounds/sky.jpg</file>
     </qresource>
 </RCC>
