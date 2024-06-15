@@ -23,7 +23,7 @@ public:
     //read JOIN
     match_id receive_join_game();
     //send JOIN
-    void send_join_game(uint16_t& player_id);
+    void send_join_game(std::pair<uint16_t, std::string>& joined_info);
 
     //send GET GAMES
     void get_games(std::vector<std::unique_ptr<Game>>& games);

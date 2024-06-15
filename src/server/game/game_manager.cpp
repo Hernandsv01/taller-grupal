@@ -15,24 +15,32 @@ GameManager::GameManager(Socket& socket) : Thread("Game manager"), protocol(sock
 
 uint8_t GameManager::create_game(GameMatch& match_info) {
     uint16_t new_match_id = game_pool.size();
-    for(Map map : map_list){
-        if (map.get_name() == match_info.map){
-            game_pool.emplace_back(std::make_unique<Game>(match_info.name,map));
-            game_pool[(game_pool.size()-1)]->set_id(new_match_id);
-        }
+    auto map_it = std::find_if(map_list.begin(), map_list.end(), [&](const Map& map) {
+        return map.get_name() == match_info.map;
+    });
+
+    if (map_it != map_list.end()) {
+        game_pool.emplace_back(std::make_unique<Game>(match_info.name, *map_it));
+        game_pool.back()->set_id(new_match_id);
     }
+
     return new_match_id;
 }
 
-uint16_t GameManager::join_game(uint8_t game_id) {
+std::pair<uint16_t, std::string> GameManager::join_game(uint8_t game_id) {
     uint16_t player_id;
+    std::string map_name = "";
     for(const auto& game: game_pool){
         if(game->get_id() == game_id){
             player_id = game->add_player();
+            map_name = game->get_map_name();
         }
     }
-    return player_id;
+
+    return std::make_pair(player_id, map_name);
 }
+
+
 
 
 void GameManager::process_command(MessageType& command) {
@@ -47,9 +55,8 @@ void GameManager::process_command(MessageType& command) {
         }
         case JOIN:{
             uint8_t game_id = protocol.receive_join_game();
-            uint16_t assigned_id = join_game(game_id);
-            protocol.send_join_game(assigned_id);
-            //FALTA ENVIAR INFO MAPA BACK
+            std::pair<uint16_t, std::string> joined_info = join_game(game_id);
+            protocol.send_join_game(joined_info);
             break;
         }
         case GET_GAMES: {
@@ -71,5 +78,8 @@ void GameManager::run() {
 
 void GameManager::kill() {
     is_running = false;
+    //end all games running
 }
+
+
 

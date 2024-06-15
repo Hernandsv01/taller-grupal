@@ -29,8 +29,8 @@ match_id LobbyProtocol::receive_join_game() {
     return id;
 }
 
-void LobbyProtocol::send_join_game(uint16_t &player_id) { //falta mapa
-    player_id = htons(player_id);
+void LobbyProtocol::send_join_game(std::pair<uint16_t, std::string> &joined_info) { //falta mapa
+    uint16_t player_id= htons(joined_info.first);
     socket.sendall(&player_id, sizeof(uint16_t));
 }
 

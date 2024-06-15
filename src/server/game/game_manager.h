@@ -2,6 +2,7 @@
 #define GAME_MANAGER_H
 
 #include <vector>
+#include <algorithm>
 #include "../../common/library/thread.h"
 #include "../../common/library/socket.h"
 #include "lobby_protocol.h"
@@ -17,7 +18,7 @@ private:
 
     uint8_t create_game(GameMatch& match_info);
 
-    uint16_t join_game(uint8_t game_id);
+    std::pair<uint16_t, std::string> join_game(uint8_t game_id);
 
 
 public:
@@ -27,7 +28,7 @@ public:
 
     void process_command(MessageType& command);
 
-   void kill();
+    void kill();
 
 };
 
