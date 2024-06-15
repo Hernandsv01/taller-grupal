@@ -3,5 +3,8 @@
         <file>Tiles/dirt.png</file>
         <file>Tiles/stone.png</file>
         <file>Tiles/water.png</file>
+        <file>Tiles/spawn-enemy.png</file>
+        <file>Tiles/spawn-item.png</file>
+        <file>Tiles/spawn-player.png</file>
     </qresource>
 </RCC>
