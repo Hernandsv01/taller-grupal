@@ -5,13 +5,16 @@
 
 #include "../update_queue.h"
 
-GuiLoop::GuiLoop(Window& window)
-    : Thread("GuiLoop cliente"), currentTick(0), windowForRender(window) {
+GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
+    : Thread("GuiLoop cliente"),
+      currentTick(0),
+      windowForRender(window),
+      mapName(map_name) {
     // Harcodeo un player dummy. En la version final del juego, esto lo
     // recibiría del servidor.
     PlayerState player;
     player.direction = Direction::Right;
-    player.id = 0;
+    player.id = player_id;
     player.position = Position{0, 0};
     player.healthPoints = 10;
     player.characterType = CharacterType::Jazz;

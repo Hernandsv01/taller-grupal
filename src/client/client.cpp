@@ -2,16 +2,17 @@
 
 #include <iostream>
 
-Client::Client(Socket socket, SDL2pp::Window& window)
+Client::Client(Socket socket, SDL2pp::Window& window, uint16_t player_id,
+               std::string map_name)
     : socket(std::move(socket)),
       window(window),
-      gui(window),
+      gui(window, player_id, map_name),
       eventListener(window, this->socket),
       updater(this->socket),
       any_thread_ended() {}
 
 /*
- * Ejecuta los hilos de gui, el updater y el eventListener. 
+ * Ejecuta los hilos de gui, el updater y el eventListener.
  * Esta funcion bloquea hasta que alguno de los hilos termine.
  */
 void Client::exec() {

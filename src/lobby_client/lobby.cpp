@@ -1,13 +1,21 @@
 #include "lobby.h"
 
+#include <tuple>
+
 Lobby::Lobby() : lobbyProtocol() {}
 
-void Lobby::checkProtocolOrError(const char* error) {
+void Lobby::checkProtocolOrError(const char* error) const {
     std::string str_error = "Primero debe conectarse a un servidor, antes de ";
     str_error += error;
 
     if (!lobbyProtocol) {
         throw std::logic_error(str_error.c_str());
+    }
+}
+
+void Lobby::checkIsConnectedToMatch() const {
+    if (!hasConnectedToMatch) {
+        throw std::logic_error("No se encuentra conectado a una partida.");
     }
 }
 
@@ -35,15 +43,45 @@ std::vector<GameMatch> Lobby::getServerMatches() {
 void Lobby::connectToMatch(u_int16_t id) {
     checkProtocolOrError("conectarse a una partida.");
 
-    lobbyProtocol->joinMatch(id);
+    std::pair<uint16_t, std::string> result = lobbyProtocol->joinMatch(id);
+
+    hasConnectedToMatch = true;
+    assigned_player_id = result.first;
+    assigned_map_name = result.second;
 }
 
 // Devuelve ID de partida creada
-uint16_t Lobby::createMatch(const std::string& selected_map,
+match_id Lobby::createMatch(const std::string& selected_map,
                             const std::string& matchName) {
     checkProtocolOrError("crear una partida.");
 
     return lobbyProtocol->createMatch(matchName, selected_map);
+}
+bool Lobby::isConnectedToMatch() const { return hasConnectedToMatch; }
+
+Socket Lobby::extractMatchConnection() {
+    checkProtocolOrError("obtener la conexión a la partida.");
+    checkIsConnectedToMatch();
+
+    Socket socket_a_devolver = lobbyProtocol->getSocket();
+
+    // Indica que ya no esta conectado a un match, y elimina el protocolo que ya
+    // no contiene el socket, por lo que no es funcional.
+    hasConnectedToMatch = false;
+    delete lobbyProtocol;
+    lobbyProtocol = nullptr;
+
+    return socket_a_devolver;
+}
+
+std::pair<uint16_t, std::string> Lobby::getPlayerIdAndMapName() {
+    checkProtocolOrError("obtener la conexión a la partida.");
+    checkIsConnectedToMatch();
+
+    std::pair<uint16_t, std::string> playerIdAndMapName =
+        std::make_pair(assigned_player_id, assigned_map_name);
+
+    return playerIdAndMapName;
 }
 
 Lobby::~Lobby() {

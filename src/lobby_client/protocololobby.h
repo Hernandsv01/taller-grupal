@@ -65,6 +65,8 @@ class LobbyProtocol {
     std::pair<uint16_t, std::string> joinMatch(match_id id);
 
     std::vector<GameMatch> getGameMatches();
+
+    Socket getSocket() { return std::move(socket); }
 };
 
 #endif  // PROTOCOLOLOBBY_H
