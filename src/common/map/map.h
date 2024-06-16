@@ -133,11 +133,13 @@ class Map {
     // Servidor
 
     // Carga un mapa desde un archivo yaml.
-    Map static fromYaml(const char* file_name);
+    Map static fromYaml(std::string file_name);
 
     void toYaml() const;
 
     Map(coord_unit size_x, coord_unit size_y);
+
+    void set_name(const std::string& name);
 
     std::string get_name() const;
 

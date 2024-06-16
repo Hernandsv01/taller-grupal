@@ -1,5 +1,6 @@
 #include "map.h"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
@@ -98,9 +99,17 @@ struct convert<::Collision> {
 
 Map::Map() {}
 
-Map Map::fromYaml(const char* file_name) {
+Map Map::fromYaml(std::string file_name) {
     std::string file_path = MAP_PATH;
     file_path += file_name;
+
+    if (file_path.substr(file_path.size() - 5) != ".yaml") {
+        file_path += ".yaml";
+    }
+
+    if (!std::filesystem::exists(file_path))
+        throw std::filesystem::filesystem_error("No existe tal mapa",
+                                                std::error_code());
 
     YAML::Node nodo_mapa = YAML::LoadFile(file_path);
 
@@ -131,6 +140,8 @@ Map::Map(coord_unit size_x, coord_unit size_y)
       blocks(size_y, std::vector<::Block>(size_x)) {}
 
 std::string Map::get_name() const { return this->map_name; }
+
+void Map::set_name(const std::string& name) { this->map_name = name; }
 
 std::vector<BlockOnlyCollision> Map::get_all_blocks_collisions() const {
     return get_blocks_with_condition_and_constructor<BlockOnlyCollision>(
