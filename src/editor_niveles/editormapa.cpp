@@ -1,8 +1,10 @@
 #include "editormapa.h"
 
 #include <QDebug>
+#include <QMetaType>
 #include <iostream>
 
+// cppcheck-suppress unknownMacro
 Q_DECLARE_METATYPE(Block)
 
 MapEditor::MapEditor(Map& map, QWidget* parent) : MapRenderer(map, parent) {

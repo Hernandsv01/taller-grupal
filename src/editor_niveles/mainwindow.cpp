@@ -13,6 +13,7 @@
 #include "./ui_mainwindow.h"
 #include "renderizadomapa.h"
 
+// cppcheck-suppress unknownMacro
 Q_DECLARE_METATYPE(Block)
 
 Block getBlockFromTextureName(QString textureName) {
