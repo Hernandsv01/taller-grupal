@@ -55,10 +55,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     ui->textErrorBeginToEdit->setText("");
+    ui->stackedWidget->setCurrentIndex(0);
 
-    // Creo una modelo de lista de tiles, para almacenar los distintos tipos y
-    // sus texturas
-    QStandardItemModel *tiles = new QStandardItemModel();
+    QMap<IdTexture, QImage> tile_textures;
+    QMap<IdTexture, QImage> background_textures;
 
     {
         QDirIterator it(":/textures/backgrounds", QDirIterator::Subdirectories);
@@ -69,9 +69,16 @@ MainWindow::MainWindow(QWidget *parent)
 
             QString fileName = it.fileName();
 
+            if (!fileName.endsWith(".png") && !fileName.endsWith(".jpg"))
+                throw std::runtime_error(
+                    "Solo se permiten archivos .png o .jpg");
+
+            QString textureName = fileName.left(fileName.length() - 4);
+
             QImage image(file_path);
 
             backgrounds.append(image);
+            background_textures.insert(textureName.toStdString(), image);
         }
     }
 
@@ -102,28 +109,34 @@ MainWindow::MainWindow(QWidget *parent)
         Block tile_block = getBlockFromTextureName(textureName);
         QVariant tile_block_variant = QVariant::fromValue(tile_block);
 
-        // Le asigno como data el struct Block, para despues utilizarla en el
-        // mapa.
+        // Le asigno como data el struct Block, para despues utilizarla en
+        // el mapa.
         tile_item->setData(tile_block_variant, Qt::UserRole + 3);
-        tiles->appendRow(tile_item);
+        tiles.appendRow(tile_item);
+
+        tile_textures.insert(textureName.toStdString(), image);
     }
 
     on_changeBackgroundButton_clicked();
 
     // Agrego los items a la interfaz
-    ui->listView->setModel(tiles);
+    ui->listView->setModel(&tiles);
 
-    // Agrego los tiles y vista de la lista al editor, para poder obtener cual
-    // tile se esta seleccionando.
+    // Agrego los tiles y vista de la lista al editor, para poder obtener
+    // cual tile se esta seleccionando.
 
-    editor.addTileModel(tiles);
-    editor.add_tile_selection(ui->listView);
+    editor.addTileTextures(tile_textures);
 
     if (ui->editorContainer->layout() == nullptr) {
         ui->editorContainer->setLayout(new QHBoxLayout());
     }
 
     ui->editorContainer->layout()->addWidget(&editor);
+
+    auto tile_selection_model = ui->listView->selectionModel();
+
+    QObject::connect(tile_selection_model, &QItemSelectionModel::currentChanged,
+                     this, &MainWindow::changed_selected_tile);
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -170,4 +183,13 @@ void MainWindow::on_loadMapEditorButton_clicked() {
 }
 void MainWindow::on_goBackButton_clicked() {
     ui->stackedWidget->setCurrentIndex(0);
+}
+
+void MainWindow::changed_selected_tile(const QModelIndex &new_seleccion,
+                                       const QModelIndex &old_selection) {
+    Block selected_tile = tiles.itemFromIndex(new_seleccion)
+                              ->data(Qt::UserRole + 3)
+                              .value<::Block>();
+
+    editor.changeSelectedTile(selected_tile);
 }

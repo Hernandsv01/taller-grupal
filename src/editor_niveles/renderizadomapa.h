@@ -17,11 +17,11 @@ class MapRenderer : public QWidget {
     uint x_limit = 0;
     uint y_limit = 0;
     uint tile_size = 64;
-    QStandardItemModel* tiles;
     QPoint camera_reference = QPoint(0, 0);
     QPoint mouse_clicked_reference = QPoint(0, 0);
     bool moving_camera = false;
     std::optional<QImage> background;
+    QMap<IdTexture, QImage> tile_textures;
 
    private:
    public:
@@ -29,8 +29,9 @@ class MapRenderer : public QWidget {
     explicit MapRenderer(QWidget* parent = nullptr);
     virtual ~MapRenderer();
 
+    void addTileTextures(QMap<IdTexture, QImage> tile_textures);
+
     void paintEvent(QPaintEvent* event);
-    void addTileModel(QStandardItemModel* newTiles);
     void setMap(Map* map);
 
     void drawGrid(QPainter& painter);

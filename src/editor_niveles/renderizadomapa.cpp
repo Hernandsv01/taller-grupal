@@ -60,20 +60,13 @@ void MapRenderer::drawGrid(QPainter& painter) {
     painter.drawLines(lineas);
 }
 
-MapRenderer::MapRenderer(QWidget* parent)
-    : QWidget{parent}, tiles{nullptr}, map(std::nullopt) {
+MapRenderer::MapRenderer(QWidget* parent) : QWidget{parent}, map(std::nullopt) {
     // Defino el tilesize. Esto indica cuantos pixeles ocupa cada casillero de
     // la grilla.
     this->tile_size = 64;
 }
 
-MapRenderer::~MapRenderer() {
-    if (tiles) delete tiles;
-}
-
-void MapRenderer::addTileModel(QStandardItemModel* newTiles) {
-    this->tiles = newTiles;
-}
+MapRenderer::~MapRenderer() {}
 
 void MapRenderer::paintEvent(QPaintEvent* event) {
     checkMapAvaible();
@@ -89,10 +82,6 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
         (*map)->get_all_block_textures_editor();
 
     for (const BlockOnlyTexture& block : blockTextures) {
-        // Busco el item en la lista de tiles
-        // (por ahora necesito el nombre. Tal vez hay alguna manera
-        // mejor ?)
-
         int x = (int)block.coordinate.x * tile_size + camera_reference.x();
         int y = (int)block.coordinate.y * tile_size + camera_reference.y();
 
@@ -100,61 +89,14 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
         if (x + tile_size < 0 || x > width || y + tile_size < 0 || y > height)
             continue;
 
-        QList<QStandardItem*> tile_items =
-            tiles->findItems(QString::fromStdString(block.texture));
-
-        if (tile_items.isEmpty()) continue;  // Probablemente sea aire
-
-        QStandardItem* tile_item = tile_items[0];
-
-        // Obtengo la imagen del tile
-        QVariant image_variant = tile_item->data(Qt::UserRole + 2);
-
-        QImage image = image_variant.value<QImage>();
+        // Busco en el map de texturas, la textura a aplicar
+        QImage image = tile_textures[block.texture];
 
         // Dibujo el tile en la posicion correcta.
         QRect rectangle_to_draw(x, y, tile_size, tile_size);
 
         painter.drawImage(rectangle_to_draw, image);
     }
-
-    // // Loop para recorrer la grilla de tiles y dibujarlos
-    // for (uint y = 0; y <= y_limit; y++) {
-    //     // En el caso de que quiera renderizar algo
-    //     // que este fuera de lo definido por level
-    //     if (y >= y_limit) break;
-
-    //     for (uint x = 0; x <= x_limit; x++) {
-    //         // En el caso de que quiera renderizar algo
-    //         // que este fuera de lo definido por level
-    //         if (x >= x_limit) break;
-
-    //         // Obtengo el tipo de tile, si es aire lo omito.
-    //         Block block = level[x][y];
-    //         if (block.texture == "") continue;
-
-    //         // Busco el item en la lista de tiles
-    //         // (por ahora necesito el nombre. Tal vez hay alguna manera
-    //         mejor?) QList<QStandardItem*> tile_items =
-    //             tiles->findItems(QString::fromStdString(block.texture));
-
-    //         if (tile_items.isEmpty()) continue;  // Probablemente sea aire
-
-    //         QStandardItem* tile_item = tile_items[0];
-
-    //         // Obtengo la imagen del tile
-    //         QVariant image_variant = tile_item->data(Qt::UserRole + 2);
-
-    //         QImage image = image_variant.value<QImage>();
-
-    //         // Dibujo el tile en la posicion correcta.
-    //         QRect rectangle_to_draw(x * tile_size + camera_reference.x(),
-    //                                 y * tile_size + camera_reference.y(),
-    //                                 tile_size, tile_size);
-
-    //         painter.drawImage(rectangle_to_draw, image);
-    //     }
-    // }
 
     // Dibujo encima las lineas que definen la cuadricula
     drawGrid(painter);
@@ -219,4 +161,8 @@ void MapRenderer::wheelEvent(QWheelEvent* event) {
     set_camera_reference(new_camera_reference.toPoint());
 
     this->update();
+}
+
+void MapRenderer::addTileTextures(QMap<IdTexture, QImage> tile_textures) {
+    this->tile_textures = tile_textures;
 }

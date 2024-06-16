@@ -36,9 +36,14 @@ class MainWindow : public QMainWindow {
     Ui::MainWindow *ui;
     Map map;
 
+    QStandardItemModel tiles;
+
     // El editor debe crearse despues del mapa, porque depende del tamaño del
     // mapa
     MapEditor editor;
     QVector<QImage> backgrounds;
+
+    void changed_selected_tile(const QModelIndex &new_seleccion,
+                               const QModelIndex &old_selection);
 };
 #endif  // MAINWINDOW_H

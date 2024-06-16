@@ -19,25 +19,20 @@ MapEditor::MapEditor(QWidget* parent) : MapRenderer(parent) {
     // map.add_block(Coordinate{4, 2}, Block{Collision::Cube, "stone"});
 }
 
-void MapEditor::add_tile_selection(QListView* list_tile_selection) {
-    // Guardo el puntero a Widget de la lista de seleccion de tiles.
-    this->tile_selection = list_tile_selection;
-}
-
 void MapEditor::mousePressEvent(QMouseEvent* event) {
     // Ejecuta a al funcion padre por si quiere hacer algo con el evento;
     this->MapRenderer::mousePressEvent(event);
 
     if (event->button() == Qt::MouseButton::LeftButton) {
         this->isEditing = true;
-        // Si se clickeo con el boton izquierdo, busco cual es el tile
-        // seleccionado en el Widget
-        auto index_selected_tile = this->tile_selection->currentIndex();
-        if (!index_selected_tile.isValid()) return;
-
-        tile_to_paint = this->tiles->itemFromIndex(index_selected_tile)
-                            ->data(Qt::UserRole + 3)
-                            .value<Block>();
+        // Si se clickeo con el boton izquierdo, obtengo el tile seleccionado en
+        // la lista
+        {
+            // Bloqueo el acceso a la variable current_selected_tile, porque
+            // podería ser cambiada desde otro hilo
+            std::lock_guard<std::mutex> lock(mutex_current_selected_tile);
+            tile_to_paint = current_selected_tile;
+        }
     } else if (event->button() == Qt::MouseButton::RightButton) {
         // Si se clickeo con el boton derecho, se pinta aire (osea, se
         // borra).
@@ -108,4 +103,9 @@ void MapEditor::saveMap() {
     checkMapAvaible();
     qDebug() << "Guardando mapa";
     (*map)->toYaml();
+}
+
+void MapEditor::changeSelectedTile(Block newSelectedTile) {
+    std::lock_guard<std::mutex> lock(mutex_current_selected_tile);
+    this->current_selected_tile = newSelectedTile;
 }

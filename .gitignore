@@ -50,3 +50,5 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 
+map/
+
