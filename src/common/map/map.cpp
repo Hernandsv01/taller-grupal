@@ -103,6 +103,22 @@ Map Map::fromYaml(const char* path) {
     return mapa_temp;
 }
 
+void Map::toYaml(const char* path_with_no_name) const {
+    YAML::Node nodo_mapa = YAML::convert<Map>::encode(*this);
+
+    std::string path = path_with_no_name;
+
+    if (path.back() != '/') path += '/';
+
+    path += this->map_name + ".yaml";
+
+    std::ofstream archivo(path);
+
+    std::cout << archivo.is_open() << ":" << path << std::endl;
+
+    archivo << nodo_mapa;
+}
+
 Map::Map(coord_unit size_x, coord_unit size_y)
     : size_x(size_x),
       size_y(size_y),

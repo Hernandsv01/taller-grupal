@@ -59,9 +59,7 @@ struct Block {
                 collision != Collision::EnemySpawn);
     }
 
-    bool has_texture_editor() const {
-        return (collision != Collision::Air);
-    }
+    bool has_texture_editor() const { return (collision != Collision::Air); }
 };
 
 // Para cuando obtengo todos los bloques con textura
@@ -136,6 +134,8 @@ class Map {
 
     // Carga un mapa desde un archivo yaml.
     Map static fromYaml(const char* path);
+
+    void toYaml(const char* path_with_no_name) const;
 
     Map(coord_unit size_x, coord_unit size_y);
 
