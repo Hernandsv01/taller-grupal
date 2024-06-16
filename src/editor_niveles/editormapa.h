@@ -12,7 +12,7 @@ class MapEditor : public MapRenderer {
     Block tile_to_paint = Block{Collision::Air, ""};
 
    public:
-    MapEditor(Map& map, QWidget* parent);
+    MapEditor(QWidget* parent);
     virtual ~MapEditor();
 
     void add_tile_selection(QListView* list_tile_selection);

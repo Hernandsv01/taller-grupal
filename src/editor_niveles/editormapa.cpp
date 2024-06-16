@@ -7,7 +7,7 @@
 // cppcheck-suppress unknownMacro
 Q_DECLARE_METATYPE(Block)
 
-MapEditor::MapEditor(Map& map, QWidget* parent) : MapRenderer(map, parent) {
+MapEditor::MapEditor(QWidget* parent) : MapRenderer(parent) {
     this->setMouseTracking(true);
 
     // TODO: ELIMINAR
@@ -53,6 +53,8 @@ void MapEditor::mousePressEvent(QMouseEvent* event) {
 }
 
 void MapEditor::mouseMoveEvent(QMouseEvent* event) {
+    MapRenderer::checkMapAvaible();
+
     this->MapRenderer::mouseMoveEvent(event);
 
     // Si no estoy editando, no quiero modificar nada.
@@ -81,7 +83,7 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
     }
 
     // Modifico la representacion en el mapa.
-    map.add_block(Coordinate{x_grid, y_grid}, tile_to_paint);
+    (*map)->add_block(Coordinate{x_grid, y_grid}, tile_to_paint);
 
     // Repinto el widget generando un evento de pintado.
     // (Esto llama al metodo MapRenderer::paintEvent())
@@ -103,6 +105,7 @@ void MapEditor::wheelEvent(QWheelEvent* event) {
 MapEditor::~MapEditor() {}
 
 void MapEditor::saveMap() {
+    checkMapAvaible();
     qDebug() << "Guardando mapa";
-    map.toYaml();
+    (*map)->toYaml();
 }

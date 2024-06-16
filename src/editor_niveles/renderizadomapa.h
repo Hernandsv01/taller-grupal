@@ -13,9 +13,9 @@ class MapRenderer : public QWidget {
     Q_OBJECT
 
    protected:
-    Map& map;
-    uint x_limit;
-    uint y_limit;
+    std::optional<Map*> map;
+    uint x_limit = 0;
+    uint y_limit = 0;
     uint tile_size = 64;
     QStandardItemModel* tiles;
     QPoint camera_reference = QPoint(0, 0);
@@ -23,13 +23,15 @@ class MapRenderer : public QWidget {
     bool moving_camera = false;
     std::optional<QImage> background;
 
+   private:
    public:
     // explicit MapRenderer(QWidget* parent = nullptr, Map& map);
-    explicit MapRenderer(Map& map, QWidget* parent = nullptr);
+    explicit MapRenderer(QWidget* parent = nullptr);
     virtual ~MapRenderer();
 
     void paintEvent(QPaintEvent* event);
     void addTileModel(QStandardItemModel* newTiles);
+    void setMap(Map* map);
 
     void drawGrid(QPainter& painter);
     void drawBackground(QPainter& painter);
@@ -44,6 +46,7 @@ class MapRenderer : public QWidget {
     void mouseReleaseEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
+    void checkMapAvaible();
 
    signals:
 };

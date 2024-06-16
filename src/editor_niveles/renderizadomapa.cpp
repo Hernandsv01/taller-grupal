@@ -9,6 +9,18 @@
 #define MAX_TILE_SIZE 120.0
 #define MIN_TILE_SIZE 10.0
 
+void MapRenderer::checkMapAvaible() {
+    if (!map.has_value()) {
+        throw std::runtime_error("Mapa no definido");
+    }
+}
+
+void MapRenderer::setMap(Map* map) {
+    this->map = map;
+    this->x_limit = map->get_map_size().x;
+    this->y_limit = map->get_map_size().y;
+}
+
 void MapRenderer::drawBackground(QPainter& painter) {
     if (!background.has_value()) return;
 
@@ -48,12 +60,8 @@ void MapRenderer::drawGrid(QPainter& painter) {
     painter.drawLines(lineas);
 }
 
-MapRenderer::MapRenderer(Map& map, QWidget* parent)
-    : QWidget{parent},
-      tiles{nullptr},
-      map(map),
-      x_limit(map.get_map_size().x),
-      y_limit(map.get_map_size().y) {
+MapRenderer::MapRenderer(QWidget* parent)
+    : QWidget{parent}, tiles{nullptr}, map(std::nullopt) {
     // Defino el tilesize. Esto indica cuantos pixeles ocupa cada casillero de
     // la grilla.
     this->tile_size = 64;
@@ -68,6 +76,8 @@ void MapRenderer::addTileModel(QStandardItemModel* newTiles) {
 }
 
 void MapRenderer::paintEvent(QPaintEvent* event) {
+    checkMapAvaible();
+
     QPainter painter(this);
 
     int width = this->width();
@@ -76,7 +86,7 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
     drawBackground(painter);
 
     std::vector<BlockOnlyTexture> blockTextures =
-        map.get_all_block_textures_editor();
+        (*map)->get_all_block_textures_editor();
 
     for (const BlockOnlyTexture& block : blockTextures) {
         // Busco el item en la lista de tiles
