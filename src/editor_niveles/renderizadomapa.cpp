@@ -86,8 +86,6 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
         int x = (int)block.coordinate.x * tile_size + camera_reference.x();
         int y = (int)block.coordinate.y * tile_size + camera_reference.y();
 
-        qDebug() << "x: " << x << " y: " << y;
-
         // Esta fuera de la pantalla
         if (x + tile_size < 0 || x > width || y + tile_size < 0 || y > height)
             continue;
@@ -103,9 +101,6 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
         QVariant image_variant = tile_item->data(Qt::UserRole + 2);
 
         QImage image = image_variant.value<QImage>();
-
-        qDebug() << "Dibujando en x: " << x << " y: " << y
-                 << " texture: " << block.texture.c_str();
 
         // Dibujo el tile en la posicion correcta.
         QRect rectangle_to_draw(x, y, tile_size, tile_size);
@@ -199,9 +194,19 @@ void MapRenderer::wheelEvent(QWheelEvent* event) {
         tile_size + modify * numSteps < MIN_TILE_SIZE)
         return;
 
+    QPointF window_center = QPointF(this->width(), this->height()) / 2.0;
+
+    QPointF window_center_on_grid =
+        (window_center - QPointF(camera_reference)) / tile_size;
+
     tile_size = round(tile_size + modify * numSteps);
 
-    // qDebug() << "Tile size: " << tile_size << " modify: " << modify;
+    // Despejo de la ecuacion de arriba la camara reference para el nuevo
+    // tile_size.
+    QPointF new_camera_reference =
+        window_center - (tile_size * window_center_on_grid);
+
+    set_camera_reference(new_camera_reference.toPoint());
 
     this->update();
 }
