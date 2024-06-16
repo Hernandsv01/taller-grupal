@@ -30,7 +30,9 @@ class MainWindow : public QMainWindow {
 
     void on_loadMapEditorButton_clicked();
 
-   private:
+    void on_goBackButton_clicked();
+
+private:
     Ui::MainWindow *ui;
     Map map;
 

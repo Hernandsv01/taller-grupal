@@ -7,6 +7,7 @@
 #include <QDirIterator>
 #include <QMetaType>
 #include <QVariant>
+#include <filesystem>
 #include <stdexcept>
 
 #include "../common/map/map.h"
@@ -60,6 +61,8 @@ MainWindow::MainWindow(const char *map_path, QWidget *parent)
     // }
 
     ui->setupUi(this);
+
+    ui->textErrorBeginToEdit->setText("");
 
     // Creo una modelo de lista de tiles, para almacenar los distintos tipos y
     // sus texturas
@@ -146,13 +149,31 @@ void MainWindow::on_changeBackgroundButton_clicked() {
 void MainWindow::on_saveMapButton_clicked() { editor.saveMap(); }
 
 void MainWindow::on_loadMapEditorButton_clicked() {
+    ui->textErrorBeginToEdit->setText("");
+
     qDebug() << "Empezar a editar";
 
     std::string map_name = ui->mapNameInput->text().toStdString();
 
-    map = Map::fromYaml(map_name);
+    qDebug() << "'" << map_name.c_str() << "'";
+
+    if (map_name.empty()) {
+        ui->textErrorBeginToEdit->setText(
+            "No se puede crear un mapa sin nombre");
+        return;
+    }
+
+    try {
+        map = Map::fromYaml(map_name);
+    } catch (const std::filesystem::filesystem_error &e) {
+        map = Map(15, 10);
+        map.set_name(map_name);
+    }
 
     editor.update();
 
     ui->stackedWidget->setCurrentIndex(1);
+}
+void MainWindow::on_goBackButton_clicked() {
+    ui->stackedWidget->setCurrentIndex(0);
 }
