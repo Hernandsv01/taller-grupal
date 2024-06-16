@@ -9,6 +9,7 @@
 #include <QVariant>
 #include <stdexcept>
 
+#include "../common/map/map.h"
 #include "./ui_mainwindow.h"
 #include "renderizadomapa.h"
 
@@ -36,8 +37,13 @@ Block getBlockFromTextureName(QString textureName) {
     return Block{collision, textureName.toStdString()};
 }
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), editor(this) {
+MainWindow::MainWindow(const char *map_path, QWidget *parent)
+    : QMainWindow(parent),
+      ui(new Ui::MainWindow),
+      map((coord_unit)15, (coord_unit)20),
+      editor(map, this) {
+    // Asumo que no se pasa ninguna ruta para el mapa.
+
     // if (map_path == nullptr) {
     //     map = new Map(255, 255);
     // } else {

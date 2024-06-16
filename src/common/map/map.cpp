@@ -182,6 +182,14 @@ std::vector<BlockOnlyTexture> Map::get_all_block_textures() const {
         });
 }
 
+std::vector<BlockOnlyTexture> Map::get_all_block_textures_editor() const {
+    return get_blocks_with_condition_and_constructor<BlockOnlyTexture>(
+        [](const Block& block) { return block.has_texture_editor(); },
+        [](const Coordinate coordinate, const Block& block) {
+            return BlockOnlyTexture{coordinate, block.texture};
+        });
+}
+
 IdTexture Map::get_background() const { return this->background_texture; }
 
 Coordinate Map::get_map_size() const {

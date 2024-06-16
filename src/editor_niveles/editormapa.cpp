@@ -5,8 +5,16 @@
 
 Q_DECLARE_METATYPE(Block)
 
-MapEditor::MapEditor(QWidget* parent) : MapRenderer(parent) {
+MapEditor::MapEditor(Map& map, QWidget* parent) : MapRenderer(map, parent) {
     this->setMouseTracking(true);
+
+    // TODO: ELIMINAR
+    //  Defino algunos tiles en la grilla para testear.
+    map.add_block(Coordinate{0, 0}, Block{Collision::Cube, "dirt"});
+
+    map.add_block(Coordinate{5, 3}, Block{Collision::Cube, "water"});
+
+    map.add_block(Coordinate{4, 2}, Block{Collision::Cube, "stone"});
 }
 
 void MapEditor::add_tile_selection(QListView* list_tile_selection) {
@@ -49,8 +57,8 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
     if (!this->isEditing) return;
 
     // Calculo en que posicion de la grilla estoy parado.
-    int x_grid = (event->x() - camera_reference.x()) / tile_size;
-    int y_grid = (event->y() - camera_reference.y()) / tile_size;
+    coord_unit x_grid = (event->x() - camera_reference.x()) / tile_size;
+    coord_unit y_grid = (event->y() - camera_reference.y()) / tile_size;
 
     // Verifico que no me pase de los limites de la grilla. (puede pasar si
     // moves mouse muy rapido fuera de ventana)
@@ -70,8 +78,10 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
         return;
     }
 
-    // Modifico la representacion de la grilla.
-    level[x_grid][y_grid] = tile_to_paint;
+    // Modifico la representacion en el mapa.
+    map.add_block(Coordinate{x_grid, y_grid}, tile_to_paint);
+
+    qDebug() << tile_to_paint.texture.c_str();
 
     // Repinto el widget generando un evento de pintado.
     // (Esto llama al metodo MapRenderer::paintEvent())

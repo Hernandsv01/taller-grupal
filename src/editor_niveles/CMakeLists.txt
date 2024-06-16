@@ -4,6 +4,8 @@ project(editor_niveles VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -14,6 +16,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
+add_subdirectory("../common/map" "${CMAKE_BINARY_DIR}/map")
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp mainwindow.h
@@ -21,6 +25,8 @@ set(PROJECT_SOURCES
         renderizadomapa.h renderizadomapa.cpp
         tiles.qrc
         editormapa.h editormapa.cpp
+        ../common/map/map.cpp
+        ../common/map/map.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -47,6 +53,7 @@ else()
 endif()
 
 target_link_libraries(editor_niveles PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(editor_niveles PRIVATE map)
 
 set_target_properties(editor_niveles PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

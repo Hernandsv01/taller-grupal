@@ -48,29 +48,15 @@ void MapRenderer::drawGrid(QPainter& painter) {
     painter.drawLines(lineas);
 }
 
-MapRenderer::MapRenderer(QWidget* parent) : QWidget{parent}, tiles{nullptr} {
+MapRenderer::MapRenderer(Map& map, QWidget* parent)
+    : QWidget{parent},
+      tiles{nullptr},
+      map(map),
+      x_limit(map.get_map_size().x),
+      y_limit(map.get_map_size().y) {
     // Defino el tilesize. Esto indica cuantos pixeles ocupa cada casillero de
     // la grilla.
     this->tile_size = 64;
-
-    // Creo una grilla de x_limit * y_limit. Inicialmente todo es aire.
-    for (int i = 0; i < y_limit; i++) {
-        level.emplace_back(
-            std::vector<Block>(x_limit, Block{Collision::Air, ""}));
-    }
-
-    // Defino para que el painter use antialliasing, y filtro bilineal, para que
-    // se vea mejor.
-    // painter.setRenderHint(QPainter::RenderHint::Antialiasing);
-    // painter.setRenderHint(QPainter::TextAntialiasing);
-    // painter.setRenderHint(QPainter::RenderHint::SmoothPixmapTransform);
-
-    // Defino algunos tiles en la grilla para testear.
-    level[0][0] = Block{Collision::Cube, "dirt"};
-
-    level[5][3] = Block{Collision::Cube, "water"};
-
-    level[4][2] = Block{Collision::Cube, "stone"};
 }
 
 MapRenderer::~MapRenderer() {
@@ -89,43 +75,81 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
 
     drawBackground(painter);
 
-    // Loop para recorrer la grilla de tiles y dibujarlos
-    for (uint y = 0; y <= y_limit; y++) {
-        // En el caso de que quiera renderizar algo
-        // que este fuera de lo definido por level
-        if (y >= y_limit) break;
+    std::vector<BlockOnlyTexture> blockTextures =
+        map.get_all_block_textures_editor();
 
-        for (uint x = 0; x <= x_limit; x++) {
-            // En el caso de que quiera renderizar algo
-            // que este fuera de lo definido por level
-            if (x >= x_limit) break;
+    for (const BlockOnlyTexture& block : blockTextures) {
+        // Busco el item en la lista de tiles
+        // (por ahora necesito el nombre. Tal vez hay alguna manera
+        // mejor ?)
 
-            // Obtengo el tipo de tile, si es aire lo omito.
-            Block block = level[x][y];
-            if (block.texture == "") continue;
+        int x = (int)block.coordinate.x * tile_size + camera_reference.x();
+        int y = (int)block.coordinate.y * tile_size + camera_reference.y();
 
-            // Busco el item en la lista de tiles
-            // (por ahora necesito el nombre. Tal vez hay alguna manera mejor?)
-            QList<QStandardItem*> tile_items =
-                tiles->findItems(QString::fromStdString(block.texture));
+        qDebug() << "x: " << x << " y: " << y;
 
-            if (tile_items.isEmpty()) continue;  // Probablemente sea aire
+        // Esta fuera de la pantalla
+        if (x + tile_size < 0 || x > width || y + tile_size < 0 || y > height)
+            continue;
 
-            QStandardItem* tile_item = tile_items[0];
+        QList<QStandardItem*> tile_items =
+            tiles->findItems(QString::fromStdString(block.texture));
 
-            // Obtengo la imagen del tile
-            QVariant image_variant = tile_item->data(Qt::UserRole + 2);
+        if (tile_items.isEmpty()) continue;  // Probablemente sea aire
 
-            QImage image = image_variant.value<QImage>();
+        QStandardItem* tile_item = tile_items[0];
 
-            // Dibujo el tile en la posicion correcta.
-            QRect rectangle_to_draw(x * tile_size + camera_reference.x(),
-                                    y * tile_size + camera_reference.y(),
-                                    tile_size, tile_size);
+        // Obtengo la imagen del tile
+        QVariant image_variant = tile_item->data(Qt::UserRole + 2);
 
-            painter.drawImage(rectangle_to_draw, image);
-        }
+        QImage image = image_variant.value<QImage>();
+
+        qDebug() << "Dibujando en x: " << x << " y: " << y
+                 << " texture: " << block.texture.c_str();
+
+        // Dibujo el tile en la posicion correcta.
+        QRect rectangle_to_draw(x, y, tile_size, tile_size);
+
+        painter.drawImage(rectangle_to_draw, image);
     }
+
+    // // Loop para recorrer la grilla de tiles y dibujarlos
+    // for (uint y = 0; y <= y_limit; y++) {
+    //     // En el caso de que quiera renderizar algo
+    //     // que este fuera de lo definido por level
+    //     if (y >= y_limit) break;
+
+    //     for (uint x = 0; x <= x_limit; x++) {
+    //         // En el caso de que quiera renderizar algo
+    //         // que este fuera de lo definido por level
+    //         if (x >= x_limit) break;
+
+    //         // Obtengo el tipo de tile, si es aire lo omito.
+    //         Block block = level[x][y];
+    //         if (block.texture == "") continue;
+
+    //         // Busco el item en la lista de tiles
+    //         // (por ahora necesito el nombre. Tal vez hay alguna manera
+    //         mejor?) QList<QStandardItem*> tile_items =
+    //             tiles->findItems(QString::fromStdString(block.texture));
+
+    //         if (tile_items.isEmpty()) continue;  // Probablemente sea aire
+
+    //         QStandardItem* tile_item = tile_items[0];
+
+    //         // Obtengo la imagen del tile
+    //         QVariant image_variant = tile_item->data(Qt::UserRole + 2);
+
+    //         QImage image = image_variant.value<QImage>();
+
+    //         // Dibujo el tile en la posicion correcta.
+    //         QRect rectangle_to_draw(x * tile_size + camera_reference.x(),
+    //                                 y * tile_size + camera_reference.y(),
+    //                                 tile_size, tile_size);
+
+    //         painter.drawImage(rectangle_to_draw, image);
+    //     }
+    // }
 
     // Dibujo encima las lineas que definen la cuadricula
     drawGrid(painter);

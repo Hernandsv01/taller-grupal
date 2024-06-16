@@ -20,8 +20,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
    public:
-    // MainWindow(const char *map_path, QWidget *parent = nullptr);
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(const char *map_path, QWidget *parent = nullptr);
     ~MainWindow();
 
    private slots:
@@ -29,8 +28,11 @@ class MainWindow : public QMainWindow {
 
    private:
     Ui::MainWindow *ui;
+    Map map;
+
+    // El editor debe crearse despues del mapa, porque depende del tamaño del
+    // mapa
     MapEditor editor;
     QVector<QImage> backgrounds;
-    Map *map;
 };
 #endif  // MAINWINDOW_H

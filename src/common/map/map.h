@@ -58,6 +58,10 @@ struct Block {
                 collision != Collision::PlayerSpawn &&
                 collision != Collision::EnemySpawn);
     }
+
+    bool has_texture_editor() const {
+        return (collision != Collision::Air);
+    }
 };
 
 // Para cuando obtengo todos los bloques con textura
@@ -162,6 +166,7 @@ class Map {
 
     // Editor mapa
     void add_block(const Coordinate& coordinate, const Block& block);
+    std::vector<BlockOnlyTexture> get_all_block_textures_editor() const;
 };
 
 #endif
