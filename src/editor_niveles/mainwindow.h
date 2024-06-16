@@ -28,7 +28,9 @@ class MainWindow : public QMainWindow {
 
     void on_saveMapButton_clicked();
 
-private:
+    void on_loadMapEditorButton_clicked();
+
+   private:
     Ui::MainWindow *ui;
     Map map;
 

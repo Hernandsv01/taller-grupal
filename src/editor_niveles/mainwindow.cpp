@@ -144,3 +144,15 @@ void MainWindow::on_changeBackgroundButton_clicked() {
 }
 
 void MainWindow::on_saveMapButton_clicked() { editor.saveMap(); }
+
+void MainWindow::on_loadMapEditorButton_clicked() {
+    qDebug() << "Empezar a editar";
+
+    std::string map_name = ui->mapNameInput->text().toStdString();
+
+    map = Map::fromYaml(map_name);
+
+    editor.update();
+
+    ui->stackedWidget->setCurrentIndex(1);
+}
