@@ -236,3 +236,37 @@ void Map::add_block(const Coordinate& coordinate, const Block& block) {
 
     blocks[coordinate.y][coordinate.x] = block;
 }
+
+void Map::resizeTo(coord_unit new_size_x, coord_unit new_size_y) {
+    blocks.resize(new_size_y, std::vector<::Block>(new_size_x));
+
+    for (coord_unit y = 0; y < size_y; y++) {
+        blocks[y].resize(new_size_x);
+    }
+
+    size_x = new_size_x;
+    size_y = new_size_y;
+}
+
+void Map::contractToMin() {
+    coord_unit new_size_x = 0;
+    coord_unit new_size_y = 0;
+
+    for (coord_unit y = 0; y < size_y; y++) {
+        for (coord_unit x = 0; x < size_x; x++) {
+            // Recorro todas las posiciones del mapa.
+            // Si no es void, se que hasta ese punto el mapa tiene que existir.
+            if (!blocks[y][x].is_void()) {
+                new_size_x = std::max<coord_unit>(new_size_x, x + 1);
+                new_size_y = std::max<coord_unit>(new_size_y, y + 1);
+            }
+        }
+    }
+
+    resizeTo(new_size_x, new_size_y);
+}
+
+void Map::expandToMax() {
+    resizeTo(std::numeric_limits<coord_unit>::max(),
+             std::numeric_limits<coord_unit>::max());
+}

@@ -60,6 +60,8 @@ struct Block {
     }
 
     bool has_texture_editor() const { return (collision != Collision::Air); }
+
+    bool is_void() const { return (collision == Collision::Air); }
 };
 
 // Para cuando obtengo todos los bloques con textura
@@ -142,6 +144,11 @@ class Map {
     void set_name(const std::string& name);
 
     std::string get_name() const;
+
+    void resizeTo(coord_unit new_size_x, coord_unit new_size_y);
+
+    void extandToMax();
+    void contractToMin();
 
     // Devuelve todos los bloques que tengan alguna colision.
     std::vector<BlockOnlyCollision> get_all_blocks_collisions() const;
