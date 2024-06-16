@@ -17,6 +17,8 @@ class MapEditor : public MapRenderer {
 
     void add_tile_selection(QListView* list_tile_selection);
 
+    void saveMap();
+
    private slots:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);

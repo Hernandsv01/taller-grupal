@@ -11,12 +11,12 @@ MapEditor::MapEditor(Map& map, QWidget* parent) : MapRenderer(map, parent) {
     this->setMouseTracking(true);
 
     // TODO: ELIMINAR
-    //  Defino algunos tiles en la grilla para testear.
-    map.add_block(Coordinate{0, 0}, Block{Collision::Cube, "dirt"});
+    // //  Defino algunos tiles en la grilla para testear.
+    // map.add_block(Coordinate{0, 0}, Block{Collision::Cube, "dirt"});
 
-    map.add_block(Coordinate{5, 3}, Block{Collision::Cube, "water"});
+    // map.add_block(Coordinate{5, 3}, Block{Collision::Cube, "water"});
 
-    map.add_block(Coordinate{4, 2}, Block{Collision::Cube, "stone"});
+    // map.add_block(Coordinate{4, 2}, Block{Collision::Cube, "stone"});
 }
 
 void MapEditor::add_tile_selection(QListView* list_tile_selection) {
@@ -83,8 +83,6 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
     // Modifico la representacion en el mapa.
     map.add_block(Coordinate{x_grid, y_grid}, tile_to_paint);
 
-    qDebug() << tile_to_paint.texture.c_str();
-
     // Repinto el widget generando un evento de pintado.
     // (Esto llama al metodo MapRenderer::paintEvent())
     this->update();
@@ -103,3 +101,8 @@ void MapEditor::wheelEvent(QWheelEvent* event) {
 }
 
 MapEditor::~MapEditor() {}
+
+void MapEditor::saveMap() {
+    qDebug() << "Guardando mapa";
+    map.toYaml();
+}

@@ -20,13 +20,15 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
    public:
-    MainWindow(const char *map_path, QWidget *parent = nullptr);
+    explicit MainWindow(const char *map_path, QWidget *parent = nullptr);
     ~MainWindow();
 
    private slots:
     void on_changeBackgroundButton_clicked();
 
-   private:
+    void on_saveMapButton_clicked();
+
+private:
     Ui::MainWindow *ui;
     Map map;
 

@@ -38,10 +38,18 @@ Block getBlockFromTextureName(QString textureName) {
     return Block{collision, textureName.toStdString()};
 }
 
+Map openOrCreateMap(const char *map_path) {
+    if (map_path == nullptr) {
+        return Map(15, 10);
+    } else {
+        return Map::fromYaml(map_path);
+    }
+}
+
 MainWindow::MainWindow(const char *map_path, QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      map((coord_unit)15, (coord_unit)20),
+      map(openOrCreateMap(map_path)),
       editor(map, this) {
     // Asumo que no se pasa ninguna ruta para el mapa.
 
@@ -134,3 +142,5 @@ void MainWindow::on_changeBackgroundButton_clicked() {
 
     editor.update();
 }
+
+void MainWindow::on_saveMapButton_clicked() { editor.saveMap(); }
