@@ -133,9 +133,9 @@ class Map {
     // Servidor
 
     // Carga un mapa desde un archivo yaml.
-    Map static fromYaml(const char* path);
+    Map static fromYaml(const char* file_name);
 
-    void toYaml(const char* path_with_no_name) const;
+    void toYaml() const;
 
     Map(coord_unit size_x, coord_unit size_y);
 

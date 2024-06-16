@@ -5,6 +5,12 @@
 
 #include "yaml-cpp/yaml.h"
 
+// Para que no aparezca error de MAP_PATH no definido.
+// Esta definido en el cmake
+#ifndef MAP_PATH
+#define MAP_PATH "./"
+#endif
+
 namespace YAML {
 template <>
 struct convert<::Map> {
@@ -92,8 +98,11 @@ struct convert<::Collision> {
 
 Map::Map() {}
 
-Map Map::fromYaml(const char* path) {
-    YAML::Node nodo_mapa = YAML::LoadFile(path);
+Map Map::fromYaml(const char* file_name) {
+    std::string file_path = MAP_PATH;
+    file_path += file_name;
+
+    YAML::Node nodo_mapa = YAML::LoadFile(file_path);
 
     // Yaml me devuelve una instancia nueva de mapa.
     // No encontré como hacer que el constructor devuelva eso,
@@ -103,14 +112,11 @@ Map Map::fromYaml(const char* path) {
     return mapa_temp;
 }
 
-void Map::toYaml(const char* path_with_no_name) const {
+void Map::toYaml() const {
     YAML::Node nodo_mapa = YAML::convert<Map>::encode(*this);
 
-    std::string path = path_with_no_name;
-
-    if (path.back() != '/') path += '/';
-
-    path += this->map_name + ".yaml";
+    // MAP_PATH definido por cmake
+    std::string path = MAP_PATH + this->map_name + ".yaml";
 
     std::ofstream archivo(path);
 
