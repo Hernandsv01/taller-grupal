@@ -14,8 +14,6 @@ class MapRenderer : public QWidget {
 
    protected:
     std::optional<Map*> map;
-    uint x_limit = 0;
-    uint y_limit = 0;
     uint tile_size = 64;
     QPoint camera_reference = QPoint(0, 0);
     QPoint mouse_clicked_reference = QPoint(0, 0);

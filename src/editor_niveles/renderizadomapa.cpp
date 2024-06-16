@@ -15,11 +15,7 @@ void MapRenderer::checkMapAvaible() {
     }
 }
 
-void MapRenderer::setMap(Map* map) {
-    this->map = map;
-    this->x_limit = map->get_map_size().x;
-    this->y_limit = map->get_map_size().y;
-}
+void MapRenderer::setMap(Map* map) { this->map = map; }
 
 void MapRenderer::drawBackground(QPainter& painter) {
     if (!background.has_value()) return;
@@ -27,9 +23,11 @@ void MapRenderer::drawBackground(QPainter& painter) {
     painter.setBackgroundMode(Qt::BGMode::OpaqueMode);
     painter.setBackground(QBrush(*background));
 
+    auto limits = (*map)->get_map_size();
+
     painter.setBrush(QBrush(*background));
-    QRect rectangle(camera_reference, QSize(this->x_limit * this->tile_size,
-                                            this->y_limit * this->tile_size));
+    QRect rectangle(camera_reference, QSize(limits.x * this->tile_size,
+                                            limits.y * this->tile_size));
 
     painter.drawRect(rectangle);
 }
@@ -39,11 +37,13 @@ void MapRenderer::setBackground(QImage image) { background = image; }
 void MapRenderer::drawGrid(QPainter& painter) {
     QVector<QLine> lineas;
 
+        auto limits = (*map)->get_map_size();
+
     int first_x = 0 + camera_reference.x();
-    int last_x = (this->x_limit * this->tile_size) + camera_reference.x();
+    int last_x = (limits.x * this->tile_size) + camera_reference.x();
 
     int first_y = 0 + camera_reference.y();
-    int last_y = (this->y_limit * this->tile_size) + camera_reference.y();
+    int last_y = (limits.y * this->tile_size) + camera_reference.y();
 
     // Agrego a un vector todas las lineas horizontales y verticales a dibujar
     for (int x = first_x; x <= last_x; x += this->tile_size) {
@@ -140,23 +140,26 @@ void MapRenderer::wheelEvent(QWheelEvent* event) {
     int numDegrees = event->angleDelta().y() / 8;
     int numSteps = numDegrees / 15;
 
+    // Velocidad de zoom.
     float modify = 3;
 
+    // Evito que el usuario haga demasiado o muy poco zoom.
     if (tile_size + modify * numSteps > MAX_TILE_SIZE ||
         tile_size + modify * numSteps < MIN_TILE_SIZE)
         return;
 
-    QPointF window_center = QPointF(this->width(), this->height()) / 2.0;
+    QPointF viewport_center = QPointF(this->width(), this->height()) / 2.0;
 
-    QPointF window_center_on_grid =
-        (window_center - QPointF(camera_reference)) / tile_size;
+    // Calculo a que parte de la grilla apunta el centro del viewport
+    QPointF view_port_center_on_grid =
+        (viewport_center - QPointF(camera_reference)) / tile_size;
 
     tile_size = round(tile_size + modify * numSteps);
 
     // Despejo de la ecuacion de arriba la camara reference para el nuevo
     // tile_size.
     QPointF new_camera_reference =
-        window_center - (tile_size * window_center_on_grid);
+        viewport_center - (tile_size * view_port_center_on_grid);
 
     set_camera_reference(new_camera_reference.toPoint());
 
