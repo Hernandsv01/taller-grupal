@@ -48,32 +48,6 @@ void MapRenderer::drawGrid(QPainter& painter) {
     painter.drawLines(lineas);
 }
 
-QString get_tile_name(Tile unTile) {
-    // Por ahora utilizo este switch para obtener el nombre del archivo.
-    // Tal vez haya una manera mejor de hacerlo?
-    switch (unTile) {
-        case Tile::dirt:
-            return "dirt.png";
-        case Tile::stone:
-            return "stone.png";
-        case Tile::water:
-            return "water.png";
-        case Tile::spawn_enemy:
-            return "spawn_enemy.png";
-        case Tile::spawn_player:
-            return "spawn_player.png";
-        case Tile::spawn_item:
-            return "spawn_item.png";
-
-        case Tile::air:
-        default:
-            qDebug("Case tile air: Deberia ser un error");
-            return "ERROR?";
-    }
-
-    return "ERROR?";
-}
-
 MapRenderer::MapRenderer(QWidget* parent) : QWidget{parent}, tiles{nullptr} {
     // Defino el tilesize. Esto indica cuantos pixeles ocupa cada casillero de
     // la grilla.
@@ -81,15 +55,22 @@ MapRenderer::MapRenderer(QWidget* parent) : QWidget{parent}, tiles{nullptr} {
 
     // Creo una grilla de x_limit * y_limit. Inicialmente todo es aire.
     for (int i = 0; i < y_limit; i++) {
-        level.emplace_back(std::vector<Tile>(x_limit, Tile::air));
+        level.emplace_back(
+            std::vector<Block>(x_limit, Block{Collision::Air, ""}));
     }
 
+    // Defino para que el painter use antialliasing, y filtro bilineal, para que
+    // se vea mejor.
+    // painter.setRenderHint(QPainter::RenderHint::Antialiasing);
+    // painter.setRenderHint(QPainter::TextAntialiasing);
+    // painter.setRenderHint(QPainter::RenderHint::SmoothPixmapTransform);
+
     // Defino algunos tiles en la grilla para testear.
-    level[0][0] = Tile::dirt;
+    level[0][0] = Block{Collision::Cube, "dirt"};
 
-    level[5][3] = Tile::water;
+    level[5][3] = Block{Collision::Cube, "water"};
 
-    level[4][2] = Tile::stone;
+    level[4][2] = Block{Collision::Cube, "stone"};
 }
 
 MapRenderer::~MapRenderer() {
@@ -120,15 +101,15 @@ void MapRenderer::paintEvent(QPaintEvent* event) {
             if (x >= x_limit) break;
 
             // Obtengo el tipo de tile, si es aire lo omito.
-            Tile content = level[x][y];
-            if (content == Tile::air) continue;
+            Block block = level[x][y];
+            if (block.texture == "") continue;
 
             // Busco el item en la lista de tiles
             // (por ahora necesito el nombre. Tal vez hay alguna manera mejor?)
             QList<QStandardItem*> tile_items =
-                tiles->findItems(get_tile_name(content));
+                tiles->findItems(QString::fromStdString(block.texture));
 
-            if (tile_items.isEmpty()) continue;
+            if (tile_items.isEmpty()) continue;  // Probablemente sea aire
 
             QStandardItem* tile_item = tile_items[0];
 
@@ -180,7 +161,7 @@ void MapRenderer::mouseMoveEvent(QMouseEvent* event) {
         this->modify_camera_reference(delta);
 
         mouse_clicked_reference = current_mouse_position;
-        this->repaint();
+        this->update();
     }
 }
 
@@ -198,5 +179,5 @@ void MapRenderer::wheelEvent(QWheelEvent* event) {
 
     // qDebug() << "Tile size: " << tile_size << " modify: " << modify;
 
-    this->repaint();
+    this->update();
 }

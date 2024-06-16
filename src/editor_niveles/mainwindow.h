@@ -8,6 +8,8 @@
 #include <QGraphicsView>
 #include <QMainWindow>
 
+#include "../common/map/map.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -18,6 +20,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
    public:
+    // MainWindow(const char *map_path, QWidget *parent = nullptr);
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
@@ -28,5 +31,6 @@ class MainWindow : public QMainWindow {
     Ui::MainWindow *ui;
     MapEditor editor;
     QVector<QImage> backgrounds;
+    Map *map;
 };
 #endif  // MAINWINDOW_H

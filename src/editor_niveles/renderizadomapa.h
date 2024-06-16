@@ -7,9 +7,7 @@
 #include <QWidget>
 #include <optional>
 
-enum Tile { air, dirt, stone, water, spawn_enemy, spawn_player, spawn_item };
-
-Q_DECLARE_METATYPE(Tile)
+#include "../common/map/map.h"
 
 class MapRenderer : public QWidget {
     Q_OBJECT
@@ -17,15 +15,17 @@ class MapRenderer : public QWidget {
    protected:
     uint x_limit = 255;
     uint y_limit = 255;
-    std::vector<std::vector<Tile>> level;
+    std::vector<std::vector<Block>> level;
     uint tile_size = 64;
     QStandardItemModel* tiles;
     QPoint camera_reference = QPoint(0, 0);
     QPoint mouse_clicked_reference = QPoint(0, 0);
     bool moving_camera = false;
     std::optional<QImage> background;
+    // Map& map;
 
    public:
+    // explicit MapRenderer(QWidget* parent = nullptr, Map& map);
     explicit MapRenderer(QWidget* parent = nullptr);
     virtual ~MapRenderer();
 

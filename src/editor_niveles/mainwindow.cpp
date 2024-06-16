@@ -5,12 +5,45 @@
 #include <QDebug>
 #include <QDialog>
 #include <QDirIterator>
+#include <QMetaType>
+#include <QVariant>
+#include <stdexcept>
 
 #include "./ui_mainwindow.h"
 #include "renderizadomapa.h"
 
+Q_DECLARE_METATYPE(Block)
+
+Block getBlockFromTextureName(QString textureName) {
+    Collision collision;
+
+    if (textureName == "dirt") {
+        collision = Collision::Cube;
+    } else if (textureName == "stone") {
+        collision = Collision::Cube;
+    } else if (textureName == "water") {
+        collision = Collision::Cube;
+    } else if (textureName == "spawn_enemy") {
+        collision = Collision::EnemySpawn;
+    } else if (textureName == "spawn_player") {
+        collision = Collision::PlayerSpawn;
+    } else if (textureName == "spawn_item") {
+        collision = Collision::ItemSpawn;
+    } else {
+        throw std::runtime_error("Textura no reconocida");
+    }
+
+    return Block{collision, textureName.toStdString()};
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), editor(this) {
+    // if (map_path == nullptr) {
+    //     map = new Map(255, 255);
+    // } else {
+    //     map = &Map::fromYaml(map_path);
+    // }
+
     ui->setupUi(this);
 
     // Creo una modelo de lista de tiles, para almacenar los distintos tipos y
@@ -41,8 +74,14 @@ MainWindow::MainWindow(QWidget *parent)
 
         QString fileName = it.fileName();
 
+        if (!fileName.endsWith(".png")) {
+            throw std::runtime_error("Solo se permiten archivos .png");
+        }
+
+        QString textureName = fileName.left(fileName.length() - 4);
+
         // Creo el item y le asigno como icono la textura
-        QStandardItem *tile_item = new QStandardItem(fileName);
+        QStandardItem *tile_item = new QStandardItem(textureName);
         tile_item->setIcon(QIcon(file_path));
 
         QImage image(file_path);
@@ -50,27 +89,12 @@ MainWindow::MainWindow(QWidget *parent)
         // Le seteo como la data la imagen.
         tile_item->setData(image, Qt::UserRole + 2);
 
-        Tile tile_enum;
+        Block tile_block = getBlockFromTextureName(textureName);
+        QVariant tile_block_variant = QVariant::fromValue(tile_block);
 
-        if (fileName == "dirt.png") {
-            tile_enum = Tile::dirt;
-        } else if (fileName == "stone.png") {
-            tile_enum = Tile::stone;
-        } else if (fileName == "water.png") {
-            tile_enum = Tile::water;
-        } else if (fileName == "spawn_enemy.png") {
-            tile_enum = Tile::spawn_enemy;
-        } else if (fileName == "spawn_player.png") {
-            tile_enum = Tile::spawn_player;
-        } else if (fileName == "spawn_item.png") {
-            tile_enum = Tile::spawn_item;
-        } else {
-            tile_enum = Tile::air;
-        }
-
-        // Le asigno como data el tipo de tile, para despues utilizarla en la
-        // grilla del mapa.
-        tile_item->setData(tile_enum, Qt::UserRole + 3);
+        // Le asigno como data el struct Block, para despues utilizarla en el
+        // mapa.
+        tile_item->setData(tile_block_variant, Qt::UserRole + 3);
         tiles->appendRow(tile_item);
     }
 

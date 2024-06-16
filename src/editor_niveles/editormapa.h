@@ -9,7 +9,7 @@ class MapEditor : public MapRenderer {
     bool isEditing = false;
     bool isMovingCamera = false;
     QListView* tile_selection = nullptr;
-    Tile tile_to_paint = Tile::air;
+    Block tile_to_paint = Block{Collision::Air, ""};
 
    public:
     MapEditor(QWidget* parent);

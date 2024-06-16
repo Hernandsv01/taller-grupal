@@ -1,6 +1,9 @@
 #include "editormapa.h"
 
 #include <QDebug>
+#include <iostream>
+
+Q_DECLARE_METATYPE(Block)
 
 MapEditor::MapEditor(QWidget* parent) : MapRenderer(parent) {
     this->setMouseTracking(true);
@@ -24,12 +27,12 @@ void MapEditor::mousePressEvent(QMouseEvent* event) {
 
         tile_to_paint = this->tiles->itemFromIndex(index_selected_tile)
                             ->data(Qt::UserRole + 3)
-                            .value<Tile>();
+                            .value<Block>();
     } else if (event->button() == Qt::MouseButton::RightButton) {
         // Si se clickeo con el boton derecho, se pinta aire (osea, se
         // borra).
         this->isEditing = true;
-        tile_to_paint = Tile::air;
+        tile_to_paint = Block{Collision::Air, ""};
     } else {
         return;
     }
@@ -72,7 +75,7 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
 
     // Repinto el widget generando un evento de pintado.
     // (Esto llama al metodo MapRenderer::paintEvent())
-    this->repaint();
+    this->update();
 }
 void MapEditor::mouseReleaseEvent(QMouseEvent* event) {
     this->MapRenderer::mouseReleaseEvent(event);
