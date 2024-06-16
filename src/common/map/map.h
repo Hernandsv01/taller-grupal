@@ -147,7 +147,7 @@ class Map {
 
     void resizeTo(coord_unit new_size_x, coord_unit new_size_y);
 
-    void extandToMax();
+    void expandToMax();
     void contractToMin();
 
     // Devuelve todos los bloques que tengan alguna colision.
