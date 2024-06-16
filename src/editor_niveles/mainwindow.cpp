@@ -138,16 +138,16 @@ void MainWindow::on_changeBackgroundButton_clicked() {
     editor.update();
 }
 
-void MainWindow::on_saveMapButton_clicked() { editor.saveMap(); }
+void MainWindow::on_saveMapButton_clicked() {
+    map.contractToMin();
+    editor.saveMap();
+    map.expandToMax();
+}
 
 void MainWindow::on_loadMapEditorButton_clicked() {
     ui->textErrorBeginToEdit->setText("");
 
-    qDebug() << "Empezar a editar";
-
     std::string map_name = ui->mapNameInput->text().toStdString();
-
-    qDebug() << "'" << map_name.c_str() << "'";
 
     if (map_name.empty()) {
         ui->textErrorBeginToEdit->setText(
@@ -158,9 +158,11 @@ void MainWindow::on_loadMapEditorButton_clicked() {
     try {
         map = Map::fromYaml(map_name);
     } catch (const std::filesystem::filesystem_error &e) {
-        map = Map(15, 10);
+        map = Map(1, 1);
         map.set_name(map_name);
     }
+
+    map.expandToMax();
 
     editor.setMap(&map);
 
