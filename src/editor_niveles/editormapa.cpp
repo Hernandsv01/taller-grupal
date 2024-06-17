@@ -27,12 +27,8 @@ void MapEditor::mousePressEvent(QMouseEvent* event) {
         this->isEditing = true;
         // Si se clickeo con el boton izquierdo, obtengo el tile seleccionado en
         // la lista
-        {
-            // Bloqueo el acceso a la variable current_selected_tile, porque
-            // podería ser cambiada desde otro hilo
-            std::lock_guard<std::mutex> lock(mutex_current_selected_tile);
-            tile_to_paint = current_selected_tile;
-        }
+        tile_to_paint = current_selected_tile;
+
     } else if (event->button() == Qt::MouseButton::RightButton) {
         // Si se clickeo con el boton derecho, se pinta aire (osea, se
         // borra).
@@ -110,6 +106,13 @@ void MapEditor::saveMap() {
 }
 
 void MapEditor::changeSelectedTile(Block newSelectedTile) {
-    std::lock_guard<std::mutex> lock(mutex_current_selected_tile);
+    // Se ejecuta en el mismo hilo en el que se accede,
+    // por lo que no hay race condition.
     this->current_selected_tile = newSelectedTile;
+}
+
+void MapEditor::changeBackground(IdTexture background) {
+    // Se ejecuta en el mismo hilo en el que se accede,
+    // por lo que no hay race condition.
+    (*map)->set_background(background);
 }

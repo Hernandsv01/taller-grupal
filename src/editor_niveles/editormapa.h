@@ -11,10 +11,9 @@ class MapEditor : public MapRenderer {
     bool isMovingCamera = false;
     Block tile_to_paint = Block{Collision::Air, ""};
 
-    // Necesito mutex, porque el current_selected_tile es accedido
-    // por el hilo de la mainwindow, y el hilo de la interfaz.
-    // Tal vez son el mismo hilo, pero prefiero no arriesgarme
-    std::mutex mutex_current_selected_tile;
+    // Esta variable es accedida tanto por mainwindow como por el editor.
+    // No le pongo mutex porque verifiqué que ambas partes del programa
+    // se ejecutan en el mismo hilo.
     Block current_selected_tile = Block{Collision::Air, ""};
 
    public:
@@ -24,6 +23,7 @@ class MapEditor : public MapRenderer {
     void saveMap();
 
     void changeSelectedTile(Block newSelectedTile);
+    void changeBackground(IdTexture image);
 
    private slots:
     void mousePressEvent(QMouseEvent* event);

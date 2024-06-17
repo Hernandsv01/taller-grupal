@@ -7,6 +7,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMainWindow>
+#include <list>
 
 #include "../common/map/map.h"
 
@@ -41,7 +42,8 @@ class MainWindow : public QMainWindow {
     // El editor debe crearse despues del mapa, porque depende del tamaño del
     // mapa
     MapEditor editor;
-    QVector<QImage> backgrounds;
+
+    std::list<IdTexture> avaible_background_texture_ids;
 
     void changed_selected_tile(const QModelIndex &new_seleccion,
                                const QModelIndex &old_selection);

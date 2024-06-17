@@ -237,6 +237,10 @@ void Map::add_block(const Coordinate& coordinate, const Block& block) {
     blocks[coordinate.y][coordinate.x] = block;
 }
 
+void Map::set_background(IdTexture background) {
+    this->background_texture = background;
+}
+
 void Map::resizeTo(coord_unit new_size_x, coord_unit new_size_y) {
     blocks.resize(new_size_y, std::vector<::Block>(new_size_x));
 

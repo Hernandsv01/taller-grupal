@@ -18,7 +18,10 @@ void MapRenderer::checkMapAvaible() {
 void MapRenderer::setMap(Map* map) { this->map = map; }
 
 void MapRenderer::drawBackground(QPainter& painter) {
-    if (!background.has_value()) return;
+    // Muestra el background que esta definido en el mapa.
+    IdTexture background_id = (*map)->get_background();
+
+    QImage* background = &background_textures[background_id];
 
     painter.setBackgroundMode(Qt::BGMode::OpaqueMode);
     painter.setBackground(QBrush(*background));
@@ -32,12 +35,10 @@ void MapRenderer::drawBackground(QPainter& painter) {
     painter.drawRect(rectangle);
 }
 
-void MapRenderer::setBackground(QImage image) { background = image; }
-
 void MapRenderer::drawGrid(QPainter& painter) {
     QVector<QLine> lineas;
 
-        auto limits = (*map)->get_map_size();
+    auto limits = (*map)->get_map_size();
 
     int first_x = 0 + camera_reference.x();
     int last_x = (limits.x * this->tile_size) + camera_reference.x();
@@ -168,4 +169,9 @@ void MapRenderer::wheelEvent(QWheelEvent* event) {
 
 void MapRenderer::addTileTextures(QMap<IdTexture, QImage> tile_textures) {
     this->tile_textures = tile_textures;
+}
+
+void MapRenderer::addBackgroundTextures(
+    QMap<IdTexture, QImage> background_textures) {
+    this->background_textures = background_textures;
 }

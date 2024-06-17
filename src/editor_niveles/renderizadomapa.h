@@ -18,8 +18,8 @@ class MapRenderer : public QWidget {
     QPoint camera_reference = QPoint(0, 0);
     QPoint mouse_clicked_reference = QPoint(0, 0);
     bool moving_camera = false;
-    std::optional<QImage> background;
     QMap<IdTexture, QImage> tile_textures;
+    QMap<IdTexture, QImage> background_textures;
 
    private:
    public:
@@ -28,6 +28,7 @@ class MapRenderer : public QWidget {
     virtual ~MapRenderer();
 
     void addTileTextures(QMap<IdTexture, QImage> tile_textures);
+    void addBackgroundTextures(QMap<IdTexture, QImage> background_textures);
 
     void paintEvent(QPaintEvent* event);
     void setMap(Map* map);
@@ -37,8 +38,6 @@ class MapRenderer : public QWidget {
 
     void set_camera_reference(QPoint reference);
     void modify_camera_reference(QPoint delta);
-
-    virtual void setBackground(QImage image);
 
    protected:
     void mousePressEvent(QMouseEvent* event);

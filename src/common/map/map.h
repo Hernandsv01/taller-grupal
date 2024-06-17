@@ -176,6 +176,7 @@ class Map {
     // Editor mapa
     void add_block(const Coordinate& coordinate, const Block& block);
     std::vector<BlockOnlyTexture> get_all_block_textures_editor() const;
+    void set_background(IdTexture background);
 };
 
 #endif

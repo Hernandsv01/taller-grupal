@@ -77,8 +77,8 @@ MainWindow::MainWindow(QWidget *parent)
 
             QImage image(file_path);
 
-            backgrounds.append(image);
             background_textures.insert(textureName.toStdString(), image);
+            avaible_background_texture_ids.push_back(textureName.toStdString());
         }
     }
 
@@ -117,8 +117,6 @@ MainWindow::MainWindow(QWidget *parent)
         tile_textures.insert(textureName.toStdString(), image);
     }
 
-    on_changeBackgroundButton_clicked();
-
     // Agrego los items a la interfaz
     ui->listView->setModel(&tiles);
 
@@ -126,6 +124,7 @@ MainWindow::MainWindow(QWidget *parent)
     // cual tile se esta seleccionando.
 
     editor.addTileTextures(tile_textures);
+    editor.addBackgroundTextures(background_textures);
 
     if (ui->editorContainer->layout() == nullptr) {
         ui->editorContainer->setLayout(new QHBoxLayout());
@@ -142,11 +141,12 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::on_changeBackgroundButton_clicked() {
-    QImage aBackground = backgrounds.last();
-    backgrounds.pop_back();
-    backgrounds.push_front(aBackground);
+    // Recorre todos los background disponibles, y los muestra de a uno.
+    IdTexture aBackgroundTextureId = avaible_background_texture_ids.front();
+    avaible_background_texture_ids.pop_front();
+    avaible_background_texture_ids.push_back(aBackgroundTextureId);
 
-    editor.setBackground(aBackground);
+    editor.changeBackground(aBackgroundTextureId);
 
     editor.update();
 }
