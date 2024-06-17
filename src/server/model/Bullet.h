@@ -82,7 +82,7 @@ public:
             }
 
             if (other->is_entity_damageable()) {
-                bool is_dead = other->deal_damage(other->get_damage_dealt());
+                bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
                     Update update{static_cast<uint16_t>(other->get_id()),

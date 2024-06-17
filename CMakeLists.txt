@@ -102,9 +102,10 @@ src/server/clients/server_client.cpp
         src/server/physics/physics.h
         src/server/physics/physics.cpp
         src/server/model/Bullet.h
-        # src/server/physics/physics.h
-        # src/server/physics/physics.cpp
-        )
+        src/server/model/Pickup.h
+        src/server/model/constants/pickup_type.h
+        src/server/model/constants/ammo_type.h
+)
 
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})
 add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
