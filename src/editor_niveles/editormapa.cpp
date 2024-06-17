@@ -2,32 +2,52 @@
 
 #include <QDebug>
 
+// cppcheck-suppress unknownMacro
+Q_DECLARE_METATYPE(Block)
+
 MapEditor::MapEditor(QWidget* parent) : MapRenderer(parent) {
     this->setMouseTracking(true);
 }
 
-void MapEditor::add_tile_selection(QListView* list_tile_selection) {
-    // Guardo el puntero a Widget de la lista de seleccion de tiles.
-    this->tile_selection = list_tile_selection;
+MapEditor::~MapEditor() {}
+
+void MapEditor::saveMap() {
+    checkMapAvaible();
+    qDebug() << "Guardando mapa";
+    (*map)->toYaml();
+}
+
+void MapEditor::changeSelectedTile(Block newSelectedTile) {
+    // Se ejecuta en el mismo hilo en el que se accede,
+    // por lo que no hay race condition.
+    this->current_selected_tile = newSelectedTile;
+}
+
+void MapEditor::changeBackground(IdTexture background) {
+    // Se ejecuta en el mismo hilo en el que se accede,
+    // por lo que no hay race condition.
+    (*map)->set_background(background);
 }
 
 void MapEditor::mousePressEvent(QMouseEvent* event) {
-    // Defino que se está editando la grilla.
-    this->isEditing = true;
+    // Ejecuta a al funcion padre por si quiere hacer algo con el evento;
+    this->MapRenderer::mousePressEvent(event);
 
-    if (event->button() == Qt::LeftButton) {
-        // Si se clickeo con el boton izquierdo, busco cual es el tile
-        // seleccionado en el Widget
-        auto index_selected_tile = this->tile_selection->currentIndex();
-        if (!index_selected_tile.isValid()) return;
+    if (event->button() == Qt::MouseButton::LeftButton) {
+        // Si se clickeo con el boton izquierdo, obtengo el tile seleccionado en
+        // la lista
+        tile_to_paint = current_selected_tile;
 
-        tile_to_paint = this->tiles->itemFromIndex(index_selected_tile)
-                            ->data(Qt::UserRole + 3)
-                            .value<Tile>();
+    } else if (event->button() == Qt::MouseButton::RightButton) {
+        // Si se clickeo con el boton derecho, se pinta aire (osea, se
+        // borra).
+        tile_to_paint = Block{Collision::Air, ""};
     } else {
-        // Si se clickeo con el boton derecho, se pinta aire (osea, se borra).
-        tile_to_paint = Tile::air;
+        // Si no es izquierdo o derecho, no quiero hacer nada más.
+        return;
     }
+
+    this->isEditing = true;
 
     // Llamo al evento de mouseMove, que es el que realmente realiza la accion
     // de modificar la grilla.
@@ -35,16 +55,20 @@ void MapEditor::mousePressEvent(QMouseEvent* event) {
 }
 
 void MapEditor::mouseMoveEvent(QMouseEvent* event) {
+    MapRenderer::checkMapAvaible();
+
+    this->MapRenderer::mouseMoveEvent(event);
+
     // Si no estoy editando, no quiero modificar nada.
     if (!this->isEditing) return;
 
-    qDebug() << "EVENTO" << event->x() << " " << event->y();
-
     // Calculo en que posicion de la grilla estoy parado.
-    int x_grid = event->x() / tile_size;
-    int y_grid = event->y() / tile_size;
+    coord_unit x_grid = (event->x() - camera_reference.x()) / tile_size;
+    coord_unit y_grid = (event->y() - camera_reference.y()) / tile_size;
 
-    qDebug() << "GRILLA" << x_grid << " " << y_grid;
+    auto limits = (*map)->get_map_size();
+    auto x_limit = limits.x;
+    auto y_limit = limits.y;
 
     // Verifico que no me pase de los limites de la grilla. (puede pasar si
     // moves mouse muy rapido fuera de ventana)
@@ -64,19 +88,22 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
         return;
     }
 
-    // Modifico la representacion de la grilla.
-    level[x_grid][y_grid] = tile_to_paint;
+    // Modifico la representacion en el mapa.
+    (*map)->add_block(Coordinate{x_grid, y_grid}, tile_to_paint);
 
     // Repinto el widget generando un evento de pintado.
     // (Esto llama al metodo MapRenderer::paintEvent())
-    this->repaint();
+    this->update();
 }
 void MapEditor::mouseReleaseEvent(QMouseEvent* event) {
+    this->MapRenderer::mouseReleaseEvent(event);
+
     // Si suelto el mouse, dejo de editar
-    isEditing = false;
+    if (event->button() == Qt::MouseButton::LeftButton ||
+        event->button() == Qt::MouseButton::RightButton)
+        this->isEditing = false;
 }
 
 void MapEditor::wheelEvent(QWheelEvent* event) {
-    // Tal vez implemente zoom en el futuro?
-    return;
+    this->MapRenderer::wheelEvent(event);
 }

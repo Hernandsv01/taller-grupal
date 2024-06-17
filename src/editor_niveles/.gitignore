@@ -80,3 +80,7 @@ Thumbs.db
 CMakeCache.txt
 
 editor_niveles
+
+/map
+
+CMakeLists.txt.user
