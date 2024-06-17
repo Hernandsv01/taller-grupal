@@ -14,9 +14,12 @@
 #include "./ui_mainwindow.h"
 #include "renderizadomapa.h"
 
+#define ITEM_BLOCK_TYPE_DATA (Qt::UserRole + 3)
+
 // cppcheck-suppress unknownMacro
 Q_DECLARE_METATYPE(Block)
 
+// Define que tipo de colision tiene cada textura
 Block getBlockFromTextureName(QString textureName) {
     Collision collision;
 
@@ -42,16 +45,8 @@ Block getBlockFromTextureName(QString textureName) {
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       ui(new Ui::MainWindow),
-      map(Map(15, 10)),
+      map(Map(0, 0)),
       editor(this) {
-    // Asumo que no se pasa ninguna ruta para el mapa.
-
-    // if (map_path == nullptr) {
-    //     map = new Map(255, 255);
-    // } else {
-    //     map = &Map::fromYaml(map_path);
-    // }
-
     ui->setupUi(this);
 
     ui->textErrorBeginToEdit->setText("");
@@ -60,80 +55,34 @@ MainWindow::MainWindow(QWidget *parent)
     QMap<IdTexture, QImage> tile_textures;
     QMap<IdTexture, QImage> background_textures;
 
-    {
-        QDirIterator it(":/textures/backgrounds", QDirIterator::Subdirectories);
-        while (it.hasNext()) {
-            QString file_path = it.next();
-
-            qDebug() << it.fileName() << file_path;
-
-            QString fileName = it.fileName();
-
-            if (!fileName.endsWith(".png") && !fileName.endsWith(".jpg"))
-                throw std::runtime_error(
-                    "Solo se permiten archivos .png o .jpg");
-
-            QString textureName = fileName.left(fileName.length() - 4);
-
-            QImage image(file_path);
-
-            background_textures.insert(textureName.toStdString(), image);
+    loadTexturesFromAndDo(
+        ":/textures/backgrounds", background_textures,
+        [&](const QString &textureName, const QImage &image) {
             avaible_background_texture_ids.push_back(textureName.toStdString());
-        }
-    }
+        });
 
     // itero sobre la carpeta de tiles, con el :/ para que busque en el qrc
-    QDirIterator it(":/textures/tiles", QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QString file_path = it.next();
-
-        qDebug() << it.fileName() << file_path;
-
-        QString fileName = it.fileName();
-
-        if (!fileName.endsWith(".png")) {
-            throw std::runtime_error("Solo se permiten archivos .png");
-        }
-
-        QString textureName = fileName.left(fileName.length() - 4);
-
-        // Creo el item y le asigno como icono la textura
-        QStandardItem *tile_item = new QStandardItem(textureName);
-        tile_item->setIcon(QIcon(file_path));
-
-        QImage image(file_path);
-
-        // Le seteo como la data la imagen.
-        tile_item->setData(image, Qt::UserRole + 2);
-
-        Block tile_block = getBlockFromTextureName(textureName);
-        QVariant tile_block_variant = QVariant::fromValue(tile_block);
-
-        // Le asigno como data el struct Block, para despues utilizarla en
-        // el mapa.
-        tile_item->setData(tile_block_variant, Qt::UserRole + 3);
-        tiles.appendRow(tile_item);
-
-        tile_textures.insert(textureName.toStdString(), image);
-    }
+    loadTexturesFromAndDo(":/textures/tiles", tile_textures,
+                          [&](const QString &textureName, const QImage &image) {
+                              addTileToItemModel(textureName, image);
+                          });
 
     // Agrego los items a la interfaz
     ui->listView->setModel(&tiles);
 
-    // Agrego los tiles y vista de la lista al editor, para poder obtener
-    // cual tile se esta seleccionando.
-
+    // Le envio al editor las texturas que existen, junto a sus ids.
     editor.addTileTextures(tile_textures);
     editor.addBackgroundTextures(background_textures);
 
+    // Agrego el editor a la interfaz.
     if (ui->editorContainer->layout() == nullptr) {
         ui->editorContainer->setLayout(new QHBoxLayout());
     }
-
     ui->editorContainer->layout()->addWidget(&editor);
 
+    // Conecto el evento de cambio de seleccion de tile con mainwindow, para
+    // poder avisarle al editor
     auto tile_selection_model = ui->listView->selectionModel();
-
     QObject::connect(tile_selection_model, &QItemSelectionModel::currentChanged,
                      this, &MainWindow::changed_selected_tile);
 }
@@ -188,8 +137,48 @@ void MainWindow::on_goBackButton_clicked() {
 void MainWindow::changed_selected_tile(const QModelIndex &new_seleccion,
                                        const QModelIndex &old_selection) {
     Block selected_tile = tiles.itemFromIndex(new_seleccion)
-                              ->data(Qt::UserRole + 3)
+                              ->data(ITEM_BLOCK_TYPE_DATA)
                               .value<::Block>();
 
     editor.changeSelectedTile(selected_tile);
+}
+
+void MainWindow::loadTexturesFromAndDo(
+    std::string path, QMap<IdTexture, QImage> &textures,
+    std::function<void(const QString &, const QImage &)> action) {
+    QDirIterator it(QString::fromStdString(path), QDirIterator::Subdirectories);
+
+    while (it.hasNext()) {
+        QString file_path = it.next();
+
+        qDebug() << it.fileName() << file_path;
+
+        QString fileName = it.fileName();
+
+        if (!fileName.endsWith(".png") && !fileName.endsWith(".jpg"))
+            throw std::runtime_error("Solo se permiten archivos .png o .jpg");
+
+        QString textureName = fileName.left(fileName.length() - 4);
+
+        QImage image(file_path);
+
+        textures.insert(textureName.toStdString(), image);
+
+        action(textureName, image);
+    }
+}
+
+void MainWindow::addTileToItemModel(const QString &texture_name,
+                                    const QImage &texture) {
+    // Creo el item y le asigno como icono la textura
+    QStandardItem *tile_item =
+        new QStandardItem(QPixmap::fromImage(texture), texture_name);
+
+    // Le asigno como data el struct Block, para despues utilizarla en
+    // el mapa.
+    Block tile_block = getBlockFromTextureName(texture_name);
+    QVariant tile_block_variant = QVariant::fromValue(tile_block);
+    tile_item->setData(tile_block_variant, ITEM_BLOCK_TYPE_DATA);
+
+    tiles.appendRow(tile_item);
 }

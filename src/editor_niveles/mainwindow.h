@@ -7,6 +7,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMainWindow>
+#include <QStandardItemModel>
 #include <list>
 
 #include "../common/map/map.h"
@@ -37,6 +38,8 @@ class MainWindow : public QMainWindow {
     Ui::MainWindow *ui;
     Map map;
 
+    // Lista de texturas disponibles para usar como tiles.
+    // Usado como modelo para el widget que muestra las texturas disponibles.
     QStandardItemModel tiles;
 
     // El editor debe crearse despues del mapa, porque depende del tamaño del
@@ -45,7 +48,13 @@ class MainWindow : public QMainWindow {
 
     std::list<IdTexture> avaible_background_texture_ids;
 
+    void loadTexturesFromAndDo(
+        std::string path, QMap<IdTexture, QImage> &textures,
+        std::function<void(const QString &, const QImage &)> action);
+
     void changed_selected_tile(const QModelIndex &new_seleccion,
                                const QModelIndex &old_selection);
+
+    void addTileToItemModel(const QString &texture_name, const QImage &texture);
 };
 #endif  // MAINWINDOW_H

@@ -1,22 +1,32 @@
 #include "editormapa.h"
 
 #include <QDebug>
-#include <QMetaType>
-#include <iostream>
 
 // cppcheck-suppress unknownMacro
 Q_DECLARE_METATYPE(Block)
 
 MapEditor::MapEditor(QWidget* parent) : MapRenderer(parent) {
     this->setMouseTracking(true);
+}
 
-    // TODO: ELIMINAR
-    // //  Defino algunos tiles en la grilla para testear.
-    // map.add_block(Coordinate{0, 0}, Block{Collision::Cube, "dirt"});
+MapEditor::~MapEditor() {}
 
-    // map.add_block(Coordinate{5, 3}, Block{Collision::Cube, "water"});
+void MapEditor::saveMap() {
+    checkMapAvaible();
+    qDebug() << "Guardando mapa";
+    (*map)->toYaml();
+}
 
-    // map.add_block(Coordinate{4, 2}, Block{Collision::Cube, "stone"});
+void MapEditor::changeSelectedTile(Block newSelectedTile) {
+    // Se ejecuta en el mismo hilo en el que se accede,
+    // por lo que no hay race condition.
+    this->current_selected_tile = newSelectedTile;
+}
+
+void MapEditor::changeBackground(IdTexture background) {
+    // Se ejecuta en el mismo hilo en el que se accede,
+    // por lo que no hay race condition.
+    (*map)->set_background(background);
 }
 
 void MapEditor::mousePressEvent(QMouseEvent* event) {
@@ -24,7 +34,6 @@ void MapEditor::mousePressEvent(QMouseEvent* event) {
     this->MapRenderer::mousePressEvent(event);
 
     if (event->button() == Qt::MouseButton::LeftButton) {
-        this->isEditing = true;
         // Si se clickeo con el boton izquierdo, obtengo el tile seleccionado en
         // la lista
         tile_to_paint = current_selected_tile;
@@ -32,11 +41,13 @@ void MapEditor::mousePressEvent(QMouseEvent* event) {
     } else if (event->button() == Qt::MouseButton::RightButton) {
         // Si se clickeo con el boton derecho, se pinta aire (osea, se
         // borra).
-        this->isEditing = true;
         tile_to_paint = Block{Collision::Air, ""};
     } else {
+        // Si no es izquierdo o derecho, no quiero hacer nada más.
         return;
     }
+
+    this->isEditing = true;
 
     // Llamo al evento de mouseMove, que es el que realmente realiza la accion
     // de modificar la grilla.
@@ -86,8 +97,8 @@ void MapEditor::mouseMoveEvent(QMouseEvent* event) {
 }
 void MapEditor::mouseReleaseEvent(QMouseEvent* event) {
     this->MapRenderer::mouseReleaseEvent(event);
-    // Si suelto el mouse, dejo de editar
 
+    // Si suelto el mouse, dejo de editar
     if (event->button() == Qt::MouseButton::LeftButton ||
         event->button() == Qt::MouseButton::RightButton)
         this->isEditing = false;
@@ -95,24 +106,4 @@ void MapEditor::mouseReleaseEvent(QMouseEvent* event) {
 
 void MapEditor::wheelEvent(QWheelEvent* event) {
     this->MapRenderer::wheelEvent(event);
-}
-
-MapEditor::~MapEditor() {}
-
-void MapEditor::saveMap() {
-    checkMapAvaible();
-    qDebug() << "Guardando mapa";
-    (*map)->toYaml();
-}
-
-void MapEditor::changeSelectedTile(Block newSelectedTile) {
-    // Se ejecuta en el mismo hilo en el que se accede,
-    // por lo que no hay race condition.
-    this->current_selected_tile = newSelectedTile;
-}
-
-void MapEditor::changeBackground(IdTexture background) {
-    // Se ejecuta en el mismo hilo en el que se accede,
-    // por lo que no hay race condition.
-    (*map)->set_background(background);
 }

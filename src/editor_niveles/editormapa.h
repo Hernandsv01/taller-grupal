@@ -1,10 +1,7 @@
 #ifndef EDITORMAPA_H
 #define EDITORMAPA_H
 
-#include <renderizadomapa.h>
-
-#include <QListView>
-#include <mutex>
+#include "renderizadomapa.h"
 
 class MapEditor : public MapRenderer {
     bool isEditing = false;
@@ -14,7 +11,7 @@ class MapEditor : public MapRenderer {
     // Esta variable es accedida tanto por mainwindow como por el editor.
     // No le pongo mutex porque verifiqué que ambas partes del programa
     // se ejecutan en el mismo hilo.
-    Block current_selected_tile = Block{Collision::Air, ""};
+    Block current_selected_tile = tile_to_paint;
 
    public:
     MapEditor(QWidget* parent);
