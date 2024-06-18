@@ -10,6 +10,8 @@ void Client_listener::run() {
             clientes_en_lobby.push_back(std::make_unique<LobbyManager>(
                 std::move(skt), gamePoolMonitor));
 
+            clientes_en_lobby.back()->start();
+
         } catch (ClosedConnectionError& e) {
             // Se cerró manualmente el listener para terminar el hilo.
             is_running = false;

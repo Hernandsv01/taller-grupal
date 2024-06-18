@@ -73,7 +73,7 @@ void LobbyManager::process_command(MessageType command) {
 }
 
 void LobbyManager::run() {
-    while(is_running){
+    while (is_running) {
         MessageType command = protocol.receive_command();
         process_command(command);
     }
