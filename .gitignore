@@ -32,6 +32,7 @@
 *.app
 client
 server
+!server/
 testsdl
 lobby_client
 !lobby_client/

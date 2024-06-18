@@ -1,8 +1,8 @@
 #include "lobby_protocol.h"
 
+#include "../../common/lobbyprotocol.h"
 
-LobbyProtocol::LobbyProtocol(Socket& socket) : socket(socket) {}
-
+LobbyProtocol::LobbyProtocol(Socket socket) : socket(std::move(socket)) {}
 
 MessageType LobbyProtocol::receive_command() {
     MessageType command;
@@ -39,32 +39,29 @@ void LobbyProtocol::send_join_game(std::pair<uint16_t, std::string> &joined_info
     socket.sendall(buffer_map_name, sizeof(buffer_map_name));
 }
 
-void LobbyProtocol::get_games(std::vector<std::unique_ptr<Game>> &games) {
+void LobbyProtocol::send_games(std::vector<GameMatch>& games) {
     uint8_t games_count = games.size();
     socket.sendall(&games_count, sizeof(uint8_t));
 
     for (const auto &game : games) {
-        match_id id = game->get_id();
+        match_id id = game.id;
         socket.sendall(&id, sizeof(id));
 
-        std::string match_name = game->get_match_name();
+        std::string match_name = game.name;
         char buffer_match_name[16] = {0};
         memcpy(buffer_match_name, match_name.c_str(), match_name.length());
         socket.sendall(buffer_match_name, sizeof(buffer_match_name));
 
-        std::string map_name = game->get_map_name();
+        std::string map_name = game.map;
         char buffer_map_name[32] = {0};
         strncpy(buffer_map_name, map_name.c_str(), map_name.length());
         socket.sendall(buffer_map_name, sizeof(buffer_map_name));
-
-        //otra forma si envio un GameMatch//GameInfoDTO por iteracion
-//        GameMatch match_info;
-//        match_info.id = game->get_id();
-//        match_info.name = game->get_match_name();
-//        match_info.map = game->get_map_name();
-//        socket.sendall(&match_info, sizeof(GameMatch));
     }
-
 }
 
+Socket LobbyProtocol::extract_socket() {
+    valid = false;
+    return std::move(socket);
+}
 
+bool LobbyProtocol::is_valid() { return valid; }

@@ -5,6 +5,7 @@
 
 #include "server_client.h"
 
+//TODO: ELIMINAR? creo que ya no se usa.
 class Client_Monitor {
    private:
     static std::vector<Server_Client*> list;
