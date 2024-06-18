@@ -1,25 +1,25 @@
 #include "update_queue.h"
-Queue<std::vector<Update>> Update_queue::updates;
+Queue<std::vector<Update::Update_new>> Update_queue::updates;
 
-void Update_queue::push(std::vector<Update> &update) { updates.push(update); }
+void Update_queue::push(std::vector<Update::Update_new> &update) { updates.push(update);}
 
-void Update_queue::try_push(std::vector<Update> &update) {
+void Update_queue::try_push(std::vector<Update::Update_new> &update) {
     updates.try_push(update);
 }
 
-std::vector<Update> Update_queue::pop() { return updates.pop(); }
+std::vector<Update::Update_new> Update_queue::pop() { return updates.pop(); }
 
-std::vector<Update> Update_queue::try_pop() {
-    std::vector<Update> update;
+std::vector<Update::Update_new> Update_queue::try_pop() {
+    std::vector<Update::Update_new> update;
     if (updates.try_pop(update)) {
         return update;
     }
     return update;
 }
 
-std::vector<Update> Update_queue::try_pop_all() {
-    std::vector<Update> all_updates;
-    std::vector<Update> update_one_tick;
+std::vector<Update::Update_new> Update_queue::try_pop_all() {
+    std::vector<Update::Update_new> all_updates;
+    std::vector<Update::Update_new> update_one_tick;
 
     // Popeo de a uno los vectores de updates, y voy insertando al final del
     // vector de todos los updates existentes.

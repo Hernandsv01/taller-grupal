@@ -9,14 +9,14 @@
 
 class Update_queue {
    private:
-    static Queue<std::vector<Update>> updates;
+    static Queue<std::vector<Update::Update_new>> updates;
 
    public:
-    static void push(std::vector<Update>& update);
-    static void try_push(std::vector<Update>& update);
-    static std::vector<Update> pop();
-    static std::vector<Update> try_pop();
-    static std::vector<Update> try_pop_all();
+    static void push(std::vector<Update::Update_new> &update);
+    static void try_push(std::vector<Update::Update_new> &update);
+    static std::vector<Update::Update_new> pop();
+    static std::vector<Update::Update_new> try_pop();
+    static std::vector<Update::Update_new> try_pop_all();
 };
 
 #endif  // UPDATE_MONITOR_H

@@ -58,6 +58,10 @@ struct Block {
                 collision != Collision::PlayerSpawn &&
                 collision != Collision::EnemySpawn);
     }
+
+    bool has_texture_editor() const { return (collision != Collision::Air); }
+
+    bool is_void() const { return (collision == Collision::Air); }
 };
 
 // Para cuando obtengo todos los bloques con textura
@@ -131,11 +135,20 @@ public:
     // Servidor
 
     // Carga un mapa desde un archivo yaml.
-    Map static fromYaml(const char* path);
+    Map static fromYaml(std::string file_name);
+
+    void toYaml() const;
 
     Map(coord_unit size_x, coord_unit size_y);
 
+    void set_name(const std::string& name);
+
     std::string get_name() const;
+
+    void resizeTo(coord_unit new_size_x, coord_unit new_size_y);
+
+    void expandToMax();
+    void contractToMin();
 
     // Devuelve todos los bloques que tengan alguna colision.
     std::vector<BlockOnlyCollision> get_all_blocks_collisions() const;
@@ -162,6 +175,8 @@ public:
 
     // Editor mapa
     void add_block(const Coordinate& coordinate, const Block& block);
+    std::vector<BlockOnlyTexture> get_all_block_textures_editor() const;
+    void set_background(IdTexture background);
 };
 
 #endif

@@ -2,9 +2,12 @@
 
 #include <utility>
 
-Game::Game(Map map) : Thread("Game server"), status(Game_status::WAITING), map(std::move(map)) {
+Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_status::WAITING), map(std::move(map)), name(name) {
     // Hardcodeado para que se asocie un jugador al único cliente que se conecta
+
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
+    //mapa
+
 }
 
 // Agregado para poder parar el loop del servidor, antes de joinear este thread
@@ -34,8 +37,8 @@ void Game::run_iteration() {
         player->process_action(action);
     }
 
-    std::vector<Update> total_updates;
-    std::vector<Update> tick_updates;
+    std::vector<Update::Update_new> total_updates;
+    std::vector<Update::Update_new> tick_updates;
     for (std::unique_ptr<Dynamic_entity>& entity_ptr : entity_pool) {
         tick_updates = entity_ptr->tick(map, &entity_pool);
         total_updates.insert(total_updates.end(), tick_updates.begin(),
@@ -44,3 +47,27 @@ void Game::run_iteration() {
 
     Client_Monitor::sendAll(total_updates);
 }
+
+uint16_t Game::add_player() {
+    uint16_t id_player = entity_pool.size();
+    entity_pool.push_back(std::make_unique<Player>(id_player, 0, 0));
+    return id_player;
+}
+
+uint8_t Game::get_id() {
+    return id;
+}
+
+void Game::set_id(uint8_t game_id) {
+    this->id = game_id;
+}
+
+std::string Game::get_match_name() {
+    return this->name;
+}
+
+std::string Game::get_map_name(){
+    return this->map.get_name();
+}
+
+

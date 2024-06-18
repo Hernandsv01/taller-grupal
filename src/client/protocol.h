@@ -7,19 +7,18 @@
 #include <vector>
 
 class ClientProtocol{
-private:
+   private:
     Socket& socket;
 
-public:
+   public:
     explicit ClientProtocol(Socket& socket);
 
     //envia al server la tecla presionada
     void send_action(ActionType& key_event);
 
-    std::vector<Update>  receive_ticks();
+    std::vector<Update::Update_new> receive_ticks();
 
     void kill();
-
 };
 
 #endif //CLIENT_PROTOCOL_H

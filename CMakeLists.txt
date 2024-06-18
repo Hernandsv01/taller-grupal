@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # Hace que ejecute el cmakelist del lobby_client
-add_subdirectory(src/lobby_client/)
+add_subdirectory(src/lobby_client)
 # Hace que ejecute el cmakelist del editor de niveles
 add_subdirectory(src/editor_niveles)
 
@@ -77,7 +77,7 @@ src/common/library/liberror.cpp
         src/common/library/socket.h
         src/common/library/thread.h
         src/common/Update.h
-        
+        src/common/Update.cpp
         src/common/updateables.h
         src/common/map/map.h
         src/common/map/map.cpp
@@ -114,6 +114,7 @@ add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
 find_package(Threads REQUIRED)
 target_link_libraries(server PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE Threads::Threads)
+target_link_libraries(client PRIVATE GuiLobby)
 #target_link_libraries(testsdl PRIVATE Threads::Threads)
 
 

@@ -78,9 +78,9 @@ public:
         }
     };
 
-    std::vector<Update> tick(const Map& map,
+    std::vector<Update::Update_new> tick(const Map& map,
         std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) override {
-        std::vector<Update> updates;
+        std::vector<Update::Update_new> updates;
 
         vel_y += acc_y;
 

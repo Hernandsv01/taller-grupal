@@ -5,26 +5,32 @@
 #include <iostream>
 #include <sstream>
 
-ClientProtocol::ClientProtocol(Socket& socket) : socket(socket) {}
+ClientProtocol::ClientProtocol(Socket &socket) : socket(socket) {}
 
 // envio de a un byte ( o sea una accion)
-void ClientProtocol::send_action(ActionType& key_event) {
+void ClientProtocol::send_action(ActionType &key_event) {
     this->socket.sendall(&key_event, sizeof(ActionType));
     //
 }
 
 // recive el paquete del server
-std::vector<Update> ClientProtocol::receive_ticks() {
-    uint8_t quantity = 0x00;
-    this->socket.recvall(&quantity, sizeof(uint8_t));
-    //
-    std::vector<Update> updates(quantity);
-    this->socket.recvall(updates.data(), sizeof(Update) * quantity);
-    //
-    for (int i = 0; i < updates.size(); ++i) {
-        updates[i].id = ntohs(updates[i].id);
-        updates[i].value = ntohl(updates[i].value);
-    }
+std::vector<Update::Update_new> ClientProtocol::receive_ticks() {
+    // Recibo la cantidad de bytes que tengo que leer.
+    // Esto no se correlaciona de ninguna manera con la cantidad de updates
+    uint16_t number_of_bytes;
+    this->socket.recvall(&number_of_bytes, sizeof(number_of_bytes));
+
+    number_of_bytes = ntohs(number_of_bytes);
+
+    // Creo un buffer de esa cantidad de bytes, y lo escribo con lo que recibo
+    // por socket
+    std::vector<uint8_t> buffer(number_of_bytes);
+    this->socket.recvall(buffer.data(), number_of_bytes);
+
+    // Deserializo el buffer en un vector de updates
+    std::vector<Update::Update_new> updates =
+        Update::Update_new::deserialize_all(std::move(buffer));
+
     return updates;
 }
 

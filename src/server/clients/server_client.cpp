@@ -2,7 +2,7 @@
 
 void Client_sender::run() {
     while (is_running) {
-        std::vector<Update> result;
+        std::vector<Update::Update_new> result;
         try {
             result = outputQueue.pop();
             protocol.sendData(result);
@@ -16,7 +16,7 @@ void Client_sender::run() {
     }
 }
 
-void Client_sender::addToQueue(std::vector<Update> const& result) {
+void Client_sender::addToQueue(std::vector<Update::Update_new> const &result) {
     outputQueue.try_push(result);
 }
 

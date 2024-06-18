@@ -19,7 +19,8 @@ class Client {
     Event any_thread_ended;
 
    public:
-    explicit Client(Socket socket, SDL2pp::Window& window);
+    explicit Client(Socket socket, SDL2pp::Window& window, uint16_t player_id,
+                    std::string map_name);
 
     void exec();
 
