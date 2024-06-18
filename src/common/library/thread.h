@@ -82,6 +82,11 @@ class Thread : public Runnable {
         _keep_running = false;
         _is_alive = false;
 
+#ifndef NDEBUG
+        std::cout << "Termina hilo de " << text_description()
+                  << " con PID: " << gettid() << std::endl;
+#endif
+
         // Si alguien agregó un evento de terminado, notificarlo.
         if (thread_ended_event.has_value())
             thread_ended_event.value()->notify_all();
@@ -99,11 +104,6 @@ class Thread : public Runnable {
     void join() override final {
         thread.join();
         _has_been_joined = true;
-
-#ifndef NDEBUG
-        std::cout << "Termina hilo de " << text_description()
-                  << " con PID: " << gettid() << std::endl;
-#endif
     }
 
     // Agrega la opcion de que alguien agrege al thread un evento que notifique

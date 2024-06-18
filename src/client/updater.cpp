@@ -1,7 +1,7 @@
 #include "updater.h"
 
 Updater::Updater(Socket& socket)
-    : Thread("EventListener Cliente"), protocol(socket) {}
+    : Thread("Updater Cliente"), protocol(socket) {}
 
 /*
  * Recive la informacion actualizada del lado del server a traves del socket.

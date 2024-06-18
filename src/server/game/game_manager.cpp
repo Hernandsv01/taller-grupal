@@ -2,7 +2,7 @@
 
 // Deberia recibir un socket conectado.
 LobbyManager::LobbyManager(Socket socket, GamePoolMonitor& game_pool_monitor)
-    : Thread("Game manager"),
+    : Thread("LobbyManager (game_manager)"),
       protocol(std::move(socket)),
       game_pool(game_pool_monitor),
       is_running(true) {
