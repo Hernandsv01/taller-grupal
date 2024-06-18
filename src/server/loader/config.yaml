@@ -1,0 +1,33 @@
+game:
+  time:
+  points:
+    carrot:
+    coin: 
+
+
+enemy: 
+  flyer: 
+    count:
+    life: 
+    speed:
+    damage: 
+  shooter: 
+    count:
+    life:
+    speed:
+    damage: 
+  crawler: 
+    count:
+    life:
+    speed:
+    damage:
+  
+
+player: 
+  speed:
+  jump:
+  max_healh:
+  
+  
+
+
