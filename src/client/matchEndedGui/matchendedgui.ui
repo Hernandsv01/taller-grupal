@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>MatchEndedGui</class>
+    <widget class="QMainWindow" name="MatchEndedGui">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>800</width>
+                <height>600</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>MatchEndedGui</string>
+        </property>
+        <widget class="QWidget" name="centralwidget">
+            <layout class="QVBoxLayout" name="verticalLayout">
+                <item>
+                    <widget class="QLabel" name="label">
+                        <property name="text">
+                            <string>Partida terminada</string>
+                        </property>
+                        <property name="alignment">
+                            <set>Qt::AlignCenter</set>
+                        </property>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QLabel" name="label_2">
+                        <property name="text">
+                            <string>Puntajes</string>
+                        </property>
+                        <property name="alignment">
+                            <set>Qt::AlignCenter</set>
+                        </property>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QScrollArea" name="scrollArea">
+                        <property name="widgetResizable">
+                            <bool>true</bool>
+                        </property>
+                        <widget class="QWidget" name="scrollAreaWidgetContents">
+                            <property name="geometry">
+                                <rect>
+                                    <x>0</x>
+                                    <y>0</y>
+                                    <width>780</width>
+                                    <height>509</height>
+                                </rect>
+                            </property>
+                            <layout class="QVBoxLayout" name="verticalLayout_2">
+                                <item>
+                                    <widget class="QLabel" name="label_3">
+                                        <property name="text">
+                                            <string>Jugador 1</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLabel" name="label_4">
+                                        <property name="text">
+                                            <string>Jugador 2</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
+                </item>
+                <item>
+                    <widget class="QPushButton" name="pushButton">
+                        <property name="text">
+                            <string>Back to main menu</string>
+                        </property>
+                    </widget>
+                </item>
+            </layout>
+        </widget>
+    </widget>
+    <resources />
+    <connections />
+</ui>
