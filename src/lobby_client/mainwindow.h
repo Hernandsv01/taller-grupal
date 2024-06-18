@@ -24,6 +24,7 @@ class MainWindow : public QMainWindow {
     void goToMatchSelection();
     std::vector<GameMatch> getGameMatches();
     void closedConnectionError();
+    void populateMapSelection();
 
    private slots:
 

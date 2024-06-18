@@ -151,6 +151,10 @@ void MainWindow::loadTexturesFromAndDo(
     while (it.hasNext()) {
         QString file_path = it.next();
 
+        if (it.fileName() == "." || it.fileName() == "..") {
+            continue;
+        }
+
         qDebug() << it.fileName() << file_path;
 
         QString fileName = it.fileName();
