@@ -47,6 +47,7 @@ enum UpdateType : uint8_t {
 enum EntityType : uint8_t { Player = 0, Bullet = 1, Enemy = 2, Item = 3 };
 
 enum EntitySubtype : uint8_t {
+    No_subtype,
     Jazz,
     Spaz,
     Lori,

@@ -4,6 +4,7 @@
 #include "../../common/Update.h"
 #include "Dynamic_entity.h"
 #include "Pickup.h"
+#include "Bullet.h"
 #include "constants/pickup_type.h"
 
 #include <cmath>
@@ -25,12 +26,12 @@ public:
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH),
         points(0), ammo_type(enums_value_update::Ammo_type::NORMAL), bullets(100) {};
 
-    void process_action(uint8_t action) {
+    std::vector<Update::Update_new> process_action(uint8_t action, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
+        std::vector<Update::Update_new> updates;
         switch (action) {
             case JUMP:
                 setYSpeed(10);
-                return;
-
+                break;
             case RUN_LEFT:
                 setXSpeed(-3);
                 break;
@@ -40,24 +41,27 @@ public:
                 break;
 
             case SHOOT_RIGHT:
-                // Not implemented: SHOOT_RIGHT action
-                return;
-
+                entity_pool.push_back(std::make_unique<Bullet>(next_id, x_pos+x_size, y_pos+(y_size/2), 5));
+                updates.push_back(Update::Update_new::create_create_entity(
+                        next_id,
+                        Update::EntityType::Bullet,
+                        Update::EntitySubtype::No_subtype
+                        ));
+                next_id++;
+                break;
             case SHOOT_LEFT:
-                // Not implemented: SHOOT_LEFT action
-                return;
-
-            case SHOOT_UP:
-                // Not implemented: SHOOT_UP action
-                return;
-
-            case SHOOT_DOWN:
-                // Not implemented: SHOOT_DOWN action
-                return;
+                entity_pool.push_back(std::make_unique<Bullet>(next_id, x_pos, y_pos+(y_size/2), -5));
+                updates.push_back(Update::Update_new::create_create_entity(
+                        next_id,
+                        Update::EntityType::Bullet,
+                        Update::EntitySubtype::No_subtype
+                ));
+                next_id++;
+                break;
 
             case SPECIAL:
                 // Not implemented: SPECIAL action
-                return;
+                break;
 
             case STOP_RUN_RIGHT:
                 if (vel_x > 0) {
@@ -75,6 +79,7 @@ public:
                 // Handle unexpected actions if necessary
                 break;
         }
+        return updates;
     };
 
     std::vector<Update::Update_new> tick(const Map& map,

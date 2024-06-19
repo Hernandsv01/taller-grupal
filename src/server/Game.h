@@ -26,6 +26,7 @@ class Game : public Thread {
     Game_status status;
     Map map;
     std::string name;
+    int next_id;
 
     std::vector<std::unique_ptr<Dynamic_entity>> entity_pool;
 

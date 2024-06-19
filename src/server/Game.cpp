@@ -2,7 +2,7 @@
 
 #include <utility>
 
-Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_status::WAITING), map(std::move(map)), name(name) {
+Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_status::WAITING), map(std::move(map)), name(name), next_id(0) {
     // Hardcodeado para que se asocie un jugador al único cliente que se conecta
 
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
@@ -34,13 +34,13 @@ void Game::run_iteration() {
     for (Server_Client* client : Client_Monitor::getAll()) {
         uint8_t action = client->getReceiver().get_next_action();
         auto* player = dynamic_cast<Player*>(entity_pool[client->get_player_position()].get());
-        player->process_action(action);
+        player->process_action(action, entity_pool, next_id);
     }
 
     std::vector<Update::Update_new> total_updates;
     std::vector<Update::Update_new> tick_updates;
     for (std::unique_ptr<Dynamic_entity>& entity_ptr : entity_pool) {
-        tick_updates = entity_ptr->tick(map, &entity_pool);
+        tick_updates = entity_ptr->tick(map, entity_pool);
         total_updates.insert(total_updates.end(), tick_updates.begin(),
                              tick_updates.end());
     }
