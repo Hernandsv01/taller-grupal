@@ -1,9 +1,14 @@
 #include "mainwindow.h"
 
 #include <QDebug>
+#include <QDirIterator>
 #include <iostream>
 
 #include "ui_mainwindow.h"
+
+#ifndef MAP_PATH
+#define MAP_PATH ""
+#endif
 
 MainWindow::MainWindow(Lobby& lobby) : lobby(lobby), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -15,9 +20,34 @@ MainWindow::MainWindow(Lobby& lobby) : lobby(lobby), ui(new Ui::MainWindow) {
     ui->textoErrorElegirPartida->setText("");
     ui->stackedWidget->setCurrentIndex(0);
     ui->listaPartidas->clear();
+
+    populateMapSelection();
 }
 
 MainWindow::~MainWindow() { delete ui; }
+
+void MainWindow::populateMapSelection() {
+    QDirIterator it(MAP_PATH, QDirIterator::IteratorFlag::Subdirectories);
+
+    while (it.hasNext()) {
+        QString file_path = it.next();
+
+        if (it.fileName() == "." || it.fileName() == "..") {
+            continue;
+        }
+
+        qDebug() << file_path << it.fileName();
+
+        QString fileName = it.fileName();
+
+        if (!fileName.endsWith(".yaml"))
+            throw std::runtime_error("Solo se permiten mapas en formato.yaml");
+
+        QString mapName = fileName.left(fileName.length() - 5);
+
+        ui->selectorMapa->addItem(mapName);
+    }
+}
 
 void MainWindow::updateMatchesFromMatchList() {
     std::vector<GameMatch> matches;

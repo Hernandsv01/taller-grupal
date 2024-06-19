@@ -768,16 +768,6 @@
                     <height>16777215</height>
                    </size>
                   </property>
-                  <item>
-                   <property name="text">
-                    <string comment="1">Mapa 1</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string comment="2">Mapa 2</string>
-                   </property>
-                  </item>
                  </widget>
                 </item>
                </layout>
