@@ -4,16 +4,15 @@
 #include <chrono>
 #include <vector>
 
+#include "../common/ActionType.h"
 #include "../common/Update.h"
 #include "../common/library/thread.h"
+#include "../common/map/map.h"
 #include "clients/client_monitor.h"
+#include "clients/server_client.h"
 #include "model/Dynamic_entity.h"
 #include "model/Player.h"
 #include "model/constants/game_status.h"
-#include "clients/server_client.h"
-#include "../common/ActionType.h"
-#include "../common/map/map.h"
-
 
 #define TPS 24
 #define SECOND_IN_NANO 1000000000
@@ -38,10 +37,14 @@ class Game : public Thread {
     void process_action(uint8_t action, int player);
     void stop_custom() override;
     uint16_t add_player();
+    void add_socket_for_player(uint16_t player_id, Socket socket);
     uint8_t get_id();
     void set_id(uint8_t id);
     std::string get_match_name();
     std::string get_map_name();
+
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
 };
 
 #endif  // GAME_H

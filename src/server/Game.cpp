@@ -1,6 +1,10 @@
 #include "Game.h"
 
-Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_status::WAITING), map(map), name(name) {
+Game::Game(std::string name, Map map)
+    : Thread("Game server"),
+      status(Game_status::WAITING),
+      map(map),
+      name(name) {
     // Hardcodeado para que se asocie un jugador al único cliente que se conecta
 
     entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
@@ -73,6 +77,7 @@ void Game::process_action(uint8_t action, int player) {
     }
 }
 
+// Primero se agrega el jugador, y luego se recibe el socket.
 uint16_t Game::add_player() {
     uint16_t id_player = entity_pool.size();
     entity_pool.push_back(std::make_unique<Player>(id_player, 0, 0));
@@ -95,4 +100,7 @@ std::string Game::get_map_name(){
     return this->map.get_name();
 }
 
-
+void Game::add_socket_for_player(uint16_t player_id, Socket socket) {
+    // Acá se destruye el socket, por lo que el cliente no puede continuar, y no
+    // hace nada
+}

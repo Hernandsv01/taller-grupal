@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
-add_subdirectory("../common/map" "${CMAKE_BINARY_DIR}/map")
+# add_subdirectory("../common/map" "${CMAKE_BINARY_DIR}/map")
 
 set(PROJECT_SOURCES
         main.cpp
