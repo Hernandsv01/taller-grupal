@@ -43,8 +43,10 @@ public:
           health(health)
           {};
 
+    ~Dynamic_entity() {};
+
     virtual std::vector<Update::Update_new> tick(const Map& map,
-        std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) = 0;
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) = 0;
 
     void setXSpeed(float vel_x_param) { vel_x = vel_x_param; }
     float getXSpeed() const { return vel_x; }
@@ -61,6 +63,7 @@ public:
     int get_id() const { return id; };
     bool get_is_item() const { return is_item; };
     bool deal_damage(int damage) {
+        // TODO: Check if health is less than 0 and actually setting values as dead
         health -= damage;
         return health <= 0;
     };

@@ -11,72 +11,29 @@ public:
     Bullet(int id, float x_spawn, float y_spawn, float x_speed, float y_speed)
             : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT, x_speed, y_speed, 0, false, 5, false, 0) {};
 
-    std::vector<Update> tick(const Map& map,
-                             std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) override {
-        std::vector<Update> updates;
+    std::vector<Update::Update_new> tick(const Map& map,
+                             std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) override {
+        std::vector<Update::Update_new> updates;
 
-        // validar movimiento en X contra mapa
-        if (vel_x != 0) {
+        // validar movimiento contra mapa
+        if (vel_x != 0 || vel_y != 0) {
             x_pos += vel_x;
-
-            bool collides = false;
-
-            for (float i = this->x_min(); i <= this->x_max() && !collides; i++) {
-                for (float j = this->y_min(); j < this->y_max() && !collides; j++) {
-                    Collision collision = map.get_block_collision({static_cast<uint8_t>(std::floor(i)),static_cast<uint8_t>(std::floor(j))});
-                    if (collision != Collision::Air) {
-                        collides = true;
-                    }
-                }
-            }
-
-            if (collides) {
-                Update update{static_cast<uint16_t>(id),
-                              Updateables::DESTROYED,
-                              static_cast<uint32_t>(0)};
-                updates.push_back(update);
-                // TODO: delete bullet from entity pool
-                return updates;
-            } else {
-                Update update{static_cast<uint16_t>(id),
-                              Updateables::POSITION_X,
-                              static_cast<uint32_t>(x_pos)};
-                updates.push_back(update);
-            }
-        }
-
-        // validar movimiento en Y contra mapa
-        if (vel_y != 0) {
             y_pos += vel_y;
 
-            bool collides = false;
-
-            for (float i = this->x_min(); i <= this->x_max() && !collides; i++) {
-                for (float j = this->y_min(); j < this->y_max() && !collides; j++) {
+            for (float i = this->x_min(); i <= this->x_max(); i++) {
+                for (float j = this->y_min(); j < this->y_max(); j++) {
                     Collision collision = map.get_block_collision({static_cast<uint8_t>(std::floor(i)),static_cast<uint8_t>(std::floor(j))});
                     if (collision != Collision::Air) {
-                        collides = true;
+                        updates.push_back(Update::Update_new::create_delete_entity(id));
+                        delete_bullet(entity_pool, id);
+                        return updates;
                     }
                 }
-            }
-
-            if (collides) {
-                Update update{static_cast<uint16_t>(id),
-                              Updateables::DESTROYED,
-                              static_cast<uint32_t>(0)};
-                updates.push_back(update);
-                // TODO: delete bullet from entity pool
-                return updates;
-            } else {
-                Update update{static_cast<uint16_t>(id),
-                              Updateables::POSITION_Y,
-                              static_cast<uint32_t>(y_pos)};
-                updates.push_back(update);
             }
         }
 
         // validar contacto con otras entidades
-        for (const std::unique_ptr<Dynamic_entity>& other : *entity_pool) {
+        for (const std::unique_ptr<Dynamic_entity>& other : entity_pool) {
             if (!this->colisiona_con(*other)) {
                 continue;
             }
@@ -85,25 +42,38 @@ public:
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
-                    Update update{static_cast<uint16_t>(other->get_id()),
-                                  Updateables::DESTROYED,
-                                  static_cast<uint32_t>(0)};
-                    updates.push_back(update);
+                    updates.push_back(Update::Update_new::create_value(
+                            static_cast<uint16_t>(other->get_id()),
+                            Update::UpdateType::State,
+                            enums_value_update::Player_State_Enum::Dead));
                 } else {
-                    Update update{static_cast<uint16_t>(other->get_id()),
-                                  Updateables::HEALTH,
-                                  static_cast<uint32_t>(health)};
-                    updates.push_back(update);
+                    updates.push_back(Update::Update_new::create_value(
+                            static_cast<uint16_t>(other->get_id()),
+                            Update::UpdateType::Health,
+                            static_cast<uint8_t>(health)));
                 }
 
-                Update update{static_cast<uint16_t>(this->id),
-                              Updateables::DESTROYED,
-                              static_cast<uint32_t>(0)};
-                updates.push_back(update);
+                updates.push_back(Update::Update_new::create_delete_entity(id));
+                return updates;
             }
         }
 
+        updates.push_back(Update::Update_new::create_position(
+                static_cast<uint16_t>(id),
+                x_pos,
+                y_pos));
+
         return updates;
+    }
+
+    void delete_bullet(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int id) {
+        auto it = std::find_if(entity_pool.begin(), entity_pool.end(),
+                               [id](const std::unique_ptr<Dynamic_entity>& entity) {
+                                   return entity->get_id() == id;
+                               });
+        if (it != entity_pool.end()) {
+            entity_pool.erase(it);
+        }
     }
 };
 

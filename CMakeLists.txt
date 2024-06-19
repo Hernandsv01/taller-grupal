@@ -80,7 +80,6 @@ src/common/library/liberror.cpp
         src/common/library/thread.h
         src/common/Update.h
         src/common/Update.cpp
-        src/common/updateables.h
         src/common/map/map.h
         src/common/map/map.cpp
 )
@@ -106,7 +105,6 @@ src/server/clients/server_client.cpp
         src/server/model/Bullet.h
         src/server/model/Pickup.h
         src/server/model/constants/pickup_type.h
-        src/server/model/constants/ammo_type.h
         src/server/game/game_manager.h
         src/server/game/game_manager.cpp
         src/server/game/lobby_protocol.h

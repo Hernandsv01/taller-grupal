@@ -3,10 +3,8 @@
 
 #include "../../common/Update.h"
 #include "Dynamic_entity.h"
-#include "updateables.h"
 #include "Pickup.h"
 #include "constants/pickup_type.h"
-#include "constants/ammo_type.h"
 
 #include <cmath>
 
@@ -20,11 +18,12 @@
 class Player : public Dynamic_entity {
 private:
     int points;
-    Ammo_type ammo_type;
+    enums_value_update::Ammo_type ammo_type;
     int bullets;
 public:
     Player(int id, float x_spawn, float y_spawn)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH) {};
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH),
+        points(0), ammo_type(enums_value_update::Ammo_type::NORMAL), bullets(100) {};
 
     void process_action(uint8_t action) {
         switch (action) {
@@ -79,8 +78,11 @@ public:
     };
 
     std::vector<Update::Update_new> tick(const Map& map,
-        std::vector<std::unique_ptr<Dynamic_entity>>* entity_pool) override {
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) override {
         std::vector<Update::Update_new> updates;
+
+        float old_x = x_pos;
+        float old_y = y_pos;
 
         vel_y += acc_y;
 
@@ -90,11 +92,6 @@ public:
 
             if (collides_with_map(map)) {
                 x_pos -= vel_x;
-            } else {
-                Update update{static_cast<uint16_t>(id),
-                              Updateables::POSITION_X,
-                              static_cast<uint32_t>(x_pos)};
-                updates.push_back(update);
             }
         }
 
@@ -105,102 +102,114 @@ public:
             if (collides_with_map(map)) {
                 y_pos -= vel_y;
                 vel_y = 0;
-            } else {
-                Update update{static_cast<uint16_t>(id),
-                              Updateables::POSITION_Y,
-                              static_cast<uint32_t>(y_pos)};
-                updates.push_back(update);
             }
         }
 
+        if (x_pos != old_x || y_pos != old_y) {
+            Update::Update_new update = Update::Update_new::create_position(
+                    static_cast<uint16_t>(id),
+                    x_pos,
+                    y_pos);
+            updates.push_back(update);
+        }
+
+
+
         // validar contacto con otras entidades
-        for (const std::unique_ptr<Dynamic_entity>& other : *entity_pool) {
+        for (const std::unique_ptr<Dynamic_entity>& other : entity_pool) {
             if (!this->colisiona_con(*other)) {
                 continue;
             }
 
-            // procesamiento de colision con objetos que hacen daño fue movido a los objetos dañinos en sí
-            // no se procesa del lado del receptor del daño
-
-            // TODO: falta eliminación de items al ser agarrados
-            if (auto pickup = std::dynamic_pointer_cast<Pickup>(other)) {
+            if (Pickup* pickup = dynamic_cast<Pickup*>(other.get())) {
                 Pickup_type type = pickup->getType();
                 switch (type) {
-                    case POINTS:
-                        points += pickup.getValue();
-                        Update update{static_cast<uint16_t>(id),
-                                      Updateables::POINTS,
-                                      static_cast<uint32_t>(points)};
-                        updates.push_back(update);
+                    case COIN:
+                        points += pickup->getValue();
+                        updates.push_back(Update::Update_new::create_value(
+                                static_cast<uint16_t>(id),
+                                Update::UpdateType::Score,
+                                static_cast<uint8_t>(points)));
                         break;
-                    case HEALTH:
-                        health += pickup.getValue();
-                        Update update{static_cast<uint16_t>(id),
-                                      Updateables::HEALTH,
-                                      static_cast<uint32_t>(health)};
-                        updates.push_back(update);
+                    case CARROT:
+                        health += pickup->getValue();
+                        updates.push_back(Update::Update_new::create_value(
+                                static_cast<uint16_t>(id),
+                                Update::UpdateType::Health,
+                                static_cast<uint8_t>(health)));
                         break;
                     case NORMAL_AMMO:
-                        if (ammo_type != Ammo_type::NORMAL) {
-                            ammo_type = Ammo_type::NORMAL;
-                            Update update{static_cast<uint16_t>(id),
-                                          Updateables::AMMO_TYPE,
-                                          static_cast<uint32_t>(Ammo_type::NORMAL)};
-                            updates.push_back(update);
+                        if (ammo_type != enums_value_update::Ammo_type::NORMAL) {
+                            ammo_type = enums_value_update::Ammo_type::NORMAL;
+                            updates.push_back(Update::Update_new::create_value(
+                                    static_cast<uint16_t>(id),
+                                    Update::UpdateType::ChangeAmmoType,
+                                    enums_value_update::Ammo_type::NORMAL));
                         }
-                        bullets += pickup.getValue();
-                        Update update{static_cast<uint16_t>(id),
-                                      Updateables::BULLETS,
-                                      static_cast<uint32_t>(bullets)};
-                        updates.push_back(update);
+                        bullets += pickup->getValue();
+                        updates.push_back(Update::Update_new::create_value(
+                                static_cast<uint16_t>(id),
+                                Update::UpdateType::BulletsRemaining,
+                                static_cast<uint8_t>(bullets)));
                         break;
                     case LIGHT_AMMO:
-                        if (ammo_type != Ammo_type::LIGHT) {
-                            ammo_type = Ammo_type::LIGHT;
-                            Update update{static_cast<uint16_t>(id),
-                                          Updateables::AMMO_TYPE,
-                                          static_cast<uint32_t>(Ammo_type::LIGHT)};
-                            updates.push_back(update);
+                        if (ammo_type != enums_value_update::Ammo_type::LIGHT) {
+                            ammo_type = enums_value_update::Ammo_type::LIGHT;
+                            updates.push_back(Update::Update_new::create_value(
+                                    static_cast<uint16_t>(id),
+                                    Update::UpdateType::ChangeAmmoType,
+                                    enums_value_update::Ammo_type::LIGHT));
                         }
-                        bullets += pickup.getValue();
-                        Update update{static_cast<uint16_t>(id),
-                                      Updateables::BULLETS,
-                                      static_cast<uint32_t>(bullets)};
-                        updates.push_back(update);
+                        bullets += pickup->getValue();
+                        updates.push_back(Update::Update_new::create_value(
+                                static_cast<uint16_t>(id),
+                                Update::UpdateType::BulletsRemaining,
+                                static_cast<uint8_t>(bullets)));
                         break;
                     case HEAVY_AMMO:
-                        if (ammo_type != Ammo_type::HEAVY) {
-                            ammo_type = Ammo_type::HEAVY;
-                            Update update{static_cast<uint16_t>(id),
-                                          Updateables::AMMO_TYPE,
-                                          static_cast<uint32_t>(Ammo_type::HEAVY)};
-                            updates.push_back(update);
+                        if (ammo_type != enums_value_update::Ammo_type::HEAVY) {
+                            ammo_type = enums_value_update::Ammo_type::HEAVY;
+                            updates.push_back(Update::Update_new::create_value(
+                                    static_cast<uint16_t>(id),
+                                    Update::UpdateType::ChangeAmmoType,
+                                    enums_value_update::Ammo_type::HEAVY));
                         }
-                        bullets += pickup.getValue();
-                        Update update{static_cast<uint16_t>(id),
-                                      Updateables::BULLETS,
-                                      static_cast<uint32_t>(bullets)};
-                        updates.push_back(update);
+                        bullets += pickup->getValue();
+                        updates.push_back(Update::Update_new::create_value(
+                                static_cast<uint16_t>(id),
+                                Update::UpdateType::BulletsRemaining,
+                                static_cast<uint8_t>(bullets)));
                         break;
                     case POWER_AMMO:
-                        if (ammo_type != Ammo_type::POWER) {
-                            ammo_type = Ammo_type::POWER;
-                            Update update{static_cast<uint16_t>(id),
-                                          Updateables::AMMO_TYPE,
-                                          static_cast<uint32_t>(Ammo_type::POWER)};
-                            updates.push_back(update);
+                        if (ammo_type != enums_value_update::Ammo_type::POWER) {
+                            ammo_type = enums_value_update::Ammo_type::POWER;
+                            updates.push_back(Update::Update_new::create_value(
+                                    static_cast<uint16_t>(id),
+                                    Update::UpdateType::ChangeAmmoType,
+                                    enums_value_update::Ammo_type::POWER));
                         }
-                        bullets += pickup.getValue();
-                        Update update{static_cast<uint16_t>(id),
-                                      Updateables::BULLETS,
-                                      static_cast<uint32_t>(bullets)};
-                        updates.push_back(update);
+                        bullets += pickup->getValue();
+                        updates.push_back(Update::Update_new::create_value(
+                                static_cast<uint16_t>(id),
+                                Update::UpdateType::BulletsRemaining,
+                                static_cast<uint8_t>(bullets)));
                         break;
                 }
+                delete_pickup(entity_pool, pickup->get_id());
             }
         }
 
         return updates;
+    }
+
+    void delete_pickup(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int id) {
+        auto it = std::find_if(entity_pool.begin(), entity_pool.end(),
+                               [id](const std::unique_ptr<Dynamic_entity>& entity) {
+                                   return entity->get_id() == id;
+                               });
+        if (it != entity_pool.end()) {
+            entity_pool.erase(it);
+        }
     }
 };
 

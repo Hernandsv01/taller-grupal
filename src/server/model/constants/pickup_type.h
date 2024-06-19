@@ -2,8 +2,8 @@
 #define PICKUP_TYPE_H
 
 enum Pickup_type {
-    POINTS,
-    HEALTH,
+    COIN,
+    CARROT,
     NORMAL_AMMO,
     LIGHT_AMMO,
     HEAVY_AMMO,
