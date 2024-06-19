@@ -1,8 +1,9 @@
 game:
-  time:
+  time: 15
   points:
     carrot:
     coin: 
+
 
 
 enemy: 
