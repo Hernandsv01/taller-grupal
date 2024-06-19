@@ -70,4 +70,7 @@ std::string Game::get_map_name(){
     return this->map.get_name();
 }
 
-
+void Game::add_socket_for_player(uint16_t player_id, Socket socket) {
+    // Acá se destruye el socket, por lo que el cliente no puede continuar, y no
+    // hace nada
+}
