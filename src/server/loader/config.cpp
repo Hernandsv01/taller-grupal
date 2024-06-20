@@ -1,8 +1,5 @@
 #include "config.h"
 
-Config::Config(){
-    
-}
 
 void Config::load_config(const std::string& file_path){
     try {
@@ -10,20 +7,25 @@ void Config::load_config(const std::string& file_path){
         YAML::Node config = YAML::LoadFile(file_path);
     
         //game
-        if(config["game"]["time"]) Config::game.time = config["game"]["time"].as<uint8_t>();
+        if(config["game"]["time"]) Config::game.time = config["game"]["time"].as<int>();
+
+        //pickups
+        
+
+        //bullets
+        
 
         //enemies
-        // auto loadEnemyAttributes = [](YAML::Node node, EnemyConfig::Attributes &attr) {
-        //     if (node["count"]) attr.count = node["count"].as<int>();
-        //     if (node["life"]) attr.life = node["life"].as<int>();
-        //     if (node["speed"]) attr.speed = node["speed"].as<int>();
-        //     if (node["damage"]) attr.damage = node["damage"].as<int>();
-        // };
+        auto loadEnemyAttributes = [](YAML::Node node, EnemyConfig::Attributes &attr) {
+            if (node["count"]) attr.count = node["count"].as<int>();
+            if (node["life"]) attr.life = node["life"].as<int>();
+            if (node["speed"]) attr.speed = node["speed"].as<int>();
+            if (node["damage"]) attr.damage = node["damage"].as<int>();
+        };
 
-        // loadEnemyAttributes(config["enemy"]["flyer"], Config::enemy.flyer);
-        // loadEnemyAttributes(config["enemy"]["shooter"], Config::enemy.shooter);
-        // loadEnemyAttributes(config["enemy"]["crawler"], Config::enemy.crawler);
-
+        loadEnemyAttributes(config["enemy"]["flyer"], Config::enemy.flyer);
+        loadEnemyAttributes(config["enemy"]["shooter"], Config::enemy.shooter);
+        loadEnemyAttributes(config["enemy"]["crawler"], Config::enemy.crawler);
 
         //player
         if(config["player"]["speed"]) Config::player.speed = config["player"]["speed"].as<int>();

@@ -1,34 +1,54 @@
 game:
-  time: 15
-  points:
-    carrot:
-    coin: 
+  time: 15 # int, MAX: 255
 
+pickups:
+  coin: 50    # int
+  carrot: 25  # int
+  light_ammo: 100   # int
+  heavy_ammo: 25    # int
+  power_ammo: 10    # int
 
+bullets:
+  normal: 
+    max_ammo: -1
+    speed: 5
+    damage: 20
+    bpm: 500
+  light: 
+    max_ammo: 1000
+    speed: 5
+    damage: 10
+    bpm: 1000
+  heavy: 
+    max_ammo: 250
+    speed: 5
+    damage: 40
+    bpm: 250
+  power: 
+    max_ammo: 100
+    speed: 15
+    damage: 100
+    bpm: 100
 
 enemy: 
-  flyer: 
-    count:
-    life: 
-    speed:
-    damage: 
-  shooter: 
-    count:
-    life:
-    speed:
-    damage: 
+  flyer:
+    count: 10  # int
+    life: 30   # int
+    speed: 20  # int
+    damage: 10 # int
+  shooter:
+    count: 10  # int
+    life: 40   # int
+    speed: 10  # int
+    damage: 10 # int
   crawler: 
-    count:
-    life:
-    speed:
-    damage:
+    count: 10  # int
+    life: 50   # int
+    speed: 20  # int
+    damage: 10 # int
   
 
 player: 
-  speed:
-  jump:
-  max_healh:
-  
-  
-
-
+  speed: 3       # int
+  jump: 10       # int
+  max_healh: 100 # int

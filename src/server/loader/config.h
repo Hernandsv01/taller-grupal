@@ -8,20 +8,45 @@
 #define CONFIG_PATH "config.yaml"
 
 struct GameConfig{
-    uint8_t time = 0;
+    int time = 15;
 
+};
+
+struct PickupsConfig{
+   int coin = 50;
+   int carrot = 25;
+   int light_ammo = 100;
+   int heavy_ammo = 25;
+   int power_ammo = 10;
+};
+
+
+struct BulletsConfig{
+    struct Attributes{
+        int max_ammo;
+        int speed; 
+        int damage; 
+        int bpm;
+        Attributes(int max_ammo,int speed, int damage, int bpm) : max_ammo(max_ammo), speed(speed), damage(damage), bpm(bpm){};
+    };
+    
+    Attributes normal = Attributes(-1, 5, 20, 500);
+    Attributes light = Attributes(1000,20, 10, 3);
+    Attributes heavy = Attributes(50,20, 10, 3);
+    Attributes power = Attributes(10,20, 10, 3);
 };
 
 struct EnemyConfig{
     struct Attributes{
-        int count = 5;
-        int life = 100;
-        int speed = 10;
-        int damage= 10;
+        int count;
+        int life;
+        int speed;
+        int damage;
+        Attributes(int count, int life, int speed, int damage) : count(count), life(life), speed(speed), damage(damage) {};
     };
-    Attributes flyer;
-    Attributes shooter;
-    Attributes crawler;
+    Attributes flyer = Attributes(5, 100, 10, 10);
+    Attributes shooter = Attributes(5, 100, 10, 10);
+    Attributes crawler = Attributes(5, 100, 10, 10);
 };
 
 struct PlayerConfig{
@@ -33,7 +58,9 @@ struct PlayerConfig{
 class Config{
 private:
   static GameConfig game;
-//   static EnemyConfig enemy;
+  static PickupsConfig pickups;
+  static BulletsConfig bullet;
+  static EnemyConfig enemy;
   static PlayerConfig player;  
 
 public: 
@@ -47,9 +74,6 @@ public:
     static int getPlayerSpeed(){
         return player.speed;
     }
-
-
-
     
 };
 
