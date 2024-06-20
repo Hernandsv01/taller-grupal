@@ -80,8 +80,6 @@ src/common/library/liberror.cpp
         src/common/library/thread.h
         src/common/Update.h
         src/common/Update.cpp
-        src/common/map/map.h
-        src/common/map/map.cpp
 )
 
 set(SOURCES_SERVER
