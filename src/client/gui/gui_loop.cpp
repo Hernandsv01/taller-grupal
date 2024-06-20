@@ -63,7 +63,7 @@ void GuiLoop::run() {
 
     using namespace std::chrono;
     time_point tickInitialTime = clock.now();
-    while (this->keep_running()) {
+    while (this->keep_running() && !matchEnded) {
         /*
     tickInitialTime     tickEndTime
             ↓               ↓
@@ -75,6 +75,7 @@ void GuiLoop::run() {
         time_point tickEndTime = tickInitialTime + TICK_DURATION;
 
         updateGameState();
+        matchEnded = updatableGameState.hasMatchEnded();
 
         time_point currentTime = clock.now();
         bool isTimeLeftInTick = currentTime <= tickEndTime;
@@ -151,3 +152,5 @@ void GuiLoop::runRenderer(MapInfo& mapInfo) {
     //           << gameStateRenderer.mainPlayer.position.y << ")"
     //           << std::endl;
 }
+
+bool GuiLoop::hasMatchEnded() { return matchEnded; }

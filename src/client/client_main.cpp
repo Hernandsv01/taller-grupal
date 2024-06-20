@@ -4,6 +4,7 @@
 #include "../../src/common/library/socket.h"
 #include "../lobby_client/gui_lobby.h"
 #include "client.h"
+#include "matchEndedGui/matchended.h"
 
 /*
  * Se harcodea un hostname y un servername para generar una conexion.
@@ -34,7 +35,17 @@ int main(int argc, char* argv[]) {
 
         Lobby lobby;
         lobby.connectToServer(hostname, servname);
-        lobby.connectToMatch(1);
+
+        auto avaibleMatches = lobby.getServerMatches();
+
+        uint8_t match_to_connect;
+
+        if (avaibleMatches.empty()) {
+            match_to_connect = lobby.createMatch("testmap", "Partida1");
+        } else {
+            match_to_connect = avaibleMatches[0].id;
+        }
+        lobby.connectToMatch(match_to_connect);
 
         playerIdAndMap = lobby.getPlayerIdAndMapName();
         socket_a_usar = lobby.extractMatchConnection();
@@ -55,6 +66,15 @@ int main(int argc, char* argv[]) {
     // (o termine con un error), no es necesario esperar
     // a que el usuario envíe 'q' para cerrar el cliente.
     client.exec();
+
+    if (client.matchEnded()) {
+        std::vector<PlayerScore> scores;
+
+        scores.push_back({"Bunny1", 1, 100, true});
+
+        MatchEnded matchEnded(argc, argv);
+        matchEnded.showWithScores(scores);
+    }
 
     return 0;
     // Estructura del main

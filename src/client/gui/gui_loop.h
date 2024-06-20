@@ -26,10 +26,14 @@ class GuiLoop : public Thread {
 
     std::string mapName;
 
+    bool matchEnded = false;
+
    public:
     // GuiLoop();
     explicit GuiLoop(Window& window, uint16_t player_id, std::string map_name);
     ~GuiLoop();
+
+    bool hasMatchEnded();
 
    private:
     void run() override;

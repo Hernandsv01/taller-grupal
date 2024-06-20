@@ -106,6 +106,7 @@ struct MapInfo {
 // Incluye todos los jugadores, proyectiles, enemigos e items, indexado por ID,
 // para ser mas facil su actualizacion.
 class UpdatableGameState {
+    bool matchEnded;
     std::map<Id_t, PlayerState> players;
     std::map<Id_t, Projectile> projectiles;
     std::map<Id_t, Enemy> enemies;
@@ -304,6 +305,10 @@ class UpdatableGameState {
                 this->deleteEntity(update.get_id());
                 break;
             }
+            case Update::MatchEnded: {
+                this->matchEnded = true;
+                break;
+            }
         }
     }
 
@@ -336,6 +341,8 @@ class UpdatableGameState {
 
         return state;
     }
+
+    bool hasMatchEnded() { return this->matchEnded; }
 };
 
 #endif
