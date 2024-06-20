@@ -27,26 +27,13 @@ struct Position {
 };
 // Direccion a la que apunta la entidad (para saber si voltear horizontalmente
 // la textura)
-enum Direction { Right = 0, Left = 1 };
 
 // Representacion de una entidad generica.
 struct Entity {
     Id_t id;
     Position position{0, 0};
-    Direction direction = Direction::Right;
-};
-
-// Posibles estados de ¿solo jugador?
-enum State_enum {
-    Idle,
-    Shooting,
-    Jumping,
-    Falling,
-    Running,
-    Intoxicated,
-    IntoxWalking,
-    Dead,
-    TakingDamage
+    enums_value_update::Direction direction =
+        enums_value_update::Direction::Right;
 };
 
 struct State {
@@ -54,7 +41,8 @@ struct State {
     uint32_t start_tick = 0;
 
    public:
-    State_enum state = State_enum::Idle;
+    enums_value_update::Player_State_Enum state =
+        enums_value_update::Player_State_Enum::Idle;
     uint32_t current_tick = 0;
     // Tiempo que lleva en ese estado.
 
@@ -62,17 +50,18 @@ struct State {
         this->current_tick = tick - this->start_tick;
     }
 
-    bool operator==(const State_enum &stateEnum) {
+    bool operator==(const enums_value_update::Player_State_Enum &stateEnum) {
         return this->state == stateEnum;
     }
 
-    State(State_enum state, uint32_t tick) : state(state), start_tick(tick) {}
+    State(enums_value_update::Player_State_Enum state, uint32_t tick)
+        : state(state), start_tick(tick) {}
 };
 
 enum CharacterType { Jazz, Spaz, Lori };
 struct PlayerState : public Entity {
     CharacterType characterType;
-    State state = State(State_enum::Idle, 0);
+    State state = State(enums_value_update::Player_State_Enum::Idle, 0);
     HealthPoints_t healthPoints = 10;
     Score_t score = 0;
     // Faltaría municion y tipo de arma.
@@ -289,13 +278,16 @@ class UpdatableGameState {
             }
             case Update::Direction: {
                 PlayerState &player = this->players.at(update.get_id());
-                player.direction = static_cast<Direction>(update.get_value());
+                player.direction = static_cast<enums_value_update::Direction>(
+                    update.get_value());
                 break;
             }
             case Update::State: {
                 PlayerState &player = this->players.at(update.get_id());
                 player.state =
-                    State(static_cast<State_enum>(update.get_value()), tick);
+                    State(static_cast<enums_value_update::Player_State_Enum>(
+                              update.get_value()),
+                          tick);
                 break;
             }
             case Update::Health: {

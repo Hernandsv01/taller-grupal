@@ -4,15 +4,44 @@
 #include <string>
 #include <vector>
 
+namespace enums_value_update {
+enum Ammo_type {
+    NORMAL,  // Standard bullets
+    LIGHT,   // High rate of fire, low damage
+    HEAVY,   // Low rate of fire, high damage
+    POWER    // Lowest rate of fire, highest damage, high speed (almost like a
+             // sniper)
+};
+
+enum Player_State_Enum : uint8_t {
+    Idle,
+    Shooting,
+    Jumping,
+    Falling,
+    Running,
+    Intoxicated,
+    IntoxWalking,
+    Dead,  // 3 seg hasta respawn
+    TakingDamage,
+    SpecialAttack
+};
+
+enum Direction : uint8_t { Right = 0, Left = 1 };
+}  // namespace enums_value_update
+
 namespace Update {
 enum UpdateType : uint8_t {
-    CreateEntity = 0,
-    Position = 1,
-    Direction = 2,
-    State = 3,
-    Health = 4,
-    Score = 5,
-    DeleteEntity = 6
+    CreateEntity = 0,      // type, subtype
+    Position = 1,          // x, y
+    Direction = 2,         // value
+    State = 3,             // value
+    Health = 4,            // value
+    Score = 5,             // value
+    DeleteEntity = 6,      // nothing
+    MatchEnded = 7,        // nothing, id irrelevante.
+    RemainingSeconds = 8,  // value
+    ChangeAmmoType = 9,    // value
+    BulletsRemaining = 10  // value
 };
 
 enum EntityType : uint8_t { Player = 0, Bullet = 1, Enemy = 2, Item = 3 };
@@ -75,6 +104,8 @@ class Update_new {
                                    uint8_t value);
 
     static Update_new create_delete_entity(uint16_t id);
+
+    static Update_new create_end_match();
 
     uint16_t get_id() const;
 

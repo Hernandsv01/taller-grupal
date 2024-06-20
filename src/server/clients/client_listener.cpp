@@ -4,8 +4,16 @@ void Client_listener::run() {
     while (is_running) {
         try {
             Socket skt = skt_listener.accept();
-            Client_Monitor::add(new Server_Client(std::move(skt)));
-        } catch (std::exception& e) {
+
+            // TODO: En algun momento debería recorrer todos los lobbys para
+            // verificar si hay que eliminar alguno que haya terminado
+            clientes_en_lobby.push_back(std::make_unique<LobbyManager>(
+                std::move(skt), gamePoolMonitor));
+
+            clientes_en_lobby.back()->start();
+
+        } catch (ClosedConnectionError& e) {
+            // Se cerró manualmente el listener para terminar el hilo.
             is_running = false;
         }
     }
