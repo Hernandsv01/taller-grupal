@@ -4,7 +4,7 @@
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 
-#define CONFIG_PATH "src/server/loader/config.yaml"
+#define CONFIG_PATH "config.yaml"
 
 class ConfigLoader{
 public: 
@@ -12,7 +12,7 @@ public:
     //un dato de configuracion que permitirian que se configure en la creacion del Game.
     //Capaz el constructor del juego debe recibir esta configucarion y cuando se crea 
     //la partida se carga con ella.
-    static void load(const std::string& file_path);
+    static void load_config(const std::string& file_path);
 
 };
 

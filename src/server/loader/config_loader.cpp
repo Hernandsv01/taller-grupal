@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-void ConfigLoader::load(const std::string& file_path){
+void ConfigLoader::load_config(const std::string& file_path){
     try {
 
         YAML::Node config = YAML::LoadFile(file_path);
