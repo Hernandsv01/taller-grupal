@@ -16,6 +16,8 @@ add_subdirectory(src/editor_niveles)
 
 add_subdirectory(src/common/map)
 
+add_subdirectory(src/client/matchEndedGui)
+
 
 include_directories(src/client)
 include_directories(src/client/gui)
@@ -117,6 +119,8 @@ find_package(Threads REQUIRED)
 target_link_libraries(server PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE GuiLobby)
+target_link_libraries(client PRIVATE MatchEndedGui)
+
 #target_link_libraries(testsdl PRIVATE Threads::Threads)
 target_link_libraries(server PRIVATE map)
 

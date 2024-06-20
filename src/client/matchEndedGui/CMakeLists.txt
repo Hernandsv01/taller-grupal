@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(matchEndedGui VERSION 0.1 LANGUAGES CXX)
+project(MatchEndedGui VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_BUILD_TYPE Debug)
@@ -21,8 +21,8 @@ set(PROJECT_SOURCES
         matchendedgui.ui
 )
 
-add_library(matchEndedGui STATIC ${PROJECT_SOURCES})
-target_link_libraries(matchEndedGui PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
+add_library(MatchEndedGui STATIC ${PROJECT_SOURCES})
+target_link_libraries(MatchEndedGui PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
 
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
