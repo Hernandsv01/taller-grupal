@@ -46,19 +46,19 @@ void Game::run() {
 }
 
 void Game::run_iteration() {
+    std::vector<Update::Update_new> total_updates;
+    std::vector<Update::Update_new> tick_updates;
+
     for (Server_Client* client : Client_Monitor::getAll()) {
         uint8_t action = client->getReceiver().get_next_action();
         auto* player = dynamic_cast<Player*>(entity_pool[client->get_player_position()].get());
-        // TODO: recibir las updates de process action
-        player->process_action(action, entity_pool, next_id);
+        tick_updates = player->process_action(action, entity_pool, next_id);
+        total_updates.insert(total_updates.end(), tick_updates.begin(),tick_updates.end());
     }
 
-    std::vector<Update::Update_new> total_updates;
-    std::vector<Update::Update_new> tick_updates;
     for (std::unique_ptr<Dynamic_entity>& entity_ptr : entity_pool) {
         tick_updates = entity_ptr->tick(map, entity_pool);
-        total_updates.insert(total_updates.end(), tick_updates.begin(),
-                             tick_updates.end());
+        total_updates.insert(total_updates.end(), tick_updates.begin(),tick_updates.end());
     }
 
     Client_Monitor::sendAll(total_updates);
