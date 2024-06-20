@@ -10,7 +10,11 @@ void Config::load_config(const std::string& file_path){
         if(config["game"]["time"]) Config::game.time = config["game"]["time"].as<int>();
 
         //pickups
-
+        if(config["pickups"]["coin"]) Config::pickups.coin = config["pickups"]["coin"].as<int>();
+        if(config["pickups"]["carrot"]) Config::pickups.carrot = config["pickups"]["carrot"].as<int>();
+        if(config["pickups"]["light_ammo"]) Config::pickups.light_ammo = config["pickups"]["light_ammo"].as<int>();
+        if(config["pickups"]["heavy_ammo"]) Config::pickups.heavy_ammo = config["pickups"]["heavy_ammo"].as<int>();
+        if(config["pickups"]["heavy_ammo"]) Config::pickups.power_ammo = config["pickups"]["heavy_ammo"].as<int>();
 
         //bullets
         
