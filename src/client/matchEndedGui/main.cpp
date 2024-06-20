@@ -7,14 +7,18 @@
 int main(int argc, char *argv[]) {
     std::vector<PlayerScore> scores;
 
+    std::vector<std::string> names = {"Jazz", "Spaz", "Lori"};
+
     for (int i = 0; i < 30; i++) {
         PlayerScore score;
-        score.name_bunny = "Bunny";
+        uint hash = std::hash<std::string>{}(std::to_string(i));
+
+        score.name_bunny = names[i % 3];
         score.id_player = i;
-        score.score = std::hash<std::string>{}(std::to_string(i)) % 100;
+        score.score = hash % 100;
+
         if (i == 7) {
             score.is_current_player = true;
-            score.score = 100;
         } else
             score.is_current_player = false;
         scores.push_back(score);

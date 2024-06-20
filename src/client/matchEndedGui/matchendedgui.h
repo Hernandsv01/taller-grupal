@@ -6,7 +6,7 @@
 struct PlayerScore {
     std::string name_bunny;
     uint16_t id_player;
-    int score;
+    uint score;
     bool is_current_player;
 };
 
