@@ -57,7 +57,7 @@ class Config{
 private:
   static GameConfig game;
   static PickupsConfig pickups;
-  static BulletsConfig bullet;
+  static BulletsConfig bullets;
   static EnemyConfig enemy;
   static PlayerConfig player;  
 

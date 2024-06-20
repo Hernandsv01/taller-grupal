@@ -17,7 +17,17 @@ void Config::load_config(const std::string& file_path){
         if(config["pickups"]["heavy_ammo"]) Config::pickups.power_ammo = config["pickups"]["heavy_ammo"].as<int>();
 
         //bullets
-        
+        auto load_bullets_attributes = [](YAML::Node node, BulletsConfig::Attributes &attr) {
+            if(node["max_ammo"]) attr.max_ammo = node["max_ammo"].as<int>();
+            if(node["speed"]) attr.speed = node["speed"].as<float>();
+            if(node["damage"]) attr.damage = node["damage"].as<int>();
+            if(node["bpm"]) attr.bpm = node["bpm"].as<int>();
+        };
+
+        load_bullets_attributes(config["bullets"]["normal"], Config::bullets.normal);
+        load_bullets_attributes(config["bullets"]["light"], Config::bullets.light);
+        load_bullets_attributes(config["bullets"]["heavy"], Config::bullets.heavy);
+        load_bullets_attributes(config["bullets"]["power"], Config::bullets.power);
 
         //enemies
         auto load_enemy_attributes = [](YAML::Node node, EnemyConfig::Attributes &attr) {
@@ -42,10 +52,24 @@ void Config::load_config(const std::string& file_path){
     
 }
 
+//GETTERS
+//Game
 
+//Pickups
 
+//Bullets
 
+//Enemies
 
+//Player
 float Config::get_player_speed(){
     return player.speed;
+}
+
+int Config::get_player_jump(){
+    return player.jump;
+}
+
+int Config::get_player_max_health(){
+    return player.max_health;
 }
