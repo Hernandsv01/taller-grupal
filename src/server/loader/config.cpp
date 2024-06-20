@@ -16,16 +16,16 @@ void Config::load_config(const std::string& file_path){
         
 
         //enemies
-        auto loadEnemyAttributes = [](YAML::Node node, EnemyConfig::Attributes &attr) {
+        auto load_enemy_attributes = [](YAML::Node node, EnemyConfig::Attributes &attr) {
             if (node["count"]) attr.count = node["count"].as<int>();
             if (node["life"]) attr.life = node["life"].as<int>();
             if (node["speed"]) attr.speed = node["speed"].as<int>();
             if (node["damage"]) attr.damage = node["damage"].as<int>();
         };
 
-        loadEnemyAttributes(config["enemy"]["flyer"], Config::enemy.flyer);
-        loadEnemyAttributes(config["enemy"]["shooter"], Config::enemy.shooter);
-        loadEnemyAttributes(config["enemy"]["crawler"], Config::enemy.crawler);
+        load_enemy_attributes(config["enemy"]["flyer"], Config::enemy.flyer);
+        load_enemy_attributes(config["enemy"]["shooter"], Config::enemy.shooter);
+        load_enemy_attributes(config["enemy"]["crawler"], Config::enemy.crawler);
 
         //player
         if(config["player"]["speed"]) Config::player.speed = config["player"]["speed"].as<int>();
@@ -39,6 +39,9 @@ void Config::load_config(const std::string& file_path){
 }
 
 
-int Config::getPlayerSpeed(){
+
+
+
+int Config::get_player_speed(){
     return player.speed;
 }

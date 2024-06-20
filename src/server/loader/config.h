@@ -19,7 +19,6 @@ struct PickupsConfig{
     int power_ammo = 10;
 };
 
-
 struct BulletsConfig{
     struct Attributes{
         int max_ammo;
@@ -70,9 +69,57 @@ public:
     //la partida se carga con ella.
     static void load_config(const std::string& file_path);
 
+    //game
+    static int get_game_time();
+
+    //pickup
+    static int get_pickup_coin();
+    static int get_pickup_carrot();
+    static int get_pickup_light();
+    static int get_pickup_heavy();
+    static int get_pickup_power();
+
+    //bullet
+        //normal
+    static int get_normal_max_ammo();
+    static int get_normal_speed();
+    static int get_normal_damage();
+    static int get_normal_bpm();
+        //light 
+    static int get_light_max_ammo();
+    static int get_light_speed();
+    static int get_light_damage();
+    static int get_light_bpm();
+        //heavy
+    static int get_heavy_max_ammo();
+    static int get_heavy_speed();
+    static int get_heavy_damage();
+    static int get_heavy_bpm();
+        //power
+    static int get_power_max_ammo();
+    static int get_power_speed();
+    static int get_power_damage();
+    static int get_power_bpm();
     
-    
-    static int getPlayerSpeed();
+    //enemy
+    //flyer
+    static int get_flyer_count();
+    static int get_flyer_life();
+    static int get_flyer_speer();
+    static int get_flyer_damage();
+    //shooter
+    static int get_shooter_count();
+    static int get_shooter_life();
+    static int get_shooter_speer();
+    static int get_shooter_damage();
+    //crawler
+    static int get_crawler_count();
+    static int get_crawler_life();
+    static int get_crawler_speer();
+    static int get_crawler_damage();
+
+    //player
+    static int get_player_speed();
     
 };
 
