@@ -9,7 +9,7 @@
 class Bullet : public Dynamic_entity {
 public:
     Bullet(int id, float x_spawn, float y_spawn, float vel_x)
-            : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT, vel_x, 0, 0, false, 5, false, 0, true, std::chrono::steady_clock::now()) {};
+            : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT, vel_x, 0, 0, false, 5, false, 0, true) {};
 
     std::vector<Update::Update_new> tick(const Map& map,
                              std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) override {

@@ -16,6 +16,7 @@
 #define PLAYER_INITIAL_Y_VEL 0
 #define GRAVITY 5
 #define SECONDS_UNTIL_RESPAWN 3
+#define SECONDS_IMMUNE_AFTER_DAMAGE 2
 
 class Player : public Dynamic_entity {
 private:
@@ -24,8 +25,7 @@ private:
     int bullets;
 public:
     Player(int id, float x_spawn, float y_spawn)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH, true,
-                         std::chrono::steady_clock::now()),
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH, true),
         points(0), ammo_type(enums_value_update::Ammo_type::NORMAL), bullets(100) {};
 
     std::vector<Update::Update_new> process_action(uint8_t action, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
@@ -97,6 +97,10 @@ public:
                         y_pos));
             }
             return updates;
+        }
+
+        if (!is_damageable && std::chrono::steady_clock::now() >= (std::chrono::steady_clock::now() + std::chrono::seconds(SECONDS_IMMUNE_AFTER_DAMAGE))) {
+            is_damageable = true;
         }
 
         float old_x = x_pos;

@@ -24,6 +24,7 @@ protected:
     // esto lo usamos para diferenciar una bala de un jugador, si no hace daño se setea en 0
     // (para evitar tener 2 atributos, uno boolean y otro con el valor)
     bool is_damageable;
+    std::chrono::steady_clock::time_point last_damaged;
     int damage_on_contact;
 
     bool is_item;
@@ -33,19 +34,19 @@ protected:
     std::chrono::steady_clock::time_point inactive_time;
 public:
     Dynamic_entity(int id, float pos_x, float pos_y, float width, float height, float vel_x, float vel_y,
-                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health, bool is_active,
-                   std::chrono::steady_clock::time_point inactive_time)
+                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health, bool is_active)
         : id(id),
           RigidBox(pos_x, pos_y, width, height),
           vel_x(vel_x),
           vel_y(vel_y),
           acc_y(acc_y),
           is_damageable(is_damageable),
+          last_damaged(std::chrono::steady_clock::time_point()),
           damage_on_contact(damage_on_contact),
           is_item(is_item),
           health(health),
           is_active(is_active),
-          inactive_time(inactive_time)
+          inactive_time(std::chrono::steady_clock::time_point())
           {};
 
     ~Dynamic_entity() {};
@@ -73,6 +74,8 @@ public:
             is_active = false;
             inactive_time = std::chrono::steady_clock::now();
             return true;
+        } else {
+            is_damageable = false;
         }
         return false;
     };
