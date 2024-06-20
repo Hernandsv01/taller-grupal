@@ -22,10 +22,10 @@ struct PickupsConfig{
 struct BulletsConfig{
     struct Attributes{
         int max_ammo;
-        int speed; 
+        float speed; 
         int damage; 
         int bpm;
-        Attributes(int max_ammo,int speed, int damage, int bpm) : max_ammo(max_ammo), speed(speed), damage(damage), bpm(bpm){};
+        Attributes(int max_ammo, float speed, int damage, int bpm) : max_ammo(max_ammo), speed(speed), damage(damage), bpm(bpm){};
     };
     
     Attributes normal = Attributes(-1, 5, 20, 500);
@@ -38,9 +38,9 @@ struct EnemyConfig{
     struct Attributes{
         int count;
         int life;
-        int speed;
+        float speed;
         int damage;
-        Attributes(int count, int life, int speed, int damage) : count(count), life(life), speed(speed), damage(damage) {};
+        Attributes(int count, int life, float speed, int damage) : count(count), life(life), speed(speed), damage(damage) {};
     };
     Attributes flyer = Attributes(5, 100, 10, 10);
     Attributes shooter = Attributes(5, 100, 10, 10);
@@ -48,7 +48,7 @@ struct EnemyConfig{
 };
 
 struct PlayerConfig{
-    int speed = 10;
+    float speed = 10;
     int jump = 15;
     int max_health = 100;
 };

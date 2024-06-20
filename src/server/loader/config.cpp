@@ -23,7 +23,7 @@ void Config::load_config(const std::string& file_path){
         auto load_enemy_attributes = [](YAML::Node node, EnemyConfig::Attributes &attr) {
             if (node["count"]) attr.count = node["count"].as<int>();
             if (node["life"]) attr.life = node["life"].as<int>();
-            if (node["speed"]) attr.speed = node["speed"].as<int>();
+            if (node["speed"]) attr.speed = node["speed"].as<float>();
             if (node["damage"]) attr.damage = node["damage"].as<int>();
         };
 
@@ -32,7 +32,7 @@ void Config::load_config(const std::string& file_path){
         load_enemy_attributes(config["enemy"]["crawler"], Config::enemy.crawler);
 
         //player
-        if(config["player"]["speed"]) Config::player.speed = config["player"]["speed"].as<int>();
+        if(config["player"]["speed"]) Config::player.speed = config["player"]["speed"].as<float>();
         if(config["player"]["jump"]) Config::player.jump = config["player"]["jump"].as<int>();
         if(config["player"]["max_health"]) Config::player.max_health = config["player"]["max_health"].as<int>();
 
