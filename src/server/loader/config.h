@@ -82,22 +82,22 @@ public:
     //bullet
         //normal
     static int get_normal_max_ammo();
-    static int get_normal_speed();
+    static float get_normal_speed();
     static int get_normal_damage();
     static int get_normal_bpm();
         //light 
     static int get_light_max_ammo();
-    static int get_light_speed();
+    static float get_light_speed();
     static int get_light_damage();
     static int get_light_bpm();
         //heavy
     static int get_heavy_max_ammo();
-    static int get_heavy_speed();
+    static float get_heavy_speed();
     static int get_heavy_damage();
     static int get_heavy_bpm();
         //power
     static int get_power_max_ammo();
-    static int get_power_speed();
+    static float get_power_speed();
     static int get_power_damage();
     static int get_power_bpm();
     
@@ -119,7 +119,9 @@ public:
     static int get_crawler_damage();
 
     //player
-    static int get_player_speed();
+    static float get_player_speed();
+    static int get_player_jump();
+    static int get_player_max_health();
     
 };
 
