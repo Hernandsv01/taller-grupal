@@ -8,21 +8,15 @@
 #define CONFIG_PATH "config.yaml"
 
 struct GameConfig{
-private:
     int time = 15;
-public:
-    int getTime() {return time;}
 };
 
 struct PickupsConfig{
-private:
     int coin = 50;
     int carrot = 25;
     int light_ammo = 100;
     int heavy_ammo = 25;
     int power_ammo = 10;
-public:
-    int getCoins() {return coin;}
 };
 
 
