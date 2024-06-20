@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 struct GameConfig{
-    int time = 0;
+    uint8_t time = 0;
 
 };
 

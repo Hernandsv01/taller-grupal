@@ -8,7 +8,7 @@ void ConfigLoader::load(const std::string& file_path){
         YAML::Node config = YAML::LoadFile(file_path);
     
         //game
-        if(config["game"]["time"]) Config::game.time= config["game"]["time"].as<int>();
+        if(config["game"]["time"]) Config::game.time= config["game"]["time"].as<uint8_t>();
 
         //enemies
         auto loadEnemyAttributes = [](YAML::Node node, EnemyConfig::Attributes &attr) {
