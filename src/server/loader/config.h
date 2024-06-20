@@ -105,17 +105,17 @@ public:
     //flyer
     static int get_flyer_count();
     static int get_flyer_life();
-    static int get_flyer_speer();
+    static float get_flyer_speed();
     static int get_flyer_damage();
     //shooter
     static int get_shooter_count();
     static int get_shooter_life();
-    static int get_shooter_speer();
+    static float get_shooter_speed();
     static int get_shooter_damage();
     //crawler
     static int get_crawler_count();
     static int get_crawler_life();
-    static int get_crawler_speer();
+    static float get_crawler_speed();
     static int get_crawler_damage();
 
     //player
