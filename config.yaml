@@ -34,21 +34,21 @@ enemy:
   flyer:
     count: 10  # int
     life: 30   # int
-    speed: 20  # int
+    speed: 20  # float
     damage: 10 # int
   shooter:
     count: 10  # int
     life: 40   # int
-    speed: 10  # int
+    speed: 10  # float
     damage: 10 # int
   crawler: 
     count: 10  # int
     life: 50   # int
-    speed: 20  # int
+    speed: 20  # float
     damage: 10 # int
   
 
 player: 
-  speed: 3       # int
+  speed: 3       # float
   jump: 10       # int
   max_healh: 100 # int
