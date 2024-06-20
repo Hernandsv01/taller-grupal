@@ -10,7 +10,7 @@ void Config::load_config(const std::string& file_path){
         if(config["game"]["time"]) Config::game.time = config["game"]["time"].as<int>();
 
         //pickups
-        
+
 
         //bullets
         
@@ -39,6 +39,6 @@ void Config::load_config(const std::string& file_path){
 }
 
 
-Config::~Config(){
+int Config::getPlayerSpeed(){
+    return player.speed;
 }
-
