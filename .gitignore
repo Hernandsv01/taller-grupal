@@ -31,6 +31,7 @@
 *.out
 *.app
 client
+!client/
 server
 !server/
 testsdl
@@ -48,6 +49,7 @@ moc_server
 
 # CMake generated files
 CMakeFiles/
+cmake-build-debug/
 CMakeCache.txt
 cmake_install.cmake
 Makefile

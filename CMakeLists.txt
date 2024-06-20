@@ -80,6 +80,8 @@ src/common/library/liberror.cpp
         src/common/library/thread.h
         src/common/Update.h
         src/common/Update.cpp
+        src/common/map/map.h
+        src/common/map/map.cpp
 )
 
 set(SOURCES_SERVER
@@ -94,20 +96,21 @@ src/server/clients/server_client.cpp
         src/server/model/constants/game_status.h
         src/server/model/Dynamic_entity.h
         src/server/model/Enemy.h
-        src/server/model/Entity.h
         src/server/model/Player.h
         src/server/Game.cpp
         src/server/Game.h      
         src/server/server_main.cpp
-        # src/server/physics/physics.h
-        # src/server/physics/physics.cpp
-
+        src/server/physics/physics.h
+        src/server/physics/physics.cpp
+        src/server/model/Bullet.h
+        src/server/model/Pickup.h
+        src/server/model/constants/pickup_type.h
         src/server/game/game_manager.h
         src/server/game/game_manager.cpp
         src/server/game/lobby_protocol.h
         src/server/game/lobby_protocol.cpp
         src/server/game_pool_monitor.h
-        )
+)
 
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})
 add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
