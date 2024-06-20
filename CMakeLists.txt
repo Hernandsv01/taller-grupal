@@ -108,6 +108,8 @@ src/server/clients/server_client.cpp
         src/server/game/lobby_protocol.h
         src/server/game/lobby_protocol.cpp
         src/server/game_pool_monitor.h
+        src/server/loader/config.h
+        src/server/loader/config.cpp
 )
 
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})
