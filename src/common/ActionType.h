@@ -11,11 +11,12 @@ enum ActionType: std::uint8_t {
     RUN_LEFT = 0x02,
     RUN_RIGHT = 0x03,
 
-    SHOOT = 0x10,
-    SPECIAL = 0x11, //esta accion es diferente para cada personaje (pero se evalua en el server).
+    SHOOT = 0x04,
 
-    STOP_RUN_RIGHT = 0x20,
-    STOP_RUN_LEFT = 0x21
+    SPECIAL = 0x05, //esta accion es diferente para cada personaje (pero se evalua en el server).
+
+    STOP_RUN_RIGHT = 0x06,
+    STOP_RUN_LEFT = 0x07
 };
 
 #endif //ACTIONTYPE_H

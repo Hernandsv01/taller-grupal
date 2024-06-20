@@ -5,12 +5,13 @@
 #include "../../common/lobbyprotocol.h"
 #include "../Game.h"
 
-class LobbyProtocol{
-private:
-    Socket& socket;
+class LobbyProtocol {
+   private:
+    Socket socket;
+    bool valid = true;
 
-public:
-    explicit LobbyProtocol(Socket& socket);
+   public:
+    explicit LobbyProtocol(Socket socket);
 
     // recibe comando
     MessageType receive_command();
@@ -26,8 +27,13 @@ public:
     void send_join_game(std::pair<uint16_t, std::string>& joined_info);
 
     //send GET GAMES
-    void get_games(std::vector<std::unique_ptr<Game>>& games);
+    void send_games(std::vector<GameMatch>& games);
 
+    // extract socket from lobbyProtocol
+    Socket extract_socket();
+
+    // devuelve si es valido
+    bool is_valid();
 };
 
-#endif //LOBBY_PROTOCOK_H
+#endif  //LOBBY_PROTOCOK_H
