@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#define GAME_LENGTH_IN_SECONDS 200
+
 Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_status::WAITING), map(std::move(map)), name(name), next_id(0) {
     // Hardcodeado para que se asocie un jugador al único cliente que se conecta
 
@@ -11,23 +13,36 @@ Game::Game(std::string name, Map map) : Thread("Game server"), status(Game_statu
 }
 
 // Agregado para poder parar el loop del servidor, antes de joinear este thread
-void Game::stop_custom() { status = Game_status::STOPPED; }
+void Game::stop_custom() { status = Game_status::FINISHED; }
 
 void Game::run() {
     status = Game_status::RUNNING;
-    std::chrono::steady_clock::time_point inicio_tick = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point current_tick_start = std::chrono::steady_clock::now();
+    int game_seconds_passed = 0;
+    std::chrono::steady_clock::time_point next_second_update = current_tick_start + std::chrono::seconds(1);
+
     while (status == Game_status::RUNNING) {
-        std::chrono::steady_clock::time_point final_tick =
-            inicio_tick + TICK_DURATION;
+        std::chrono::steady_clock::time_point current_tick_end = current_tick_start + TICK_DURATION;
 
         run_iteration();
 
         // Calculate the start time for the next tick
-        inicio_tick += TICK_DURATION;
+        current_tick_start += TICK_DURATION;
 
         // Sleep until the next tick
-        std::this_thread::sleep_until(final_tick);
+        std::this_thread::sleep_until(current_tick_end);
+
+        if (game_seconds_passed >= GAME_LENGTH_IN_SECONDS) {
+            status = Game_status::FINISHED;
+            Client_Monitor::sendAll({Update::Update_new::create_value(0, Update::MatchEnded, 0)});
+        } else if (std::chrono::steady_clock::now() >= next_second_update) {
+            Client_Monitor::sendAll({Update::Update_new::create_value(static_cast<uint16_t>(0), Update::RemainingSeconds, static_cast<uint8_t>(GAME_LENGTH_IN_SECONDS - game_seconds_passed))});
+            next_second_update += std::chrono::seconds(1);
+            game_seconds_passed++;
+        }
     }
+
+    // TODO: Send final stats
 }
 
 void Game::run_iteration() {

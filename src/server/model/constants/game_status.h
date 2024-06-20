@@ -2,10 +2,9 @@
 #define GAME_STATUS_H
 
 enum Game_status {
-    RUNNING,
-    PAUSED,
     WAITING,
-    STOPPED
+    RUNNING,
+    FINISHED
 };
 
 #endif //GAME_STATUS_H
