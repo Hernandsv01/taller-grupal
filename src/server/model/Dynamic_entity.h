@@ -29,9 +29,12 @@ protected:
     bool is_item;
 
     int health;
+    bool is_active;
+    std::chrono::steady_clock::time_point inactive_time;
 public:
     Dynamic_entity(int id, float pos_x, float pos_y, float width, float height, float vel_x, float vel_y,
-                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health)
+                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health, bool is_active,
+                   std::chrono::steady_clock::time_point inactive_time)
         : id(id),
           RigidBox(pos_x, pos_y, width, height),
           vel_x(vel_x),
@@ -40,7 +43,9 @@ public:
           is_damageable(is_damageable),
           damage_on_contact(damage_on_contact),
           is_item(is_item),
-          health(health)
+          health(health),
+          is_active(is_active),
+          inactive_time(inactive_time)
           {};
 
     ~Dynamic_entity() {};
@@ -63,9 +68,13 @@ public:
     int get_id() const { return id; };
     bool get_is_item() const { return is_item; };
     bool deal_damage(int damage) {
-        // TODO: Check if health is less than 0 and actually setting values as dead
         health -= damage;
-        return health <= 0;
+        if(health <= 0) {
+            is_active = false;
+            inactive_time = std::chrono::steady_clock::now();
+            return true;
+        }
+        return false;
     };
     bool collides_with_map(const Map& map) {
         int x_min = static_cast<int>(std::floor(this->x_min()));
