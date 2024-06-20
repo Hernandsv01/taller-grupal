@@ -18,7 +18,7 @@ void Game::stop_custom() { status = Game_status::FINISHED; }
 void Game::run() {
     status = Game_status::RUNNING;
     std::chrono::steady_clock::time_point current_tick_start = std::chrono::steady_clock::now();
-    int game_seconds_passed = 0;
+    int time_left = GAME_LENGTH_IN_SECONDS;
     std::chrono::steady_clock::time_point next_second_update = current_tick_start + std::chrono::seconds(1);
 
     while (status == Game_status::RUNNING) {
@@ -32,13 +32,13 @@ void Game::run() {
         // Sleep until the next tick
         std::this_thread::sleep_until(current_tick_end);
 
-        if (game_seconds_passed >= GAME_LENGTH_IN_SECONDS) {
+        if (time_left < 0) {
             status = Game_status::FINISHED;
             Client_Monitor::sendAll({Update::Update_new::create_value(0, Update::MatchEnded, 0)});
         } else if (std::chrono::steady_clock::now() >= next_second_update) {
-            Client_Monitor::sendAll({Update::Update_new::create_value(static_cast<uint16_t>(0), Update::RemainingSeconds, static_cast<uint8_t>(GAME_LENGTH_IN_SECONDS - game_seconds_passed))});
+            time_left--;
             next_second_update += std::chrono::seconds(1);
-            game_seconds_passed++;
+            Client_Monitor::sendAll({Update::Update_new::create_value(static_cast<uint16_t>(0), Update::RemainingSeconds, static_cast<uint8_t>(time_left))});
         }
     }
 
@@ -49,6 +49,7 @@ void Game::run_iteration() {
     for (Server_Client* client : Client_Monitor::getAll()) {
         uint8_t action = client->getReceiver().get_next_action();
         auto* player = dynamic_cast<Player*>(entity_pool[client->get_player_position()].get());
+        // TODO: recibir las updates de process action
         player->process_action(action, entity_pool, next_id);
     }
 
