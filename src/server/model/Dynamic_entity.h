@@ -32,9 +32,11 @@ protected:
     int health;
     bool is_active;
     std::chrono::steady_clock::time_point inactive_time;
+
+    bool looking_right;
 public:
     Dynamic_entity(int id, float pos_x, float pos_y, float width, float height, float vel_x, float vel_y,
-                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health, bool is_active)
+                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health, bool is_active, bool looking_right)
         : id(id),
           RigidBox(pos_x, pos_y, width, height),
           vel_x(vel_x),
@@ -46,7 +48,8 @@ public:
           is_item(is_item),
           health(health),
           is_active(is_active),
-          inactive_time(std::chrono::steady_clock::time_point())
+          inactive_time(std::chrono::steady_clock::time_point()),
+          looking_right(looking_right)
           {};
 
     ~Dynamic_entity() {};
