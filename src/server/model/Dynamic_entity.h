@@ -24,23 +24,32 @@ protected:
     // esto lo usamos para diferenciar una bala de un jugador, si no hace daño se setea en 0
     // (para evitar tener 2 atributos, uno boolean y otro con el valor)
     bool is_damageable;
+    std::chrono::steady_clock::time_point last_damaged;
     int damage_on_contact;
 
     bool is_item;
 
     int health;
+    bool is_active;
+    std::chrono::steady_clock::time_point inactive_time;
+
+    bool looking_right;
 public:
     Dynamic_entity(int id, float pos_x, float pos_y, float width, float height, float vel_x, float vel_y,
-                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health)
+                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health, bool is_active, bool looking_right)
         : id(id),
           RigidBox(pos_x, pos_y, width, height),
           vel_x(vel_x),
           vel_y(vel_y),
           acc_y(acc_y),
           is_damageable(is_damageable),
+          last_damaged(std::chrono::steady_clock::time_point()),
           damage_on_contact(damage_on_contact),
           is_item(is_item),
-          health(health)
+          health(health),
+          is_active(is_active),
+          inactive_time(std::chrono::steady_clock::time_point()),
+          looking_right(looking_right)
           {};
 
     ~Dynamic_entity() {};
@@ -63,9 +72,15 @@ public:
     int get_id() const { return id; };
     bool get_is_item() const { return is_item; };
     bool deal_damage(int damage) {
-        // TODO: Check if health is less than 0 and actually setting values as dead
         health -= damage;
-        return health <= 0;
+        if(health <= 0) {
+            is_active = false;
+            inactive_time = std::chrono::steady_clock::now();
+            return true;
+        } else {
+            is_damageable = false;
+        }
+        return false;
     };
     bool collides_with_map(const Map& map) {
         int x_min = static_cast<int>(std::floor(this->x_min()));

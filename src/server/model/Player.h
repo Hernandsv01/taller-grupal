@@ -15,6 +15,8 @@
 #define PLAYER_INITIAL_X_VEL 0
 #define PLAYER_INITIAL_Y_VEL 0
 #define GRAVITY 5
+#define SECONDS_UNTIL_RESPAWN 3
+#define SECONDS_IMMUNE_AFTER_DAMAGE 2
 
 class Player : public Dynamic_entity {
 private:
@@ -23,7 +25,7 @@ private:
     int bullets;
 public:
     Player(int id, float x_spawn, float y_spawn)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH),
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH, true, true),
         points(0), ammo_type(enums_value_update::Ammo_type::NORMAL), bullets(100) {};
 
     std::vector<Update::Update_new> process_action(uint8_t action, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
@@ -40,17 +42,21 @@ public:
                 setXSpeed(3);
                 break;
 
-            case SHOOT_RIGHT:
-                entity_pool.push_back(std::make_unique<Bullet>(next_id, x_pos+x_size, y_pos+(y_size/2), 5));
-                updates.push_back(Update::Update_new::create_create_entity(
-                        next_id,
-                        Update::EntityType::Bullet,
-                        Update::EntitySubtype::No_subtype
-                        ));
-                next_id++;
-                break;
-            case SHOOT_LEFT:
-                entity_pool.push_back(std::make_unique<Bullet>(next_id, x_pos, y_pos+(y_size/2), -5));
+            case SHOOT:
+                float x_spawn;
+                float y_spawn;
+                float speed;
+
+                if (looking_right) {
+                    x_spawn = x_pos+x_size;
+                    y_spawn = y_pos+(y_size/2);
+                    speed = 5;
+                } else {
+                    x_spawn = x_pos;
+                    y_spawn = y_pos+(y_size/2);
+                    speed = -5;
+                }
+                entity_pool.push_back(std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed));
                 updates.push_back(Update::Update_new::create_create_entity(
                         next_id,
                         Update::EntityType::Bullet,
@@ -85,6 +91,21 @@ public:
     std::vector<Update::Update_new> tick(const Map& map,
         std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) override {
         std::vector<Update::Update_new> updates;
+
+        if (!is_active) {
+            if (std::chrono::steady_clock::now() >= inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
+                revive(map.get_player_spawns());
+                updates.push_back(Update::Update_new::create_position(
+                        static_cast<uint16_t>(id),
+                        x_pos,
+                        y_pos));
+            }
+            return updates;
+        }
+
+        if (!is_damageable && std::chrono::steady_clock::now() >= (std::chrono::steady_clock::now() + std::chrono::seconds(SECONDS_IMMUNE_AFTER_DAMAGE))) {
+            is_damageable = true;
+        }
 
         float old_x = x_pos;
         float old_y = y_pos;
@@ -205,6 +226,16 @@ public:
         }
 
         return updates;
+    }
+
+    void revive(std::vector<Coordinate> spawns) {
+        // TODO: send update...? Position for sure, but events?
+        Coordinate spawn = spawns[rand() % spawns.size()];
+        x_pos = spawn.x;
+        y_pos = spawn.y;
+
+        health = PLAYER_HEALTH;
+        is_active = true;
     }
 
     void delete_pickup(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int id) {
