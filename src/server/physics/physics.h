@@ -40,6 +40,7 @@ class Point {
 class RigidTriangle;
 
 class RigidBox {
+protected:
     // La posicion del rigid box esta definida por la esquina inferior
     // izquierda
     float x_pos;
@@ -48,11 +49,7 @@ class RigidBox {
     float x_size;
     float y_size;
 
-    float x_min() const;
-    float x_max() const;
-    float y_min() const;
-    float y_max() const;
-
+private:
     float x_center() const;
     float y_center() const;
 
@@ -87,7 +84,12 @@ class RigidBox {
     void decolisionar_horizontal_con(const RigidBox& other);
     void decolisionar_vertical_con(const RigidBox& other);
 
-   public:
+public:
+    float x_min() const;
+    float x_max() const;
+    float y_min() const;
+    float y_max() const;
+
     // Crea una RigidBox con
     RigidBox(float x_pos, float y_pos, float x_size, float y_size);
 

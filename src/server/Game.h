@@ -22,11 +22,11 @@
 
 class Game : public Thread {
    private:
-    std::chrono::steady_clock reloj;
     uint8_t id;
     Game_status status;
     Map map;
     std::string name;
+    int next_id;
 
     std::vector<std::unique_ptr<Dynamic_entity>> entity_pool;
 
@@ -34,7 +34,6 @@ class Game : public Thread {
     explicit Game(std::string name, Map map);
     void run() override;
     void run_iteration();
-    void process_action(uint8_t action, int player);
     void stop_custom() override;
     uint16_t add_player();
     void add_socket_for_player(uint16_t player_id, Socket socket);

@@ -131,7 +131,7 @@ class Map {
     std::vector<Coordinate> get_coord_of_blocks_with_condition(
         bool (*condition)(const Block&)) const;
 
-   public:
+public:
     // Servidor
 
     // Carga un mapa desde un archivo yaml.
