@@ -46,6 +46,6 @@ void Config::load_config(const std::string& file_path){
 
 
 
-int Config::get_player_speed(){
+float Config::get_player_speed(){
     return player.speed;
 }
