@@ -1,7 +1,7 @@
 #include "Game.h"
 
 #include <utility>
-#include "player_type.h"
+#include "./loader/config.h"
 
 #define GAME_LENGTH_IN_SECONDS 200
 
@@ -72,6 +72,9 @@ void Game::run_iteration() {
 
 
 void Game::send_initial_values() {
+
+    std::vector<Update::Update_new> creations;
+    std::vector<Update::Update_new> creations;
     //
     /*
         Reveisar orden: 
@@ -90,25 +93,28 @@ void Game::send_initial_values() {
    
     Player player(next_id++, rand_spawn.x, rand_spawn.y);
     entity_pool.push_back(std::make_unique<Player>(player));
-
+    // 
     Update::Update_new::create_create_entity(
         player.get_id(),
         Update::EntityType::Player,
         Update::EntitySubtype::Jazz //deberia ser random entre los 3 tipos. 
     );
 
- 
     Update::Update_new::create_position(
         player.get_id(), // usar mismo id que en la creación
         rand_spawn.x,
         rand_spawn.y
     );
+    
+
+    Update::Update_new::create_value(player.get_id, )
+
 
     //enemies
-    Coordinate rand_spawn = map.get_enemy_spawns()[rand() % map.get_enemy_spawns().size()];
+    Coordinate rand_enemy_spawn = map.get_enemy_spawns()[rand() % map.get_enemy_spawns().size()];
     /*
     //se deberia chequear al cantidad de enemigos. 
-    Enemy enemy();
+    Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y);
     Update::Update_new::create_create_entity(
         enemy.get_id(),
         Update::EntityType::Enemy,
@@ -124,15 +130,23 @@ void Game::send_initial_values() {
    
     //pickups
     //ver como se maneja la cantidad 
-    Pickup Pickup()
+    //ver como hacer para tomar la configuracion, si lo hago yo desde aca o si se hace desde el constructor. 
+    Coordinate rand_pickup_spawn = map.get_items_spawns()[rand() % map.get_items_spawns().size()];
+    Pickup pickup(next_id++, rand_pickup_spawn.x, rand_pickup_spawn.y, Pickup_type::COIN, Config::get_pickup_coin());  
+    entity_pool.push_back(std::make_unique<Pickup>(pickup));
 
-    
+    Coordinate rand_pickup_spawn = map.get_items_spawns()[rand() % map.get_items_spawns().size()];
+    Pickup pickup(next_id++, rand_pickup_spawn.x, rand_pickup_spawn.y, Pickup_type::COIN, Config::get_pickup_coin());  
+    entity_pool.push_back(std::make_unique<Pickup>(pickup));
+
+
 }
 
 uint16_t Game::add_player() {
     Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
-    entity_pool.push_back(std::make_unique<Player>(next_id++, rand_spawn.x, rand_spawn.y));
-    return id_player;
+    Player player(next_id++, rand_spawn.x, rand_spawn.y);
+    entity_pool.push_back(std::make_unique<Player>(player));
+    return player.get_id();
 }
 
 uint8_t Game::get_id() {
