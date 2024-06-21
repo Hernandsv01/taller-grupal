@@ -4,7 +4,6 @@
 enum Pickup_type {
     COIN,
     CARROT,
-    NORMAL_AMMO,
     LIGHT_AMMO,
     HEAVY_AMMO,
     POWER_AMMO

@@ -8,6 +8,7 @@
 #include "constants/pickup_type.h"
 
 #include <cmath>
+#include <map>
 
 #define PLAYER_HEIGHT 5
 #define PLAYER_WIDTH 5
@@ -22,11 +23,15 @@ class Player : public Dynamic_entity {
 private:
     int points;
     enums_value_update::Ammo_type ammo_type;
-    int bullets;
+    std::map<enums_value_update::Ammo_type, int> ammo;
 public:
     Player(int id, float x_spawn, float y_spawn)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH, true, true),
-        points(0), ammo_type(enums_value_update::Ammo_type::NORMAL), bullets(100) {};
+        points(0), ammo_type(enums_value_update::Ammo_type::NORMAL) {
+        ammo[enums_value_update::Ammo_type::LIGHT] = 0;
+        ammo[enums_value_update::Ammo_type::HEAVY] = 0;
+        ammo[enums_value_update::Ammo_type::POWER] = 0;
+    };
 
     std::vector<Update::Update_new> process_action(uint8_t action, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
         std::vector<Update::Update_new> updates;
@@ -43,6 +48,9 @@ public:
                 break;
 
             case SHOOT:
+                if (ammo[ammo_type] <= 0) {
+                    return updates;
+                }
                 float x_spawn;
                 float y_spawn;
                 float speed;
@@ -63,6 +71,9 @@ public:
                         Update::EntitySubtype::No_subtype
                 ));
                 next_id++;
+                if (ammo_type != enums_value_update::Ammo_type::NORMAL) {
+                    ammo[ammo_type]--;
+                }
                 break;
 
             case SPECIAL:
@@ -164,63 +175,17 @@ public:
                                 Update::UpdateType::Health,
                                 static_cast<uint8_t>(health)));
                         break;
-                    case NORMAL_AMMO:
-                        if (ammo_type != enums_value_update::Ammo_type::NORMAL) {
-                            ammo_type = enums_value_update::Ammo_type::NORMAL;
-                            updates.push_back(Update::Update_new::create_value(
-                                    static_cast<uint16_t>(id),
-                                    Update::UpdateType::ChangeAmmoType,
-                                    enums_value_update::Ammo_type::NORMAL));
-                        }
-                        bullets += pickup->getValue();
-                        updates.push_back(Update::Update_new::create_value(
-                                static_cast<uint16_t>(id),
-                                Update::UpdateType::BulletsRemaining,
-                                static_cast<uint8_t>(bullets)));
-                        break;
                     case LIGHT_AMMO:
-                        if (ammo_type != enums_value_update::Ammo_type::LIGHT) {
-                            ammo_type = enums_value_update::Ammo_type::LIGHT;
-                            updates.push_back(Update::Update_new::create_value(
-                                    static_cast<uint16_t>(id),
-                                    Update::UpdateType::ChangeAmmoType,
-                                    enums_value_update::Ammo_type::LIGHT));
-                        }
-                        bullets += pickup->getValue();
-                        updates.push_back(Update::Update_new::create_value(
-                                static_cast<uint16_t>(id),
-                                Update::UpdateType::BulletsRemaining,
-                                static_cast<uint8_t>(bullets)));
+                        ammo[enums_value_update::LIGHT] += pickup->getValue();
                         break;
                     case HEAVY_AMMO:
-                        if (ammo_type != enums_value_update::Ammo_type::HEAVY) {
-                            ammo_type = enums_value_update::Ammo_type::HEAVY;
-                            updates.push_back(Update::Update_new::create_value(
-                                    static_cast<uint16_t>(id),
-                                    Update::UpdateType::ChangeAmmoType,
-                                    enums_value_update::Ammo_type::HEAVY));
-                        }
-                        bullets += pickup->getValue();
-                        updates.push_back(Update::Update_new::create_value(
-                                static_cast<uint16_t>(id),
-                                Update::UpdateType::BulletsRemaining,
-                                static_cast<uint8_t>(bullets)));
+                        ammo[enums_value_update::HEAVY] += pickup->getValue();
                         break;
                     case POWER_AMMO:
-                        if (ammo_type != enums_value_update::Ammo_type::POWER) {
-                            ammo_type = enums_value_update::Ammo_type::POWER;
-                            updates.push_back(Update::Update_new::create_value(
-                                    static_cast<uint16_t>(id),
-                                    Update::UpdateType::ChangeAmmoType,
-                                    enums_value_update::Ammo_type::POWER));
-                        }
-                        bullets += pickup->getValue();
-                        updates.push_back(Update::Update_new::create_value(
-                                static_cast<uint16_t>(id),
-                                Update::UpdateType::BulletsRemaining,
-                                static_cast<uint8_t>(bullets)));
+                        ammo[enums_value_update::POWER] += pickup->getValue();
                         break;
                 }
+                updates.push_back(Update::Update_new::create_delete_entity(other->get_id()));
                 delete_pickup(entity_pool, pickup->get_id());
             }
         }
