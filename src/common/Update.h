@@ -40,14 +40,12 @@ struct PositionFloat {
 
 // USANDO OBJETO PRACTICAMENTE VACIO
 class Update_new {
-   public:
-    uint16_t id = 0;
-    Update::UpdateType update_type_value = Update::CreateEntity;
-
    private:
     // Estas propiedades tienen valores default para poder crear una instancia
     // "vacia". Luego se completaran las propiedades petrinentes, al tipo de
     // update utilizado.
+    uint16_t id = 0;
+    Update::UpdateType update_type_value = Update::CreateEntity;
 
     // Create entity
     Update::EntityType entity_type_value = Update::EntityType::Player;
@@ -75,6 +73,12 @@ class Update_new {
 
     static Update_new create_value(uint16_t id, Update::UpdateType key,
                                    uint8_t value);
+
+    static Update_new create_delete_entity(uint16_t id);
+
+    uint16_t get_id() const;
+
+    Update::UpdateType get_update_type() const;
 
     uint8_t get_value() const;
 

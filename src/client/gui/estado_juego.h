@@ -314,6 +314,26 @@ class UpdatableGameState {
 
     void addItem(Item item) { this->items.insert({item.id, item}); }
 
+    void deleteEntity(Id_t id) {
+        if (id == this->mainPlayerId) {
+            // No se puede borrar al jugador principal.
+            throw std::runtime_error(
+                "No se puede borrar al jugador principal.");
+        }
+
+        if (this->players.count(id)) {
+            this->players.erase(id);
+        } else if (this->projectiles.count(id)) {
+            this->projectiles.erase(id);
+        } else if (this->enemies.count(id)) {
+            this->enemies.erase(id);
+        } else if (this->items.count(id)) {
+            this->items.erase(id);
+        }
+
+        throw std::runtime_error("No se encontro la entidad con el id dado.");
+    }
+
     uint8_t getLocalSubtypeOfEntity(
         Update::EntityTypeAndSubtype entityTypeAndSubtype) {
         Update::EntityType entity_type_value = entityTypeAndSubtype.type;
@@ -391,43 +411,43 @@ class UpdatableGameState {
     }
 
     void handleUpdate(Update::Update_new update, uint32_t tick) {
-        // Incluir logica de que tipo de update es
-        switch (update.update_type_value) {
+        switch (update.get_update_type()) {
             case Update::CreateEntity: {
-                Update::EntityTypeAndSubtype entity_type_and_subtype = 
-                        update.get_entity_type_and_subtype();
-                Update::EntityType entityType =
-                                            update.getEntityType();
-                Update::EntitySubtype entitySubtype =
-                                            update.getEntitySubType();
-                this->addEntity(update.id, entity_type_and_subtype);
-                
+                Update::EntityTypeAndSubtype entity_type_and_subtype =
+                    update.get_entity_type_and_subtype();
+
+                this->addEntity(update.get_id(), entity_type_and_subtype);
+
                 break;
             }
             case Update::Position: {
-                Entity &entity = this->getEntityReferenceById(update.id);
+                Entity &entity = this->getEntityReferenceById(update.get_id());
                 entity.position = conversionTamanio(update.get_position());
                 break;
             }
             case Update::Direction: {
-                PlayerState &player = this->players.at(update.id);
+                PlayerState &player = this->players.at(update.get_id());
                 player.direction = static_cast<Direction>(update.get_value());
                 break;
             }
             case Update::State: {
-                PlayerState &player = this->players.at(update.id);
+                PlayerState &player = this->players.at(update.get_id());
                 player.state =
                     State(static_cast<State_enum>(update.get_value()), tick);
                 break;
             }
             case Update::Health: {
-                PlayerState &player = this->players.at(update.id);
+                PlayerState &player = this->players.at(update.get_id());
                 player.healthPoints = update.get_value();
                 break;
             }
             case Update::Score: {
-                PlayerState &player = this->players.at(update.id);
+                PlayerState &player = this->players.at(update.get_id());
                 player.score = update.get_value();
+                break;
+            }
+            case Update::DeleteEntity: {
+                this->deleteEntity(update.get_id());
                 break;
             }
         }
