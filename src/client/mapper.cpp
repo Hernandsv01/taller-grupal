@@ -23,6 +23,9 @@ ActionType Mapper::map_key_event(const SDL_Event& event){
             case SDLK_RETURN:
                 action = SHOOT;
                 break;
+            case SDLK_n:
+                action = SWITCH_GUN;
+                break;
             case SDLK_m:
                 action = SPECIAL;
                 break;

@@ -24,6 +24,7 @@ private:
     int points;
     enums_value_update::Ammo_type current_ammo_type;
     std::map<enums_value_update::Ammo_type, int> ammo;
+    std::map<enums_value_update::Ammo_type, enums_value_update::Ammo_type> next_ammo_type;
 public:
     Player(int id, float x_spawn, float y_spawn)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH, true, true),
@@ -31,6 +32,11 @@ public:
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
+
+        next_ammo_type[enums_value_update::Ammo_type::NORMAL] = enums_value_update::Ammo_type::LIGHT;
+        next_ammo_type[enums_value_update::Ammo_type::LIGHT] = enums_value_update::Ammo_type::HEAVY;
+        next_ammo_type[enums_value_update::Ammo_type::HEAVY] = enums_value_update::Ammo_type::POWER;
+        next_ammo_type[enums_value_update::Ammo_type::POWER] = enums_value_update::Ammo_type::NORMAL;
     };
 
     std::vector<Update::Update_new> tick(const Map& map,
@@ -144,6 +150,15 @@ public:
                 total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
                 break;
 
+            case SWITCH_GUN:
+                current_ammo_type = get_next_ammo_type(current_ammo_type);
+                total_updates.push_back(Update::Update_new::create_value(
+                        id,
+                        Update::UpdateType::ChangeAmmoType,
+                        current_ammo_type
+                ));
+                break;
+
             case SPECIAL:
                 // Not implemented: SPECIAL action
                 break;
@@ -200,6 +215,14 @@ public:
         return updates;
     }
 
+    enums_value_update::Ammo_type get_next_ammo_type(enums_value_update::Ammo_type ammo_type) {
+        enums_value_update::Ammo_type result = next_ammo_type[ammo_type];
+        if (ammo[result] == enums_value_update::Ammo_type::NORMAL || ammo[result] > 0) {
+            return result;
+        }
+        return get_next_ammo_type(result);
+    }
+
     void revive(std::vector<Coordinate> spawns) {
         // TODO: send update...? Position for sure, but events?
         Coordinate spawn = spawns[rand() % spawns.size()];
@@ -210,10 +233,10 @@ public:
         is_active = true;
     }
 
-    void delete_pickup(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int id) {
+    void delete_pickup(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int pickup_id) {
         auto it = std::find_if(entity_pool.begin(), entity_pool.end(),
-                               [id](const std::unique_ptr<Dynamic_entity>& entity) {
-                                   return entity->get_id() == id;
+                               [pickup_id](const std::unique_ptr<Dynamic_entity>& entity) {
+                                   return entity->get_id() == pickup_id;
                                });
         if (it != entity_pool.end()) {
             entity_pool.erase(it);
