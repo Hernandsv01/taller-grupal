@@ -210,20 +210,18 @@ public:
         if (current_ammo_type != enums_value_update::Ammo_type::NORMAL && ammo[current_ammo_type] <= 0) {
             return updates;
         }
-        float x_spawn;
-        float y_spawn;
-        float speed;
+        float x_spawn = x_pos;
+        float y_spawn = y_pos+(y_size/2);
+        float speed = ammo_config[current_ammo_type].get_speed();
+        int damage = ammo_config[current_ammo_type].get_damage();
 
         if (looking_right) {
-            x_spawn = x_pos+x_size;
-            y_spawn = y_pos+(y_size/2);
-            speed = 5;
+            x_spawn += x_size;
         } else {
-            x_spawn = x_pos;
-            y_spawn = y_pos+(y_size/2);
-            speed = -5;
+            speed *= -1;
         }
-        entity_pool.push_back(std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed));
+
+        entity_pool.push_back(std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
         updates.push_back(Update::Update_new::create_create_entity(
                 next_id,
                 Update::EntityType::Bullet,
