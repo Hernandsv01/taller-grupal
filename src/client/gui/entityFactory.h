@@ -7,7 +7,7 @@
 
 class EntityFactory {
     public:
-        static std::unique_ptr<Entity2> createEntity(const int& type, const int& subType);
+        static std::shared_ptr<Entity2> createEntity(const int& type, const int& subType);
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <map>
 #include <vector>
+#include <stdexcept>
 
 #include <SDL2pp/SDL2pp.hh>
 #include "../../common/Update.h"
@@ -57,8 +58,9 @@ enum State_enum {
     TakingDamage
     
 };
-enums_value_update::Direction direction =
-        enums_value_update::Direction::Right;
+
+//enums_value_update::Direction direction = enums_value_update::Direction::Right;
+
 struct State {
    private:
     uint32_t start_tick = 0;
@@ -129,12 +131,12 @@ struct MapInfo {
 
 class UpdatableGameState2 {
     private:
-        std::map<int, std::unique_ptr<Entity2>> gameState;
+        std::map<int, std::shared_ptr<Entity2>> gameState;
        
 
     public:
         explicit UpdatableGameState2() {
-            // std::unique_ptr<Entity2> ptr = std::make_unique<Entity2>();
+            // std::shared_ptr<Entity2> ptr = std::make_unique<Entity2>();
             // gameState.emplace(1, std::move(ptr));
         }
 
@@ -175,7 +177,7 @@ class UpdatableGameState2 {
                 break;
             }
             default:
-                throw std::runtime_error();
+                throw std::runtime_error("Faltan valores para los cases");
                 break;
             }
         }
@@ -213,34 +215,35 @@ class UpdatableGameState2 {
         //devolver vector de todos id tipo puntaje
 
         void addEntity(const int &id, const int &type, const int &subType) {
-            std::unique_ptr<Entity2> entity = EntityFactory::createEntity(type, subType);
-            //std::unique_ptr<Entity2> entity = std::make_unique<PlayableCharacter>("Jazz");
-            gameState.emplace(id, std::move(entity));
+            std::shared_ptr<Entity2> entity = EntityFactory::createEntity(type, subType);
+            //std::shared_ptr<Entity2> entity = std::make_unique<PlayableCharacter>("Jazz");
+            //gameState.emplace(id, std::move(entity));
             //gameState[id] = std::move(entity);
+            gameState.insert(std::make_pair(id, std::move(entity)));
         }
 
         void updatePosition(const int &id, const int &x, const int &y) {
-            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            std::shared_ptr<Entity2>& entity = gameState.at(id);
             entity->updatePosition(x, y);
         }
 
         void updateState(const int &id, std::string newState) {
-            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            std::shared_ptr<Entity2>& entity = gameState.at(id);
             entity->updateState(newState);
         }
 
         void updateDirection(const int &id, bool &isRight) {
-            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            std::shared_ptr<Entity2>& entity = gameState.at(id);
             entity->updateDirection(isRight);
         }
 
         void updateHealthPoints(const int &id, const int &healthPoint) {
-            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            std::shared_ptr<Entity2>& entity = gameState.at(id);
             entity->updateHealth(healthPoint);
         }
 
         void updateScore(const int &id, const int &score) {
-            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            std::shared_ptr<Entity2>& entity = gameState.at(id);
             entity->updateHealth(score);
         }
 
@@ -501,4 +504,4 @@ class UpdatableGameState {
     }
 };
 
-#endif
+#endif //ESTADO_JUEGO_H
