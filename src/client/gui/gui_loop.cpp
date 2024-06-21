@@ -56,6 +56,8 @@ void GuiLoop::run() {
     // Estoy obligado a construir el renderer acá, porque para que el renderer
     // pueda dibujar en pantalla, necesita ejecutarse en el mismo thread donde
     // fue construido.
+    SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
+
     initializeRender();
 
     using namespace std::chrono;
