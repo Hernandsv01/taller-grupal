@@ -8,7 +8,6 @@
 #include "../common/Update.h"
 #include "../common/library/thread.h"
 #include "../common/map/map.h"
-#include "clients/client_monitor.h"
 #include "clients/server_client.h"
 #include "model/Dynamic_entity.h"
 #include "model/Player.h"
@@ -29,6 +28,7 @@ class Game : public Thread {
     int next_id;
 
     std::vector<std::unique_ptr<Dynamic_entity>> entity_pool;
+    std::vector<std::unique_ptr<Server_Client>> clients;
 
    public:
     explicit Game(std::string name, Map map);
@@ -38,6 +38,8 @@ class Game : public Thread {
     void stop_custom() override;
     uint16_t add_player();
     void add_socket_for_player(uint16_t player_id, Socket socket);
+    void sendAll(std::vector<Update::Update_new> updates);
+    int findEntityPositionById(int id);
     uint8_t get_id();
     void set_id(uint8_t id);
     std::string get_match_name();

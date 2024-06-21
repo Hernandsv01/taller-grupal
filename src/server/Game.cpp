@@ -37,11 +37,11 @@ void Game::run() {
 
         if (time_left < 0) {
             status = Game_status::FINISHED;
-            Client_Monitor::sendAll({Update::Update_new::create_value(0, Update::MatchEnded, 0)});
+            sendAll({Update::Update_new::create_value(0, Update::MatchEnded, 0)});
         } else if (std::chrono::steady_clock::now() >= next_second_update) {
             time_left--;
             next_second_update += std::chrono::seconds(1);
-            Client_Monitor::sendAll({Update::Update_new::create_value(static_cast<uint16_t>(0), Update::RemainingSeconds, static_cast<uint8_t>(time_left))});
+            sendAll({Update::Update_new::create_value(static_cast<uint16_t>(0), Update::RemainingSeconds, static_cast<uint8_t>(time_left))});
         }
     }
 
@@ -52,9 +52,9 @@ void Game::run_iteration() {
     std::vector<Update::Update_new> total_updates;
     std::vector<Update::Update_new> tick_updates;
 
-    for (Server_Client* client : Client_Monitor::getAll()) {
+    for (auto& client : clients) {
         uint8_t action = client->getReceiver().get_next_action();
-        auto* player = dynamic_cast<Player*>(entity_pool[client->get_player_position()].get());
+        auto* player = dynamic_cast<Player*>(entity_pool[findEntityPositionById(client->get_id())].get());
         tick_updates = player->process_action(action, entity_pool, next_id);
         total_updates.insert(total_updates.end(), tick_updates.begin(),tick_updates.end());
     }
@@ -64,7 +64,7 @@ void Game::run_iteration() {
         total_updates.insert(total_updates.end(), tick_updates.begin(),tick_updates.end());
     }
 
-    Client_Monitor::sendAll(total_updates);
+    sendAll(total_updates);
 }
 
 void Game::send_initial_values() {
@@ -132,6 +132,22 @@ std::string Game::get_map_name(){
 }
 
 void Game::add_socket_for_player(uint16_t player_id, Socket socket) {
-    // Acá se destruye el socket, por lo que el cliente no puede continuar, y no
-    // hace nada
+    clients.push_back(std::make_unique<Server_Client>(static_cast<int>(player_id), std::move(socket)));
+}
+
+void Game::sendAll(std::vector<Update::Update_new> updates) {
+    for (auto& i : clients) {
+        i->getSender().addToQueue(updates);
+    }
+}
+
+int Game::findEntityPositionById(int entity_id) {
+    auto it = std::find_if(entity_pool.begin(), entity_pool.end(),
+                           [entity_id](const std::unique_ptr<Dynamic_entity>& entity) {
+                               return entity->get_id() == entity_id;
+                           });
+    if (it != entity_pool.end()) {
+        return std::distance(entity_pool.begin(), it);
+    }
+    return -1;
 }
