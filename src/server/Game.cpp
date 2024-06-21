@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include <utility>
+#include "player_type.h"
 
 #define GAME_LENGTH_IN_SECONDS 200
 
@@ -68,25 +69,6 @@ void Game::run_iteration() {
 
 void Game::send_initial_values() {
     //
-    Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
-   
-    Player player(next_id++, rand_spawn.x, rand_spawn.y);
-    Update::Update_new::create_create_entity(
-        player.get_id(),
-        Update::EntityType::Player,
-        Update::EntitySubtype::Jazz //modificar es random 
-    );
-
-     Update::Update_new::create_position(
-        player.get_id(), // usar mismo id que en la creación
-        rand_spawn.x,
-        rand_spawn.y
-    );
-
-    //enemies
-
-    //pickups
-
     /*
         1. crear entidades
             a. usar next_id para settear id (next_id++ luego)
@@ -97,6 +79,34 @@ void Game::send_initial_values() {
         5. Crear update para poner cada entidad en su posición inicial
         6. Mandar paquete de updates
     */
+
+    //player
+    Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
+   
+    Player player(next_id++, rand_spawn.x, rand_spawn.y);
+    entity_pool.push_back(std::make_unique<Player>(player));
+
+    Update::Update_new::create_create_entity(
+        player.get_id(),
+        Update::EntityType::Player,
+        Update::EntitySubtype::Jazz //deberia ser random entre los 3 tipos. 
+        //PlayerType::Jazz //modificar es random 
+    );
+    // mandar paquete.
+
+    Update::Update_new::create_position(
+        player.get_id(), // usar mismo id que en la creación
+        rand_spawn.x,
+        rand_spawn.y
+    );
+    //mandar paquete. 
+
+    //enemies
+
+    //pickups
+
+
+    
 }
 
 uint16_t Game::add_player() {

@@ -2,10 +2,10 @@
 #define PLAYER_TYPE_H
 
 enum PlayerType{
-    JAZZ,
-    SPAZZ,
-    LORI
-}
+    Jazz,
+    Spazz,
+    Lori
+};
 
 
 #endif // PLAYER_TYPE_H
