@@ -114,7 +114,7 @@ public:
             return updates;
         }
 
-        if (!is_damageable && std::chrono::steady_clock::now() >= (std::chrono::steady_clock::now() + std::chrono::seconds(SECONDS_IMMUNE_AFTER_DAMAGE))) {
+        if (!is_damageable && std::chrono::steady_clock::now() >= (inactive_time + std::chrono::seconds(SECONDS_IMMUNE_AFTER_DAMAGE))) {
             is_damageable = true;
         }
 
