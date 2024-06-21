@@ -1,0 +1,11 @@
+/home/local/Escritorio/taller-grupal/src/client/gui/build/CMakeFiles/testStand.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/CMakeFiles/testRun.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/CMakeFiles/testIntox.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/CMakeFiles/testMap.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/CMakeFiles/testStandR.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/CMakeFiles/testRunR.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/CMakeFiles/edit_cache.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/CMakeFiles/rebuild_cache.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/SDL2pp/CMakeFiles/SDL2pp.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/SDL2pp/CMakeFiles/edit_cache.dir
+/home/local/Escritorio/taller-grupal/src/client/gui/build/SDL2pp/CMakeFiles/rebuild_cache.dir
