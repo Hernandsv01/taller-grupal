@@ -127,6 +127,46 @@ class UpdatableGameState2 {
     public:
         explicit UpdatableGameState2() {}
 
+        void handleUpdate(Update::Update_new update, int tick) {
+            switch (update.update_type_value) {
+                case Update::CreateEntity: {
+                Update::EntityType entityType =
+                                            update.getEntityType();
+                Update::EntitySubtype entitySubtype =
+                                            update.getEntitySubType();
+                addEntity(update.id, entityType, entitySubtype);
+                break;
+            }
+            case Update::Position: {
+                int xPosition = update.getPositionX() * FACTOR_TAMANIO;
+                int yPosition = update.getPositionY() * FACTOR_TAMANIO;
+                updatePosition(update.id, xPosition, yPosition);
+                break;
+            }
+            case Update::Direction: {
+                bool isRight =  (update.get_value() == 0) ? true : false;
+                updateDirection(update.id, isRight);
+                break;
+            }
+            case Update::State: {
+                PlayerState &player = this->players.at(update.id);
+                player.state =
+                    State(static_cast<State_enum>(update.get_value()), tick);
+                break;
+            }
+            case Update::Health: {
+                int healthPoints = update.get_value();
+                updateHealthPoints(update.id, healthPoints);
+                break;
+            }
+            case Update::Score: {
+                int score = update.get_value();
+                updateScore(update.id, score);
+                break;
+            }
+            }
+        }
+
         void copyAllEntities(SDL2pp::Renderer &renderer,
                             const int &mainId, const int &xCenter,
                             const int &yCenter) {
@@ -160,7 +200,8 @@ class UpdatableGameState2 {
         //devolver vector de todos id tipo puntaje
 
         void addEntity(const int &id, const int &type, const int &subType) {
-            std::unique_ptr<Entity2> entity = std::make_unique<PlayableCharacter>("Jazz");
+            std::unique_ptr<Entity2> entity = EntityFactory::createEntity(type, subType);
+            //std::unique_ptr<Entity2> entity = std::make_unique<PlayableCharacter>("Jazz");
             gameState[id] = std::move(entity);
         }
 
@@ -177,6 +218,16 @@ class UpdatableGameState2 {
         void updateDirection(const int &id, bool &isRight) {
             std::unique_ptr<Entity2>& entity = gameState.at(id);
             entity->updateDirection(isRight);
+        }
+
+        void updateHealthPoints(const int &id, const int &healthPoint) {
+            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            entity->updateHealth(healthPoint);
+        }
+
+        void updateScore(const int &id, const int &score) {
+            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            entity->updateHealth(score);
         }
 
         int getEntityPositionX(int id) const {

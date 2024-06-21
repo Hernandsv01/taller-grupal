@@ -2,24 +2,6 @@
 #include "textureManager.h"
 
 #define BASESPRITE 0
-#define JAZZSTANDX 46
-#define JAZZSTANDY 49
-#define STANDSPRITELONG 27
-
-#define JAZZRUNX 67
-#define JAZZRUNY 35
-#define RUNSPRITELONG 8
-
-#define JAZZINTOXX 42
-#define JAZZINTOXY 48
-#define INTOXSPRITELONG 8
-
-#define JAZZINTOXWALKX 63
-#define JAZZINTOXWALKY 50
-#define INTOXWALKSPRITELONG 12
-
-#define JAZZX 90
-#define JAZZY 71
 
 #define GROUND 0
 #define UNDER 1
@@ -47,38 +29,61 @@
 //       runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
 //       frame(0) {}
 
-Render::Render(Window& window)
-    : window(window),
-      renderer(window, -1, SDL_RENDERER_ACCELERATED),
-      mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
-      standSpritesJazz(renderer, DATA_PATH "/Jazz_stand.png"),
-      runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
-      intoxJazz(renderer, DATA_PATH "/Jazz_intoxStand.png"),
-      intoxWalkJazz(renderer, DATA_PATH "/Jazz_intoxWalk.png"),
-
-      xCenter(window.GetWidth() / 2),
-      yCenter(window.GetHeight() / 2),
-      xReference(xCenter),
-      yReference(yCenter),
-      frame(0) {
-    window.SetTitle(WINDOW_TITLE);
-    window.SetSize(800, 600);
-    window.SetPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-    TextureManager::Init(renderer);
+Render::Render(Window& window, const int &id) :
+    window(window),
+    renderer(window, -1, SDL_RENDERER_ACCELERATED),
+    mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
+    mainPlayerID(id),
+    xCenter(window.GetWidth() / 2),
+    yCenter(window.GetHeight() / 2),
+    xReference(0),
+    yReference(0),
+    TextureManager::Init(renderer) {
 }
 
 
 void Render::presentGame2(UpdatableGameState2 gameState, MapInfo mapInfo) {
-    int mainPlayerID = 1;
-    //xReference = gameState.getEntityPositionX(mainPlayerID);
-    //yReference = gameState.getEntityPositionY(mainPlayerID);
+    int xReference = gameState.getEntityPositionX(mainPlayerID);
+    int yReference = gameState.getEntityPositionY(mainPlayerID);
     copyMap(mapInfo);
-    //gameState.copyAllEntities(this->renderer, xReference, yReference);
+    gameState.copyAllEntities(this->renderer, mainPlayerID, xReference, yReference);
     renderer.Present();
 }
 
+void Render::copyMap(MapInfo mapInfo) {
+    copyWall();
+    copyMapPart(GROUND, mapInfo.typeOfGround, mapInfo.groundPosition);
+    copyMapPart(UNDER, mapInfo.typeOfUnder, mapInfo.underPosition);
+}
+
+void Render::copyWall() {
+    for (int i = 0; i < window.GetWidth(); i += WALLDIMENSION) {
+        for (int j = 0; j < window.GetHeight(); j += WALLDIMENSION) {
+            renderer.Copy(
+                mapsTexture,
+                Rect(0, WALL * PARTDIMY, WALLDIMENSION, WALLDIMENSION),
+                Rect(i, j, WALLDIMENSION, WALLDIMENSION));
+        }
+    }
+}
+
+void Render::copyMapPart(int typeOfPart, int part,
+                         std::vector<Position> positions) {
+    for (auto position : positions) {
+        renderer.Copy(
+            mapsTexture,
+            Rect(part * PARTDIMX, typeOfPart * PARTDIMY, PARTDIMX, PARTDIMY),
+            Rect(position.x - xReference + xCenter,
+                 position.y - yReference + yCenter, PARTDIMX, PARTDIMY));
+    }
+}
+
+void Render::presentImage() { renderer.Present(); }
+
+void Render::sleep(int millisecond) { SDL_Delay(millisecond); }
 
 
+/*
 void Render::presentGame(GameStateRenderer gameStatus, MapInfo mapInfo) {
     xReference = gameStatus.mainPlayer.position.x;
     yReference = gameStatus.mainPlayer.position.y;
@@ -116,35 +121,4 @@ void Render::copyEntity(int xPos, int yPos, int spriteLong, int spriteHigh,
 
     frame = (frame + 1) % animationLong;
 }
-
-void Render::copyMap(MapInfo mapInfo) {
-    copyWall();
-    copyMapPart(GROUND, mapInfo.typeOfGround, mapInfo.groundPosition);
-    copyMapPart(UNDER, mapInfo.typeOfUnder, mapInfo.underPosition);
-}
-
-void Render::copyWall() {
-    for (int i = 0; i < window.GetWidth(); i += WALLDIMENSION) {
-        for (int j = 0; j < window.GetHeight(); j += WALLDIMENSION) {
-            renderer.Copy(
-                mapsTexture,
-                Rect(0, WALL * PARTDIMY, WALLDIMENSION, WALLDIMENSION),
-                Rect(i, j, WALLDIMENSION, WALLDIMENSION));
-        }
-    }
-}
-
-void Render::copyMapPart(int typeOfPart, int part,
-                         std::vector<Position> positions) {
-    for (auto position : positions) {
-        renderer.Copy(
-            mapsTexture,
-            Rect(part * PARTDIMX, typeOfPart * PARTDIMY, PARTDIMX, PARTDIMY),
-            Rect(position.x - xReference + xCenter,
-                 position.y - yReference + yCenter, PARTDIMX, PARTDIMY));
-    }
-}
-
-void Render::presentImage() { renderer.Present(); }
-
-void Render::sleep(int millisecond) { SDL_Delay(millisecond); }
+*/
