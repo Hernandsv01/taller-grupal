@@ -27,6 +27,8 @@ class Entity2 {
 
         virtual void updateState(const std::string &newState) {};
 
+        virtual void updateHealth(const int &newHealth) {};
+
         virtual void updateDirection(bool &isFacingRight) {};
 };
 

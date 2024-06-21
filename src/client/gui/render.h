@@ -31,7 +31,7 @@ class Render {
     const int xCenter;
     const int yCenter;
     int xReference;
-    int yReference
+    int yReference;
 
     void copyMapPart(int typeOfPart, int part, std::vector<Position> positions);
 

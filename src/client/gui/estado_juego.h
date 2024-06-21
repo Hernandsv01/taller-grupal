@@ -33,17 +33,17 @@ struct Position {
 // Direccion a la que apunta la entidad (para saber si voltear horizontalmente
 // la textura)
 
-// Representacion de una entidad generica.
+// Representacion de una entidad generica
 struct Entity {
     Id_t id;
     Position position{0, 0};
-    Direction direction = Direction::Right;
+    enums_value_update::Direction direction = enums_value_update::Direction::Right;
 };
 
 const std::vector<std::string> posibleStates = {"Stand", "Shot", "Jump",
                             "Fall", "Run", "Intox", "Intoxwalk", 
                             "Roasted", "Gethit", "Dash", "Shotfall", 
-                            "Special"}
+                            "Special"};
 // Posibles estados de ¿solo jugador?
 enum State_enum {
     Idle,
@@ -87,6 +87,7 @@ struct PlayerState : public Entity {
     State state = State(enums_value_update::Player_State_Enum::Idle, 0);
     HealthPoints_t healthPoints = 10;
     Score_t score = 0;
+
     // Faltaría municion y tipo de arma.
     // Tendría que ver que variaciones tendría eso
 };
