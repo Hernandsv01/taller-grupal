@@ -21,6 +21,8 @@ void Game::run() {
     int time_left = GAME_LENGTH_IN_SECONDS;
     std::chrono::steady_clock::time_point next_second_update = current_tick_start + std::chrono::seconds(1);
 
+    send_initial_values();
+
     while (status == Game_status::RUNNING) {
         std::chrono::steady_clock::time_point current_tick_end = current_tick_start + TICK_DURATION;
 
@@ -62,6 +64,39 @@ void Game::run_iteration() {
     }
 
     Client_Monitor::sendAll(total_updates);
+}
+
+void Game::send_initial_values() {
+    //
+    Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
+   
+    Player player(next_id++, rand_spawn.x, rand_spawn.y);
+    Update::Update_new::create_create_entity(
+        player.get_id(),
+        Update::EntityType::Player,
+        Update::EntitySubtype::Jazz //modificar es random 
+    );
+
+     Update::Update_new::create_position(
+        player.get_id(), // usar mismo id que en la creación
+        rand_spawn.x,
+        rand_spawn.y
+    );
+
+    //enemies
+
+    //pickups
+
+    /*
+        1. crear entidades
+            a. usar next_id para settear id (next_id++ luego)
+            b. usar métodos de spawn de mapa para ver dónde crearlas
+        2. meterlas en la entity_pool
+        3. Crear update de creación de esas entidades
+        4. Mandar paquete de updates de creación a todos los clientes
+        5. Crear update para poner cada entidad en su posición inicial
+        6. Mandar paquete de updates
+    */
 }
 
 uint16_t Game::add_player() {

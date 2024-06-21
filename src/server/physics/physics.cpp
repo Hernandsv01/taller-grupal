@@ -369,7 +369,7 @@ std::ostream& operator<<(std::ostream& out, const RigidBox& box) {
     return out;
 }
 
-int main() {
+/*int main() {
     RigidBox box(-1, 6, 4, 10);
     RigidBox box2(0, 0, 10, 10);
     // Point punto(0, 2);
@@ -407,4 +407,4 @@ int main() {
     std::cout << std::endl;
 
     return 0;
-}
+}*/
