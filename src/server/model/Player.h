@@ -6,6 +6,7 @@
 #include "Pickup.h"
 #include "Bullet.h"
 #include "constants/pickup_type.h"
+#include "Ammo_data.h"
 
 #include <cmath>
 #include <map>
@@ -19,16 +20,22 @@
 #define SECONDS_UNTIL_RESPAWN 3
 #define SECONDS_IMMUNE_AFTER_DAMAGE 2
 
+#define MILLISECONDS_IN_A_MINUTE 60000
+
 class Player : public Dynamic_entity {
 private:
     int points;
-    enums_value_update::Ammo_type current_ammo_type;
     std::map<enums_value_update::Ammo_type, int> ammo;
+    enums_value_update::Ammo_type current_ammo_type;
     std::map<enums_value_update::Ammo_type, enums_value_update::Ammo_type> next_ammo_type;
+    std::map<enums_value_update::Ammo_type, Ammo> ammo_config;
+
+    bool is_shooting;
+    std::chrono::steady_clock::time_point last_shot_time;
 public:
     Player(int id, float x_spawn, float y_spawn)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH, true, true),
-          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL) {
+          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
@@ -37,10 +44,15 @@ public:
         next_ammo_type[enums_value_update::Ammo_type::LIGHT] = enums_value_update::Ammo_type::HEAVY;
         next_ammo_type[enums_value_update::Ammo_type::HEAVY] = enums_value_update::Ammo_type::POWER;
         next_ammo_type[enums_value_update::Ammo_type::POWER] = enums_value_update::Ammo_type::NORMAL;
+
+        ammo_config[enums_value_update::Ammo_type::NORMAL] = Ammo::create_normal();
+        ammo_config[enums_value_update::Ammo_type::LIGHT] = Ammo::create_light();
+        ammo_config[enums_value_update::Ammo_type::HEAVY] = Ammo::create_heavy();
+        ammo_config[enums_value_update::Ammo_type::POWER] = Ammo::create_power();
     };
 
     std::vector<Update::Update_new> tick(const Map& map,
-        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) override {
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) override {
         std::vector<Update::Update_new> updates;
 
         if (!is_active) {
@@ -56,6 +68,12 @@ public:
 
         if (!is_damageable && std::chrono::steady_clock::now() >= (inactive_time + std::chrono::seconds(SECONDS_IMMUNE_AFTER_DAMAGE))) {
             is_damageable = true;
+        }
+
+        if (is_shooting && std::chrono::steady_clock::now() >= (last_shot_time + std::chrono::milliseconds(MILLISECONDS_IN_A_MINUTE / ammo_config[current_ammo_type].get_rate_of_fire()))) {
+            std::vector<Update::Update_new> shoot_update = shoot(entity_pool, next_id);
+            last_shot_time = std::chrono::steady_clock::now();
+            updates.insert(updates.end(), shoot_update.begin(), shoot_update.end());
         }
 
         float old_x = x_pos;
@@ -148,6 +166,10 @@ public:
             case SHOOT:
                 action_updates = shoot(entity_pool, next_id);
                 total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
+                break;
+
+            case STOP_SHOOT:
+                is_shooting = false;
                 break;
 
             case SWITCH_GUN:

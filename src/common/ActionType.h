@@ -12,6 +12,7 @@ enum ActionType: std::uint8_t {
     RUN_RIGHT = 0x03,
 
     SHOOT = 0x04,
+    STOP_SHOOT = 0x05,
     SWITCH_GUN = 0x06,
 
     SPECIAL = 0x07, //esta accion es diferente para cada personaje (pero se evalua en el server).

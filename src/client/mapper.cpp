@@ -40,6 +40,9 @@ ActionType Mapper::map_key_event(const SDL_Event& event){
             case SDLK_LEFT:
                 action = STOP_RUN_LEFT;
                 break;
+            case SDLK_RETURN:
+                action = STOP_SHOOT;
+                break;
             default:
                 action = NULL_ACTION;
         }
