@@ -17,20 +17,27 @@
 #define JAZZSHOT "/jazz_shot.png"
 #define JAZZSHOTFALL "/jazz_shotfall.png"
 
+
+#define EXTENSION ".png"
 const std::vector<std::string> typeOfCharacter = {"Jazz"};
 const std::vector<std::string> typeOfState = {"Stand", "Run", "Dash",
                                     "Intox", "Intoxwalk", "Fall", "Jump",
-                                    "Shot", "Shotfall"};
+                                    "Shot", "Shotfall", "Gethit", "Roasted", 
+                                    "Special", "Hud"};
 
 //Defino el mapa estatico
 std::map<std::string, std::shared_ptr<SDL2pp::Texture>> TextureManager::textures;
 
 void TextureManager::Init(SDL2pp::Renderer& renderer) {
-    for (std::string type : typeOfCharacter) {
+    for (std::string character : typeOfCharacter) {
+        for (std::string state : typeOfState) {
+            std::string textureName = character + state;
+            SDL2pp::Texture texture(renderer, DATA_PATH textureName EXTENSION);
+            textures[textureName] = std::make_shared<SDL2pp::Texture>(std::move(texture));
+        }
         
-        SDL2pp::Texture jazzStand(renderer, DATA_PATH JAZZSTAND);
-    textures["JazzStand"] = std::make_shared<SDL2pp::Texture>(std::move(jazzStand));
     }
+    /*
     SDL2pp::Texture jazzStand(renderer, DATA_PATH JAZZSTAND);
     textures["JazzStand"] = std::make_shared<SDL2pp::Texture>(std::move(jazzStand));
     
@@ -45,6 +52,8 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
     
     SDL2pp::Texture jazzDash(renderer, DATA_PATH JAZZDASH);
     textures["JazzDash"] = std::make_shared<SDL2pp::Texture>(std::move(jazzDash));
+    */
+    
     /*
     SDL2pp::Texture jazzIntox(renderer, DATA_PATH JAZZINTOX);
     textures["JazzIntox"] = std::make_shared<SDL2pp::Texture>(std::move(jazzIntox));

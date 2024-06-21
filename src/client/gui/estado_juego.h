@@ -42,6 +42,10 @@ struct Entity {
     Direction direction = Direction::Right;
 };
 
+const std::vector<std::string> posibleStates = {"Stand", "Shot", "Jump",
+                            "Fall", "Run", "Intox", "Intoxwalk", 
+                            "Roasted", "Gethit", "Dash", "Shotfall", 
+                            "Special"}
 // Posibles estados de ¿solo jugador?
 enum State_enum {
     Idle,
@@ -134,34 +138,33 @@ class UpdatableGameState2 {
                                             update.getEntityType();
                 Update::EntitySubtype entitySubtype =
                                             update.getEntitySubType();
-                addEntity(update.id, entityType, entitySubtype);
+                addEntity(update.get_id(), entityType, entitySubtype);
                 break;
             }
             case Update::Position: {
                 int xPosition = update.getPositionX() * FACTOR_TAMANIO;
                 int yPosition = update.getPositionY() * FACTOR_TAMANIO;
-                updatePosition(update.id, xPosition, yPosition);
+                updatePosition(update.get_id(), xPosition, yPosition);
                 break;
             }
             case Update::Direction: {
                 bool isRight =  (update.get_value() == 0) ? true : false;
-                updateDirection(update.id, isRight);
+                updateDirection(update.get_id(), isRight);
                 break;
             }
             case Update::State: {
-                PlayerState &player = this->players.at(update.id);
-                player.state =
-                    State(static_cast<State_enum>(update.get_value()), tick);
+                int state = update.get_value();
+                updateState(update.get_id(), posibleStates[state]);
                 break;
             }
             case Update::Health: {
                 int healthPoints = update.get_value();
-                updateHealthPoints(update.id, healthPoints);
+                updateHealthPoints(update.get_id(), healthPoints);
                 break;
             }
             case Update::Score: {
                 int score = update.get_value();
-                updateScore(update.id, score);
+                updateScore(update.get_id(), score);
                 break;
             }
             }
