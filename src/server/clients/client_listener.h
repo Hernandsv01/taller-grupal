@@ -7,7 +7,6 @@
 #include "../../common/library/thread.h"
 // TODO: RENOMBRAR A LOBBY_MANAGER
 #include "../game/game_manager.h"
-#include "client_monitor.h"
 #include "server_client.h"
 
 #define SHUTDOWN_MODE 2

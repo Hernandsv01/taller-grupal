@@ -87,8 +87,6 @@ src/server/clients/server_client.cpp
         src/server/clients/server_client.h
         src/server/clients/client_listener.cpp
         src/server/clients/client_listener.h
-        src/server/clients/client_monitor.cpp
-        src/server/clients/client_monitor.h
         src/server/clients/protocol.cpp
         src/server/clients/protocol.h
         src/server/model/constants/game_status.h
