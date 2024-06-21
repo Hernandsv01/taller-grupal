@@ -67,9 +67,14 @@ void Game::run_iteration() {
     sendAll(total_updates);
 }
 
+
+
+
+
 void Game::send_initial_values() {
     //
     /*
+        Reveisar orden: 
         1. crear entidades
             a. usar next_id para settear id (next_id++ luego)
             b. usar métodos de spawn de mapa para ver dónde crearlas
@@ -90,28 +95,43 @@ void Game::send_initial_values() {
         player.get_id(),
         Update::EntityType::Player,
         Update::EntitySubtype::Jazz //deberia ser random entre los 3 tipos. 
-        //PlayerType::Jazz //modificar es random 
     );
-    // mandar paquete.
 
+ 
     Update::Update_new::create_position(
         player.get_id(), // usar mismo id que en la creación
         rand_spawn.x,
         rand_spawn.y
     );
-    //mandar paquete. 
 
     //enemies
-
+    Coordinate rand_spawn = map.get_enemy_spawns()[rand() % map.get_enemy_spawns().size()];
+    /*
+    //se deberia chequear al cantidad de enemigos. 
+    Enemy enemy();
+    Update::Update_new::create_create_entity(
+        enemy.get_id(),
+        Update::EntityType::Enemy,
+        Update::EntitySubtype::Enemy1 //deberia ser random entre los tres tipos. 
+    
+    );
+    Update::Update_new::create_position(
+        enemy.get_id(), // usar mismo id que en la creación
+        rand_spawn.x,
+        rand_spawn.y
+    );
+    */
+   
     //pickups
-
+    //ver como se maneja la cantidad 
+    Pickup Pickup()
 
     
 }
 
 uint16_t Game::add_player() {
-    uint16_t id_player = entity_pool.size();
-    entity_pool.push_back(std::make_unique<Player>(id_player, 0, 0));
+    Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
+    entity_pool.push_back(std::make_unique<Player>(next_id++, rand_spawn.x, rand_spawn.y));
     return id_player;
 }
 
@@ -133,6 +153,7 @@ std::string Game::get_map_name(){
 
 void Game::add_socket_for_player(uint16_t player_id, Socket socket) {
     clients.push_back(std::make_unique<Server_Client>(static_cast<int>(player_id), std::move(socket)));
+    //aca tambien deberia mandar el paquete de updates inicial 
 }
 
 void Game::sendAll(std::vector<Update::Update_new> updates) {
