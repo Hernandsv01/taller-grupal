@@ -22,81 +22,15 @@
 class Player : public Dynamic_entity {
 private:
     int points;
-    enums_value_update::Ammo_type ammo_type;
+    enums_value_update::Ammo_type current_ammo_type;
     std::map<enums_value_update::Ammo_type, int> ammo;
 public:
     Player(int id, float x_spawn, float y_spawn)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH, true, true),
-        points(0), ammo_type(enums_value_update::Ammo_type::NORMAL) {
+          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
-    };
-
-    std::vector<Update::Update_new> process_action(uint8_t action, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
-        std::vector<Update::Update_new> updates;
-        switch (action) {
-            case JUMP:
-                setYSpeed(10);
-                break;
-            case RUN_LEFT:
-                setXSpeed(-3);
-                break;
-
-            case RUN_RIGHT:
-                setXSpeed(3);
-                break;
-
-            case SHOOT:
-                if (ammo[ammo_type] <= 0) {
-                    return updates;
-                }
-                float x_spawn;
-                float y_spawn;
-                float speed;
-
-                if (looking_right) {
-                    x_spawn = x_pos+x_size;
-                    y_spawn = y_pos+(y_size/2);
-                    speed = 5;
-                } else {
-                    x_spawn = x_pos;
-                    y_spawn = y_pos+(y_size/2);
-                    speed = -5;
-                }
-                entity_pool.push_back(std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed));
-                updates.push_back(Update::Update_new::create_create_entity(
-                        next_id,
-                        Update::EntityType::Bullet,
-                        Update::EntitySubtype::No_subtype
-                ));
-                next_id++;
-                if (ammo_type != enums_value_update::Ammo_type::NORMAL) {
-                    ammo[ammo_type]--;
-                }
-                break;
-
-            case SPECIAL:
-                // Not implemented: SPECIAL action
-                break;
-
-            case STOP_RUN_RIGHT:
-                if (vel_x > 0) {
-                    vel_x = 0;
-                }
-                break;
-
-            case STOP_RUN_LEFT:
-                if (vel_x < 0) {
-                    vel_x = 0;
-                }
-                break;
-
-            default:
-                // Handle unexpected actions if necessary
-                break;
-        }
-        return updates;
     };
 
     std::vector<Update::Update_new> tick(const Map& map,
@@ -150,8 +84,6 @@ public:
             updates.push_back(update);
         }
 
-
-
         // validar contacto con otras entidades
         for (const std::unique_ptr<Dynamic_entity>& other : entity_pool) {
             if (!this->colisiona_con(*other)) {
@@ -188,6 +120,81 @@ public:
                 updates.push_back(Update::Update_new::create_delete_entity(other->get_id()));
                 delete_pickup(entity_pool, pickup->get_id());
             }
+        }
+        return updates;
+    }
+
+    std::vector<Update::Update_new> process_action(uint8_t action, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
+        std::vector<Update::Update_new> total_updates;
+        std::vector<Update::Update_new> action_updates;
+        switch (action) {
+            case JUMP:
+                setYSpeed(10);
+                break;
+            case RUN_LEFT:
+                setXSpeed(-3);
+                break;
+
+            case RUN_RIGHT:
+                setXSpeed(3);
+                break;
+
+            case SHOOT:
+                action_updates = shoot(entity_pool, next_id);
+                total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
+                break;
+
+            case SPECIAL:
+                // Not implemented: SPECIAL action
+                break;
+
+            case STOP_RUN_RIGHT:
+                if (vel_x > 0) {
+                    vel_x = 0;
+                }
+                break;
+
+            case STOP_RUN_LEFT:
+                if (vel_x < 0) {
+                    vel_x = 0;
+                }
+                break;
+
+            default:
+                // Handle unexpected actions if necessary
+                break;
+        }
+        return total_updates;
+    };
+
+    std::vector<Update::Update_new> shoot(std::vector<std::unique_ptr<Dynamic_entity>> &entity_pool, int &next_id) {
+        std::vector<Update::Update_new> updates;
+
+        if (current_ammo_type != enums_value_update::Ammo_type::NORMAL && ammo[current_ammo_type] <= 0) {
+            return updates;
+        }
+        float x_spawn;
+        float y_spawn;
+        float speed;
+
+        if (looking_right) {
+            x_spawn = x_pos+x_size;
+            y_spawn = y_pos+(y_size/2);
+            speed = 5;
+        } else {
+            x_spawn = x_pos;
+            y_spawn = y_pos+(y_size/2);
+            speed = -5;
+        }
+        entity_pool.push_back(std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed));
+        updates.push_back(Update::Update_new::create_create_entity(
+                next_id,
+                Update::EntityType::Bullet,
+                Update::EntitySubtype::No_subtype
+        ));
+        next_id++;
+        if (current_ammo_type != enums_value_update::Ammo_type::NORMAL) {
+            ammo[current_ammo_type]--;
         }
 
         return updates;
