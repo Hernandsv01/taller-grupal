@@ -32,7 +32,7 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
     for (std::string character : typeOfCharacter) {
         for (std::string state : typeOfState) {
             std::string textureName = character + state;
-            SDL2pp::Texture texture(renderer, DATA_PATH textureName EXTENSION);
+            SDL2pp::Texture texture(renderer, DATA_PATH+textureName+EXTENSION);
             textures[textureName] = std::make_shared<SDL2pp::Texture>(std::move(texture));
         }
         

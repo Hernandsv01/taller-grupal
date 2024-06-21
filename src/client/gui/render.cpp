@@ -37,8 +37,8 @@ Render::Render(Window& window, const int &id) :
     xCenter(window.GetWidth() / 2),
     yCenter(window.GetHeight() / 2),
     xReference(0),
-    yReference(0),
-    TextureManager::Init(renderer) {
+    yReference(0) {
+    TextureManager::Init(renderer);
 }
 
 

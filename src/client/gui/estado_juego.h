@@ -130,19 +130,23 @@ struct MapInfo {
 class UpdatableGameState2 {
     private:
         std::map<int, std::unique_ptr<Entity2>> gameState;
+       
 
     public:
-        explicit UpdatableGameState2() {}
+        explicit UpdatableGameState2() {
+            // std::unique_ptr<Entity2> ptr = std::make_unique<Entity2>();
+            // gameState.emplace(1, std::move(ptr));
+        }
 
         void handleUpdate(Update::Update_new update, int tick) {
-            switch (update.update_type_value) {
+            switch (update.get_update_type()) {
                 case Update::CreateEntity: {
                 Update::EntityType entityType =
                                             update.getEntityType();
                 Update::EntitySubtype entitySubtype =
                                             update.getEntitySubType();
                 addEntity(update.get_id(), entityType, entitySubtype);
-                break;
+                break;   
             }
             case Update::Position: {
                 int xPosition = update.getPositionX() * FACTOR_TAMANIO;
@@ -170,6 +174,9 @@ class UpdatableGameState2 {
                 updateScore(update.get_id(), score);
                 break;
             }
+            default:
+                throw std::runtime_error();
+                break;
             }
         }
 
@@ -208,7 +215,8 @@ class UpdatableGameState2 {
         void addEntity(const int &id, const int &type, const int &subType) {
             std::unique_ptr<Entity2> entity = EntityFactory::createEntity(type, subType);
             //std::unique_ptr<Entity2> entity = std::make_unique<PlayableCharacter>("Jazz");
-            gameState[id] = std::move(entity);
+            gameState.emplace(id, std::move(entity));
+            //gameState[id] = std::move(entity);
         }
 
         void updatePosition(const int &id, const int &x, const int &y) {
