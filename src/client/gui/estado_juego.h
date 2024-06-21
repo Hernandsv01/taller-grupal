@@ -1,12 +1,18 @@
 #ifndef ESTADO_JUEGO_H
 #define ESTADO_JUEGO_H
 
+#include <map>
 #include <algorithm>
 #include <cstdint>
 #include <map>
 #include <vector>
 
+//#include "entityFactory.h"
+#include <SDL2pp/SDL2pp.hh>
 #include "../../common/Update.h"
+#include "entityGame.h"
+#include "entityFactory.h"
+#include "playableCharacter.h"
 
 #define FACTOR_TAMANIO 5
 
@@ -113,6 +119,85 @@ struct MapInfo {
     std::vector<Position> underPosition;
 };
 
+
+class UpdatableGameState2 {
+    private:
+        std::map<int, std::unique_ptr<Entity2>> gameState;
+
+    public:
+        explicit UpdatableGameState2() {}
+
+        void copyAllEntities(SDL2pp::Renderer &renderer,
+                            const int &mainId, const int &xCenter,
+                            const int &yCenter) {
+            const auto& entity = gameState.at(mainId);
+            const int xRef = entity->getPosX();
+            const int yRef = entity->getPosY();
+            for (auto& pair: gameState) {
+                if (isNotMain(pair.first, mainId)) {
+                    pair.second->renderize(renderer, xRef, yRef,
+                                        xCenter, yCenter);
+                }
+            }
+            entity->renderMainPj(renderer, xCenter, yCenter);
+        }
+
+        /*
+        std::vector<std::tuple<int , std::string, int>> getPlayersScores() {
+            std::vector<std::tuple<int , std::string, int>> scores;
+            for (auto& pair: gameState) {
+                if (pair.second->isPlayer()) {
+                    std::string playerType = pair.second->getType();
+                    int score = pair.second->getScore();
+                    scores.push_back(std::make_tuple(pair.first, playerType, score));
+                }
+            }
+            return std::move(scores);
+        */
+        //Devuelve los puntajes de los jugadores.
+        //El formato es (Id, tipo de jugador, puntaje)
+        
+        //devolver vector de todos id tipo puntaje
+
+        void addEntity(const int &id, const int &type, const int &subType) {
+            std::unique_ptr<Entity2> entity = std::make_unique<PlayableCharacter>("Jazz");
+            gameState[id] = std::move(entity);
+        }
+
+        void updatePosition(const int &id, const int &x, const int &y) {
+            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            entity->updatePosition(x, y);
+        }
+
+        void updateState(const int &id, std::string newState) {
+            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            entity->updateState(newState);
+        }
+
+        void updateDirection(const int &id, bool &isRight) {
+            std::unique_ptr<Entity2>& entity = gameState.at(id);
+            entity->updateDirection(isRight);
+        }
+
+        int getEntityPositionX(int id) const {
+            const auto& entity = gameState.at(id);
+            return entity->getPosX();
+        }
+
+        int getEntityPositionY(int id) const {
+            const auto& entity = gameState.at(id);
+            return entity->getPosY();
+        }
+
+    private:
+        bool isNotMain(const int &playerId, const int& mainId) {
+            return (playerId != mainId);
+        }
+};
+
+
+
+
 // Clase que se encarga de mantener el estado del juego actualizado.
 // Incluye todos los jugadores, proyectiles, enemigos e items, indexado por ID,
 // para ser mas facil su actualizacion.
@@ -121,6 +206,8 @@ class UpdatableGameState {
     std::map<Id_t, Projectile> projectiles;
     std::map<Id_t, Enemy> enemies;
     std::map<Id_t, Item> items;
+    std::map<int, Entity> gameEntities;
+    int mainPlayer;
     Id_t mainPlayerId = 1;
 
    private:
@@ -256,11 +343,14 @@ class UpdatableGameState {
         // Incluir logica de que tipo de update es
         switch (update.update_type_value) {
             case Update::CreateEntity: {
-                Update::EntityTypeAndSubtype entity_type_and_subtype =
-                    update.get_entity_type_and_subtype();
-
+                Update::EntityTypeAndSubtype entity_type_and_subtype = 
+                        update.get_entity_type_and_subtype();
+                Update::EntityType entityType =
+                                            update.getEntityType();
+                Update::EntitySubtype entitySubtype =
+                                            update.getEntitySubType();
                 this->addEntity(update.id, entity_type_and_subtype);
-
+                
                 break;
             }
             case Update::Position: {

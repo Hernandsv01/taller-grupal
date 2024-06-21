@@ -11,6 +11,8 @@ class Render {
    public:
     explicit Render(Window& window);
 
+    void presentGame2(UpdatableGameState2 gameState, MapInfo mapInfo);
+
     void presentGame(GameStateRenderer, MapInfo mapInfo);
 
     void copyPlayer(PlayerState jugador);

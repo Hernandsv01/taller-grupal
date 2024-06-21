@@ -1,4 +1,5 @@
 #include "render.h"
+#include "textureManager.h"
 
 #define BASESPRITE 0
 #define JAZZSTANDX 46
@@ -63,7 +64,20 @@ Render::Render(Window& window)
     window.SetTitle(WINDOW_TITLE);
     window.SetSize(800, 600);
     window.SetPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+    TextureManager::Init(renderer);
 }
+
+
+void Render::presentGame2(UpdatableGameState2 gameState, MapInfo mapInfo) {
+    int mainPlayerID = 1;
+    //xReference = gameState.getEntityPositionX(mainPlayerID);
+    //yReference = gameState.getEntityPositionY(mainPlayerID);
+    copyMap(mapInfo);
+    //gameState.copyAllEntities(this->renderer, xReference, yReference);
+    renderer.Present();
+}
+
+
 
 void Render::presentGame(GameStateRenderer gameStatus, MapInfo mapInfo) {
     xReference = gameStatus.mainPlayer.position.x;
