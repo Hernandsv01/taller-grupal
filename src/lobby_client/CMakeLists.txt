@@ -17,15 +17,13 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 set(PROJECT_SOURCES
         lobby.cpp
         lobby.h
-        main.cpp
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
         protocololobby.cpp
         protocololobby.h
-        socket/conexion_cerrada.h
-        socket/socket.cpp
-        socket/socket.h
+
+        gui_lobby.h
 
         
         ../common/library/liberror.cpp
@@ -34,7 +32,13 @@ set(PROJECT_SOURCES
         ../common/library/resolver.h
         ../common/library/resolvererror.cpp
         ../common/library/resolvererror.h
+        ../common/library/closedconectionerror.h
+        ../common/library/socket.cpp
+        ../common/library/socket.h
 )
+
+set(EJECUTABLE_SOURCE
+    main.cpp)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(lobby_client
@@ -54,11 +58,17 @@ else()
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(lobby_client
-            ${PROJECT_SOURCES}
+            ${PROJECT_SOURCES} ${EJECUTABLE_SOURCE}
         )
     endif()
 endif()
 
+add_library(GuiLobby STATIC ${PROJECT_SOURCES})
+
+target_compile_definitions(GuiLobby PUBLIC MAP_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../maps/")
+
+
+target_link_libraries(GuiLobby PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(lobby_client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 set_target_properties(lobby_client PROPERTIES
@@ -72,3 +82,14 @@ set_target_properties(lobby_client PROPERTIES
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(lobby_client)
 endif()
+
+
+add_executable(moc_server moc_server.cpp ../common/library/liberror.cpp
+../common/library/liberror.h
+../common/library/resolver.cpp
+../common/library/resolver.h
+../common/library/resolvererror.cpp
+../common/library/resolvererror.h
+../common/library/closedconectionerror.h
+../common/library/socket.cpp
+../common/library/socket.h)

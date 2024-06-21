@@ -3,41 +3,101 @@
 
 #include <stdexcept>
 #include <vector>
+#include <cmath>
 
-#include "Entity.h"
 #include "Game.h"
+#include "physics/physics.h"
+#include "map/map.h"
 
-class Dynamic_entity : public Entity {
-   protected:
+class Dynamic_entity : public RigidBox {
+protected:
     int id;
 
-    int vel_x;
-    int vel_y;
+    float vel_x;
+    float vel_y;
 
     // esto probablemente sea agregado cuando implementemos física
     // (para la gravedad seguro y estamos evaluando hacerlo para movimiento en X)
     // int acc_x;
-    // int acc_y;
-   public:
-    Dynamic_entity(int id, int pos_x, int pos_y, int width, int height,
-                   bool is_damageable, int damage_on_contact, int vel_x,
-                   int vel_y /*, int acc_x, int acc_y*/)
+    float acc_y;
+
+    // esto lo usamos para diferenciar una bala de un jugador, si no hace daño se setea en 0
+    // (para evitar tener 2 atributos, uno boolean y otro con el valor)
+    bool is_damageable;
+    std::chrono::steady_clock::time_point last_damaged;
+    int damage_on_contact;
+
+    bool is_item;
+
+    int health;
+    bool is_active;
+    std::chrono::steady_clock::time_point inactive_time;
+
+    bool looking_right;
+public:
+    Dynamic_entity(int id, float pos_x, float pos_y, float width, float height, float vel_x, float vel_y,
+                   float acc_y, bool is_damageable, int damage_on_contact, bool is_item, int health, bool is_active, bool looking_right)
         : id(id),
-          Entity(pos_x, pos_y, width, height, is_damageable, damage_on_contact),
+          RigidBox(pos_x, pos_y, width, height),
           vel_x(vel_x),
-          vel_y(vel_y) /*,
-           acc_x(acc_x),
-           acc_y(acc_y)*/
+          vel_y(vel_y),
+          acc_y(acc_y),
+          is_damageable(is_damageable),
+          last_damaged(std::chrono::steady_clock::time_point()),
+          damage_on_contact(damage_on_contact),
+          is_item(is_item),
+          health(health),
+          is_active(is_active),
+          inactive_time(std::chrono::steady_clock::time_point()),
+          looking_right(looking_right)
           {};
 
-    virtual std::vector<Update::Update_new> tick(
-        std::vector<std::unique_ptr<Dynamic_entity>> *entity_pool) = 0;
+    ~Dynamic_entity() {};
 
-    void setXSpeed(int vel_x_param) { vel_x = vel_x_param; }
-    int getXSpeed() { return vel_x; }
+    virtual std::vector<Update::Update_new> tick(const Map& map,
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) = 0;
 
-    void setYSpeed(int vel_y_param) { vel_y = vel_y_param; }
-    int getYSpeed() { return vel_y; }
+    void setXSpeed(float vel_x_param) { vel_x = vel_x_param; }
+    float getXSpeed() const { return vel_x; }
+
+    void setYSpeed(float vel_y_param) { vel_y = vel_y_param; }
+    float getYSpeed() const { return vel_y; }
+
+    void setYAcceleration(float acc_y_param) { acc_y = acc_y_param; }
+    float getYAcceleration() const { return acc_y; }
+
+    bool is_entity_damageable() const { return is_damageable; }
+    bool is_dead() const { return health <= 0; }
+    int get_damage_dealt() const { return damage_on_contact; }
+    int get_id() const { return id; };
+    bool get_is_item() const { return is_item; };
+    bool deal_damage(int damage) {
+        health -= damage;
+        if(health <= 0) {
+            is_active = false;
+            inactive_time = std::chrono::steady_clock::now();
+            return true;
+        } else {
+            is_damageable = false;
+        }
+        return false;
+    };
+    bool collides_with_map(const Map& map) {
+        int x_min = static_cast<int>(std::floor(this->x_min()));
+        int x_max = static_cast<int>(std::floor(this->x_max()));
+        int y_min = static_cast<int>(std::floor(this->y_min()));
+        int y_max = static_cast<int>(std::floor(this->y_max()));
+
+        for (int x = x_min; x <= x_max; ++x) {
+            for (int y = y_min; y <= y_max; ++y) {
+                Collision collision = map.get_block_collision({static_cast<uint8_t>(x), static_cast<uint8_t>(y)});
+                if (collision != Collision::Air) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 };
 
 #endif  // DYNAMIC_ENTITY_H

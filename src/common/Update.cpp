@@ -25,6 +25,7 @@ float htonf(float f) {
 #define SIZE_UPDATE_POSITION 11
 #define SIZE_UPDATE_VALUE 4
 #define SIZE_UPDATE_DELETE 3
+#define SIZE_UPDATE_END_MATCH 3
 
 // USANDO OBJETO PRACTICAMENTE VACIO
 using namespace Update;
@@ -36,15 +37,36 @@ std::vector<Update_new> Update_new::deserialize_all(std::vector<uint8_t> data) {
         Update_new update = Update_new::deserialize(data);
         updates.push_back(update);
 
-        if (update.get_update_type() == CreateEntity) {
-            data.erase(data.begin(), data.begin() + SIZE_UPDATE_CREATE);
-        } else if (update.get_update_type() == Position) {
-            data.erase(data.begin(), data.begin() + SIZE_UPDATE_POSITION);
-        } else if (update.get_update_type() == DeleteEntity) {
-            data.erase(data.begin(), data.begin() + SIZE_UPDATE_DELETE);
-        } else {
-            data.erase(data.begin(), data.begin() + SIZE_UPDATE_VALUE);
+        uint8_t erase_size = 0;
+
+        switch (update.get_update_type()) {
+            case CreateEntity:
+                erase_size = SIZE_UPDATE_CREATE;
+                break;
+            case Position:
+                erase_size = SIZE_UPDATE_POSITION;
+                break;
+            case DeleteEntity:
+                erase_size = SIZE_UPDATE_DELETE;
+                break;
+            case MatchEnded:
+                erase_size = SIZE_UPDATE_END_MATCH;
+                break;
+            case Direction:
+            case State:
+            case Health:
+            case Score:
+            case RemainingSeconds:
+            case ChangeAmmoType:
+            case BulletsRemaining:
+                erase_size = SIZE_UPDATE_VALUE;
+                break;
+
+            default:
+                throw std::runtime_error("Invalid update type");
         }
+
+        data.erase(data.begin(), data.begin() + erase_size);
     }
 
     return updates;
@@ -74,11 +96,15 @@ Update_new Update_new::deserialize(const std::vector<uint8_t> &data) {
             update.y = ntohf(update.y);
             break;
         case DeleteEntity:
+        case MatchEnded:
             break;
         case Direction:
         case State:
         case Health:
         case Score:
+        case RemainingSeconds:
+        case ChangeAmmoType:
+        case BulletsRemaining:
             update.value = data[3];
             break;
     }
@@ -125,10 +151,14 @@ std::vector<uint8_t> Update_new::serialize() const {
         case Direction:
         case State:
         case Health:
-        case Score: {
+        case Score:
+        case RemainingSeconds:
+        case ChangeAmmoType:
+        case BulletsRemaining: {
             data.push_back(value);
             break;
         }
+        case MatchEnded:
         case DeleteEntity:
             break;
     }
@@ -169,6 +199,12 @@ Update_new Update_new::create_value(uint16_t id, UpdateType key,
     update.update_type_value = key;
     update.id = id;
     update.value = value;
+    return update;
+}
+
+Update_new Update_new::create_end_match() {
+    Update_new update;
+    update.update_type_value = UpdateType::MatchEnded;
     return update;
 }
 

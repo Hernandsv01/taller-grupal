@@ -3,86 +3,83 @@
 #include <arpa/inet.h>
 
 #include <QDebug>  // Include the appropriate header for qDebug
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
-
-void consumir_socket_hasta_linefeed(Socket& socket) {
-    char buffer[1] = {0};
-
-    while (buffer[0] != '\n') {
-        socket.recvall(buffer, 1);
-    }
-}
 
 LobbyProtocol::LobbyProtocol(const char* ip, const char* port)
     : socket(ip, port) {}
 
 std::vector<GameMatch> LobbyProtocol::getGameMatches() {
-    // TODO: MODIFICAR PROTOCOLO
+    MessageType type = GET_GAMES;
+    socket.sendall(&type, sizeof(type));
 
-    // TODO: ENVIAR PETICION PARTIDAS
-    char request[] = "Solicito partidas (4 bytes) \nRESPONDER 4 LETRAS: ";
-    socket.sendall(request, sizeof(request) - 1);
+    uint8_t games_count;
+    socket.recvall(&games_count, sizeof(games_count));
 
-    char buffer[5] = {0};
+    std::vector<GameMatch> games(games_count);
+    for (uint8_t i = 0; i < games_count; i++) {
+        match_id id;
+        socket.recvall(&id, sizeof(id));
 
-    socket.recvall(buffer, 4);
+        char buffer_match_name[17] = {0};
+        socket.recvall(buffer_match_name, sizeof(buffer_match_name) - 1);
 
-    // Agregado para poder comunicarse con netcat.
-    consumir_socket_hasta_linefeed(socket);
+        std::string match_name(buffer_match_name);
 
-    std::string match_name(buffer);
-    std::vector<GameMatch> gameMatches;
+        char buffer_map_name[33] = {0};
+        socket.recvall(buffer_map_name, sizeof(buffer_map_name) - 1);
 
-    for (uint16_t i = 0; i < 5; i++) {
-        GameMatch match = {i, 3, 0, match_name + std::to_string(i)};
+        std::string map_name(buffer_map_name);
 
-        gameMatches.push_back(match);
+        games[i] = GameMatch{id, match_name, map_name};
     }
 
-    return gameMatches;
+    return games;
 }
 
-void LobbyProtocol::connectToMatch(u_int16_t id) {
-    std::string request = "Conectarse a partida " + std::to_string(id) +
-                          ". Responder 1 byte \nRESPONDER 'N' PARA SIMULAR "
-                          "DEVOLUCION DE ERROR, U OTRO CARACTER PARA EXITO: ";
+std::pair<uint16_t, std::string> LobbyProtocol::joinMatch(match_id id) {
+    MessageType type = JOIN;
+    socket.sendall(&type, sizeof(type));
 
-    socket.sendall((char*)request.c_str(), request.length());
+    socket.sendall(&id, sizeof(id));
 
-    uint8_t response;
-    socket.recvall(&response, 1);
+    // Recibir id jugador
+    uint16_t player_id;
+    socket.recvall(&player_id, sizeof(player_id));
+    player_id = ntohs(player_id);
 
-    // Agregado para poder comunicarse con netcat.
-    consumir_socket_hasta_linefeed(socket);
+    // Recibir mapa (CUANDO DECIDAMOS)
 
-    if (response == 'N') {
-        throw std::runtime_error("No se pudo conectar a partida");
-    }
+    char buffer_map_name[33] = {0};
+    socket.recvall(buffer_map_name, sizeof(buffer_map_name) - 1);
 
-    qDebug() << "Acá se cerraría esta ventana, y se abriria la ventana de la "
-                "partida (el otro ejecutable)";
+    std::string map_name(buffer_map_name);
+
+    return std::make_pair(player_id, map_name);
 }
 
-uint16_t LobbyProtocol::createMatch(GameMatch match) {
-    std::string request = "Solicito crear partida para " +
-                          std::to_string(match.requiredPlayersCount) +
-                          " con nombre de partida " + match.name +
-                          "\nRESPONDER 'N' PARA SIMULAR DEVOLUCION DE ERROR, U "
-                          "OTRO CARACTER PARA EXITO: ";
-
-    socket.sendall((char*)request.c_str(), request.length());
-
-    uint8_t response;
-    socket.recvall(&response, 1);
-
-    // Agregado para poder comunicarse con netcat.
-    consumir_socket_hasta_linefeed(socket);
-
-    if (response == 'N') {
-        throw std::runtime_error("No se pudo crear la partida");
+match_id LobbyProtocol::createMatch(const std::string& match_name,
+                                    const std::string& map_name) {
+    if (match_name.length() > 16) {
+        throw std::runtime_error(
+            "El nombre de la partida es demasiado largo. El máximo es de "
+            "16 caracteres.");
     }
 
-    qDebug() << "Se crea exitosamente la partida. ID: " << match.id << "\n";
-    return response;
+    MessageType type = CREATE;
+    socket.sendall(&type, sizeof(type));
+
+    uint8_t buffer_match_name[16] = {0};
+    memcpy(buffer_match_name, match_name.c_str(), match_name.length());
+    socket.sendall(buffer_match_name, sizeof(buffer_match_name));
+
+    uint8_t buffer_map_name[32] = {0};
+    memcpy(buffer_map_name, map_name.c_str(), map_name.length());
+    socket.sendall(buffer_map_name, sizeof(buffer_map_name));
+
+    match_id id;
+    socket.recvall(&id, sizeof(id));
+
+    return id;
 }

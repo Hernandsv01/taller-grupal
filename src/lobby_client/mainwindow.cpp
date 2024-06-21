@@ -1,9 +1,14 @@
 #include "mainwindow.h"
 
 #include <QDebug>
+#include <QDirIterator>
 #include <iostream>
 
 #include "ui_mainwindow.h"
+
+#ifndef MAP_PATH
+#define MAP_PATH ""
+#endif
 
 MainWindow::MainWindow(Lobby& lobby) : lobby(lobby), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -15,15 +20,43 @@ MainWindow::MainWindow(Lobby& lobby) : lobby(lobby), ui(new Ui::MainWindow) {
     ui->textoErrorElegirPartida->setText("");
     ui->stackedWidget->setCurrentIndex(0);
     ui->listaPartidas->clear();
+
+    populateMapSelection();
 }
 
 MainWindow::~MainWindow() { delete ui; }
+
+void MainWindow::populateMapSelection() {
+    QDirIterator it(MAP_PATH, QDirIterator::IteratorFlag::Subdirectories);
+
+    while (it.hasNext()) {
+        QString file_path = it.next();
+
+        if (it.fileName() == "." || it.fileName() == "..") {
+            continue;
+        }
+
+        qDebug() << file_path << it.fileName();
+
+        QString fileName = it.fileName();
+
+        if (!fileName.endsWith(".yaml"))
+            throw std::runtime_error("Solo se permiten mapas en formato.yaml");
+
+        QString mapName = fileName.left(fileName.length() - 5);
+
+        ui->selectorMapa->addItem(mapName);
+    }
+}
 
 void MainWindow::updateMatchesFromMatchList() {
     std::vector<GameMatch> matches;
 
     try {
         matches = lobby.getServerMatches();
+    } catch (const ClosedConnectionError& e) {
+        closedConnectionError();
+        return;
     } catch (const std::exception& e) {
         ui->textoErrorElegirPartida->setText(e.what());
         return;
@@ -33,11 +66,13 @@ void MainWindow::updateMatchesFromMatchList() {
 
     for (const GameMatch& match : matches) {
         std::string name = match.name;
+        std::string map = match.map;
         uint16_t id = match.id;
 
         // Sacado de:
         // https://stackoverflow.com/questions/25452125/is-it-possible-to-add-a-hidden-value-to-every-item-of-qlistwidget
-        auto* item = new QListWidgetItem(QString::fromStdString(name));
+        auto* item = new QListWidgetItem(QString::fromStdString(name) + " - " +
+                                         QString::fromStdString(map));
         QVariant variant_id;
         variant_id.setValue(id);
 
@@ -70,6 +105,9 @@ void MainWindow::on_botonConectar_clicked() {
 
     try {
         lobby.connectToServer(ip_servidor, puerto_servidor);
+    } catch (const ClosedConnectionError& e) {
+        closedConnectionError();
+        return;
     } catch (const std::exception& e) {
         ui->textoErrorConectarseServidor->setText(e.what());
         return;
@@ -79,8 +117,8 @@ void MainWindow::on_botonConectar_clicked() {
 }
 
 void MainWindow::goToMatchSelection() {
-    updateMatchesFromMatchList();
     ui->stackedWidget->setCurrentIndex(1);
+    updateMatchesFromMatchList();
 }
 
 void MainWindow::on_botonUnirseAPartida_clicked() {
@@ -103,13 +141,19 @@ void MainWindow::on_botonUnirseAPartida_clicked() {
 
     try {
         lobby.connectToMatch(id);
+    } catch (const ClosedConnectionError& e) {
+        closedConnectionError();
+        return;
     } catch (const std::exception& e) {
         ui->textoErrorElegirPartida->setText(e.what());
+        return;
     }
 
     // TODO: Que tendría que hacer cuando se conecta a la partida exitosamente?
     //  -Deberia devolver el socket.
     //  -Deberia iniciar la interfaz sdl.
+    // Close the application
+    this->close();
 }
 
 void MainWindow::on_botonIrACrearPartida_clicked() {
@@ -119,23 +163,40 @@ void MainWindow::on_botonIrACrearPartida_clicked() {
 void MainWindow::on_botonCrearPartida_clicked() {
     std::string mapa_seleccionado =
         ui->selectorMapa->currentText().toStdString();
-    uint8_t cantidad_jugadores = ui->selectorCantidadJugadores->value();
+
     std::string nombre_partida =
         get_text_or_placeholder(ui->selectorNombrePartida);
 
     try {
-        uint16_t id_partida = lobby.createMatch(
-            mapa_seleccionado, cantidad_jugadores, nombre_partida);
+        uint16_t id_partida =
+            lobby.createMatch(mapa_seleccionado, nombre_partida);
         lobby.connectToMatch(id_partida);
+    } catch (const ClosedConnectionError& e) {
+        closedConnectionError();
+        return;
     } catch (const std::exception& e) {
         ui->textoErrorCrearPartida->setText(e.what());
+        return;
     }
 
     // TODO: Que tendría que hacer cuando se conecta a la partida exitosamente?
     //  -Deberia devolver el socket.
     //  -Deberia iniciar la interfaz sdl.
+    std::cout << "Conectado a la partida exitosamente" << std::endl;
+
+    this->close();
 }
 
 void MainWindow::on_botonCancelarCrearPartida_clicked() {
     goToMatchSelection();
 }
+
+void MainWindow::closedConnectionError() {
+    ui->textoErrorConectarseServidor->setText(
+        "La conexion con el servidor se cerró de manera inesperada");
+
+    lobby.desconnectFromServer();
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+void MainWindow::on_botonRecargarPartidas_clicked() { goToMatchSelection(); }

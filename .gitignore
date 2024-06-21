@@ -31,12 +31,15 @@
 *.out
 *.app
 client
+!client/
 server
+!server/
 testsdl
 lobby_client
 !lobby_client/
 editor_niveles
 !editor_niveles/
+moc_server
 
 # Idea
 .idea/
@@ -46,7 +49,10 @@ editor_niveles
 
 # CMake generated files
 CMakeFiles/
+cmake-build-debug/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+
+map/
 

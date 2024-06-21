@@ -1,20 +1,55 @@
 #include "renderizadomapa.h"
 
 #include <QVector>
-#include <iostream>
 
-void dibujar_cuadricula(QPainter& painter, int tile_size, int width,
-                        int height) {
+#define MAX_TILE_SIZE 120.0
+#define MIN_TILE_SIZE 10.0
+
+void MapRenderer::checkMapAvaible() {
+    if (!map.has_value()) {
+        throw std::runtime_error("Mapa no definido");
+    }
+}
+
+void MapRenderer::setMap(Map* map) { this->map = map; }
+
+void MapRenderer::drawBackground(QPainter& painter) {
+    // Muestra el background que esta definido en el mapa.
+    IdTexture background_id = (*map)->get_background();
+
+    QImage* background = &background_textures[background_id];
+
+    painter.setBackgroundMode(Qt::BGMode::OpaqueMode);
+    painter.setBackground(QBrush(*background));
+
+    auto limits = (*map)->get_map_size();
+
+    painter.setBrush(QBrush(*background));
+    QRect rectangle(camera_reference, QSize(limits.x * this->tile_size,
+                                            limits.y * this->tile_size));
+
+    painter.drawRect(rectangle);
+}
+
+void MapRenderer::drawGrid(QPainter& painter) {
     QVector<QLine> lineas;
 
+    auto limits = (*map)->get_map_size();
+
+    int first_x = 0 + camera_reference.x();
+    int last_x = (limits.x * this->tile_size) + camera_reference.x();
+
+    int first_y = 0 + camera_reference.y();
+    int last_y = (limits.y * this->tile_size) + camera_reference.y();
+
     // Agrego a un vector todas las lineas horizontales y verticales a dibujar
-    for (int x = 0; x <= width; x += tile_size) {
-        QLine linea(x, 0, x, height);
+    for (int x = first_x; x <= last_x; x += this->tile_size) {
+        QLine linea(x, first_y, x, last_y);
         lineas.push_back(linea);
     }
 
-    for (int y = 0; y <= height; y += tile_size) {
-        QLine linea(0, y, width, y);
+    for (int y = first_y; y <= last_y; y += this->tile_size) {
+        QLine linea(first_x, y, last_x, y);
         lineas.push_back(linea);
     }
 
@@ -22,94 +57,117 @@ void dibujar_cuadricula(QPainter& painter, int tile_size, int width,
     painter.drawLines(lineas);
 }
 
-QString get_tile_name(Tile unTile) {
-    // Por ahora utilizo este switch para obtener el nombre del archivo.
-    // Tal vez haya una manera mejor de hacerlo?
-    switch (unTile) {
-        case Tile::dirt:
-            return "dirt.png";
-        case Tile::stone:
-            return "stone.png";
-        case Tile::water:
-            return "water.png";
-        case Tile::air:
-        default:
-            qDebug("Case tile air: Deberia ser un error");
-            return "ERROR?";
-    }
-
-    return "ERROR?";
-}
-
-MapRenderer::MapRenderer(QWidget* parent) : QWidget{parent}, tiles{nullptr} {
+MapRenderer::MapRenderer(QWidget* parent) : QWidget{parent}, map(std::nullopt) {
     // Defino el tilesize. Esto indica cuantos pixeles ocupa cada casillero de
     // la grilla.
     this->tile_size = 64;
-
-    // Creo una grilla de x_limit * y_limit. Inicialmente todo es aire.
-    for (int i = 0; i < y_limit; i++) {
-        level.emplace_back(std::vector<Tile>(x_limit, Tile::air));
-    }
-
-    // Defino algunos tiles en la grilla para testear.
-    level[0][0] = Tile::dirt;
-
-    level[5][3] = Tile::water;
-
-    level[4][2] = Tile::stone;
 }
 
-MapRenderer::~MapRenderer() {
-    if (tiles) delete tiles;
-}
-
-void MapRenderer::addTileModel(QStandardItemModel* newTiles) {
-    this->tiles = newTiles;
-}
+MapRenderer::~MapRenderer() {}
 
 void MapRenderer::paintEvent(QPaintEvent* event) {
+    checkMapAvaible();
+
     QPainter painter(this);
 
     int width = this->width();
     int height = this->height();
 
-    // Loop para recorrer la grilla de tiles y dibujarlos
-    for (uint y = 0; y <= (height / tile_size); y++) {
-        // En el caso de que quiera renderizar algo
-        // que este fuera de lo definido por level
-        if (y >= y_limit) break;
+    drawBackground(painter);
 
-        for (uint x = 0; x <= (width / tile_size); x++) {
-            // En el caso de que quiera renderizar algo
-            // que este fuera de lo definido por level
-            if (x >= x_limit) break;
+    std::vector<BlockOnlyTexture> blockTextures =
+        (*map)->get_all_block_textures_editor();
 
-            // Obtengo el tipo de tile, si es aire lo omito.
-            Tile content = level[x][y];
-            if (content == Tile::air) continue;
+    for (const BlockOnlyTexture& block : blockTextures) {
+        int x = (int)block.coordinate.x * tile_size + camera_reference.x();
+        int y = (int)block.coordinate.y * tile_size + camera_reference.y();
 
-            // Busco el item en la lista de tiles
-            // (por ahora necesito el nombre. Tal vez hay alguna manera mejor?)
-            QList<QStandardItem*> tile_items =
-                tiles->findItems(get_tile_name(content));
+        // Esta fuera de la pantalla
+        if (x + tile_size < 0 || x > width || y + tile_size < 0 || y > height)
+            continue;
 
-            if (tile_items.isEmpty()) continue;
+        // Busco en el map de texturas, la textura a aplicar
+        QImage image = tile_textures[block.texture];
 
-            QStandardItem* tile_item = tile_items[0];
+        // Dibujo el tile en la posicion correcta.
+        QRect rectangle_to_draw(x, y, tile_size, tile_size);
 
-            // Obtengo la imagen del tile
-            QVariant image_variant = tile_item->data(Qt::UserRole + 2);
-
-            QImage image = image_variant.value<QImage>();
-
-            // Dibujo el tile en la posicion correcta.
-            QRect rectangle_to_draw(x * tile_size, y * tile_size, tile_size,
-                                    tile_size);
-
-            painter.drawImage(rectangle_to_draw, image);
-        }
+        painter.drawImage(rectangle_to_draw, image);
     }
 
     // Dibujo encima las lineas que definen la cuadricula
-    dibujar_cuadricula(painter, this->tile_size, width, height);
+    drawGrid(painter);
+}
+
+void MapRenderer::set_camera_reference(QPoint camera_reference) {
+    this->camera_reference = camera_reference;
+}
+
+void MapRenderer::modify_camera_reference(QPoint delta) {
+    this->camera_reference += delta;
+}
+
+void MapRenderer::mousePressEvent(QMouseEvent* event) {
+    // Defino que se está editando la grilla.
+    if (event->button() == Qt::MouseButton::MiddleButton) {
+        this->moving_camera = true;
+        mouse_clicked_reference = event->pos();
+    }
+}
+
+void MapRenderer::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::MouseButton::MiddleButton) {
+        this->moving_camera = false;
+    }
+}
+
+void MapRenderer::mouseMoveEvent(QMouseEvent* event) {
+    if (this->moving_camera) {
+        QPoint current_mouse_position = event->pos();
+        QPoint delta = current_mouse_position - mouse_clicked_reference;
+
+        this->modify_camera_reference(delta);
+
+        mouse_clicked_reference = current_mouse_position;
+        this->update();
+    }
+}
+
+void MapRenderer::wheelEvent(QWheelEvent* event) {
+    int numDegrees = event->angleDelta().y() / 8;
+    int numSteps = numDegrees / 15;
+
+    // Velocidad de zoom.
+    float modify = 3;
+
+    // Evito que el usuario haga demasiado o muy poco zoom.
+    if (tile_size + modify * numSteps > MAX_TILE_SIZE ||
+        tile_size + modify * numSteps < MIN_TILE_SIZE)
+        return;
+
+    QPointF viewport_center = QPointF(this->width(), this->height()) / 2.0;
+
+    // Calculo a que parte de la grilla apunta el centro del viewport
+    QPointF view_port_center_on_grid =
+        (viewport_center - QPointF(camera_reference)) / tile_size;
+
+    tile_size = round(tile_size + modify * numSteps);
+
+    // Despejo de la ecuacion de arriba la camara reference para el nuevo
+    // tile_size.
+    QPointF new_camera_reference =
+        viewport_center - (tile_size * view_port_center_on_grid);
+
+    set_camera_reference(new_camera_reference.toPoint());
+
+    this->update();
+}
+
+void MapRenderer::addTileTextures(QMap<IdTexture, QImage> tile_textures) {
+    this->tile_textures = tile_textures;
+}
+
+void MapRenderer::addBackgroundTextures(
+    QMap<IdTexture, QImage> background_textures) {
+    this->background_textures = background_textures;
 }

@@ -27,9 +27,11 @@ class GuiLoop : public Thread {
 
     uint32_t currentTick;
 
+    std::string mapName;
+
    public:
     // GuiLoop();
-    explicit GuiLoop(Window& window);
+    explicit GuiLoop(Window& window, uint16_t player_id, std::string map_name);
     ~GuiLoop();
 
    private:

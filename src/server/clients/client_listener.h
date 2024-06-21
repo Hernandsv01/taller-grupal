@@ -3,23 +3,27 @@
 
 #include <utility>
 
-#include "client_monitor.h"
+#include "../../common/library/socket.h"
+#include "../../common/library/thread.h"
+// TODO: RENOMBRAR A LOBBY_MANAGER
+#include "../game/game_manager.h"
 #include "server_client.h"
-#include "socket.h"
-#include "thread.h"
 
 #define SHUTDOWN_MODE 2
 
 class Client_listener : public Thread {
    private:
-    Socket skt_listener;
+    Socket& skt_listener;
     bool is_running;
+    GamePoolMonitor& gamePoolMonitor;
+    std::vector<std::unique_ptr<LobbyManager>> clientes_en_lobby;
 
    public:
-    explicit Client_listener(char* port)
+    Client_listener(Socket& socket, GamePoolMonitor& gamePoolMonitor)
         : Thread("Client_listener server"),
-          skt_listener(port),
-          is_running(true) {}
+          skt_listener(socket),
+          is_running(true),
+          gamePoolMonitor(gamePoolMonitor) {}
 
     void run() override;
     void kill();

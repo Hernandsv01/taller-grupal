@@ -10,9 +10,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 # Hace que ejecute el cmakelist del lobby_client
-add_subdirectory(src/lobby_client/)
+add_subdirectory(src/lobby_client)
 # Hace que ejecute el cmakelist del editor de niveles
 add_subdirectory(src/editor_niveles)
+
+add_subdirectory(src/common/map)
 
 
 include_directories(src/client)
@@ -93,21 +95,28 @@ src/server/clients/server_client.cpp
         src/server/clients/server_client.h
         src/server/clients/client_listener.cpp
         src/server/clients/client_listener.h
-        src/server/clients/client_monitor.cpp
-        src/server/clients/client_monitor.h
         src/server/clients/protocol.cpp
         src/server/clients/protocol.h
         src/server/model/constants/game_status.h
         src/server/model/Dynamic_entity.h
         src/server/model/Enemy.h
-        src/server/model/Entity.h
         src/server/model/Player.h
         src/server/Game.cpp
         src/server/Game.h      
         src/server/server_main.cpp
-        # src/server/physics/physics.h
-        # src/server/physics/physics.cpp
-        )
+        src/server/physics/physics.h
+        src/server/physics/physics.cpp
+        src/server/model/Bullet.h
+        src/server/model/Pickup.h
+        src/server/model/constants/pickup_type.h
+        src/server/game/game_manager.h
+        src/server/game/game_manager.cpp
+        src/server/game/lobby_protocol.h
+        src/server/game/lobby_protocol.cpp
+        src/server/game_pool_monitor.h
+        src/server/loader/config.h
+        src/server/loader/config.cpp
+)
 
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})
 add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
@@ -116,7 +125,9 @@ add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
 find_package(Threads REQUIRED)
 target_link_libraries(server PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE Threads::Threads)
+target_link_libraries(client PRIVATE GuiLobby)
 #target_link_libraries(testsdl PRIVATE Threads::Threads)
+target_link_libraries(server PRIVATE map)
 
 
 set(SDL2PP_WITH_IMAGE YES)

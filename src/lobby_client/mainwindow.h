@@ -23,6 +23,8 @@ class MainWindow : public QMainWindow {
     void updateMatchesFromMatchList();
     void goToMatchSelection();
     std::vector<GameMatch> getGameMatches();
+    void closedConnectionError();
+    void populateMapSelection();
 
    private slots:
 
@@ -36,7 +38,9 @@ class MainWindow : public QMainWindow {
 
     void on_botonCancelarCrearPartida_clicked();
 
-   private:
+    void on_botonRecargarPartidas_clicked();
+
+private:
     Ui::MainWindow* ui;
 };
 #endif  // MAINWINDOW_H

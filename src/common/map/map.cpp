@@ -1,9 +1,16 @@
 #include "map.h"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
 #include "yaml-cpp/yaml.h"
+
+// Para que no aparezca error de MAP_PATH no definido.
+// Esta definido en el cmake
+#ifndef MAP_PATH
+#define MAP_PATH "./"
+#endif
 
 namespace YAML {
 template <>
@@ -92,8 +99,19 @@ struct convert<::Collision> {
 
 Map::Map() {}
 
-Map Map::fromYaml(const char* path) {
-    YAML::Node nodo_mapa = YAML::LoadFile(path);
+Map Map::fromYaml(std::string file_name) {
+    std::string file_path = MAP_PATH;
+    file_path += file_name;
+
+    if (file_path.substr(file_path.size() - 5) != ".yaml") {
+        file_path += ".yaml";
+    }
+
+    if (!std::filesystem::exists(file_path))
+        throw std::filesystem::filesystem_error("No existe tal mapa",
+                                                std::error_code());
+
+    YAML::Node nodo_mapa = YAML::LoadFile(file_path);
 
     // Yaml me devuelve una instancia nueva de mapa.
     // No encontré como hacer que el constructor devuelva eso,
@@ -103,12 +121,27 @@ Map Map::fromYaml(const char* path) {
     return mapa_temp;
 }
 
+void Map::toYaml() const {
+    YAML::Node nodo_mapa = YAML::convert<Map>::encode(*this);
+
+    // MAP_PATH definido por cmake
+    std::string path = MAP_PATH + this->map_name + ".yaml";
+
+    std::ofstream archivo(path);
+
+    std::cout << archivo.is_open() << ":" << path << std::endl;
+
+    archivo << nodo_mapa;
+}
+
 Map::Map(coord_unit size_x, coord_unit size_y)
     : size_x(size_x),
       size_y(size_y),
       blocks(size_y, std::vector<::Block>(size_x)) {}
 
 std::string Map::get_name() const { return this->map_name; }
+
+void Map::set_name(const std::string& name) { this->map_name = name; }
 
 std::vector<BlockOnlyCollision> Map::get_all_blocks_collisions() const {
     return get_blocks_with_condition_and_constructor<BlockOnlyCollision>(
@@ -182,6 +215,14 @@ std::vector<BlockOnlyTexture> Map::get_all_block_textures() const {
         });
 }
 
+std::vector<BlockOnlyTexture> Map::get_all_block_textures_editor() const {
+    return get_blocks_with_condition_and_constructor<BlockOnlyTexture>(
+        [](const Block& block) { return block.has_texture_editor(); },
+        [](const Coordinate coordinate, const Block& block) {
+            return BlockOnlyTexture{coordinate, block.texture};
+        });
+}
+
 IdTexture Map::get_background() const { return this->background_texture; }
 
 Coordinate Map::get_map_size() const {
@@ -194,4 +235,42 @@ void Map::add_block(const Coordinate& coordinate, const Block& block) {
     }
 
     blocks[coordinate.y][coordinate.x] = block;
+}
+
+void Map::set_background(IdTexture background) {
+    this->background_texture = background;
+}
+
+void Map::resizeTo(coord_unit new_size_x, coord_unit new_size_y) {
+    blocks.resize(new_size_y, std::vector<::Block>(new_size_x));
+
+    for (coord_unit y = 0; y < size_y; y++) {
+        blocks[y].resize(new_size_x);
+    }
+
+    size_x = new_size_x;
+    size_y = new_size_y;
+}
+
+void Map::contractToMin() {
+    coord_unit new_size_x = 0;
+    coord_unit new_size_y = 0;
+
+    for (coord_unit y = 0; y < size_y; y++) {
+        for (coord_unit x = 0; x < size_x; x++) {
+            // Recorro todas las posiciones del mapa.
+            // Si no es void, se que hasta ese punto el mapa tiene que existir.
+            if (!blocks[y][x].is_void()) {
+                new_size_x = std::max<coord_unit>(new_size_x, x + 1);
+                new_size_y = std::max<coord_unit>(new_size_y, y + 1);
+            }
+        }
+    }
+
+    resizeTo(new_size_x, new_size_y);
+}
+
+void Map::expandToMax() {
+    resizeTo(std::numeric_limits<coord_unit>::max(),
+             std::numeric_limits<coord_unit>::max());
 }

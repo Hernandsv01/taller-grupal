@@ -6,21 +6,23 @@
 #include "textureManager.h"
 #include "../update_queue.h"
 
-GuiLoop::GuiLoop(Window& window)
-    : Thread("GuiLoop cliente"), currentTick(0), windowForRender(window),
-        gameState(), mainId(0) {
-    
-    //Harcodeo un player dummy. En la version final del juego, esto lo
-    //recibiría del servidor.
-    
+GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
+    : Thread("GuiLoop cliente"),
+      currentTick(0),
+      windowForRender(window),
+      mapName(map_name),
+      mainId(player_id),
+      gameState() {
+    // Harcodeo un player dummy. En la version final del juego, esto lo
+    // recibiría del servidor.
     PlayerState player;
-    player.direction = Direction::Right;
-    player.id = 0;
+    player.direction = enums_value_update::Direction::Right;
+    player.id = player_id;
     player.position = Position{0, 0};
     player.healthPoints = 10;
     player.characterType = CharacterType::Jazz;
     player.score = 0;
-    player.state = State(Idle, 0);
+    player.state = State(enums_value_update::Player_State_Enum::Idle, 0);
 
     updatableGameState.addMainPlayer(player);
 };
@@ -135,9 +137,10 @@ void GuiLoop::updateGameState() {
     }
 }
 
-void GuiLoop::runRenderer(MapInfo &mapInfo) {
+void GuiLoop::runRenderer(MapInfo& mapInfo) {
     // Genero un nuevo estado apto para que lo consuma el renderer
-    //GameStateRenderer gameStateRenderer = updatableGameState.getStateRenderer(currentTick);
+    //GameStateRenderer gameStateRenderer =
+    //    updatableGameState.getStateRenderer(currentTick);
 
     if (render == nullptr)
         throw std::runtime_error(

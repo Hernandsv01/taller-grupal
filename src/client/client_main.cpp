@@ -1,7 +1,8 @@
 #include <iostream>
+#include <utility>
 
-// #include "lobby/lobby.h"
 #include "../../src/common/library/socket.h"
+#include "../lobby_client/gui_lobby.h"
 #include "client.h"
 
 /*
@@ -9,21 +10,46 @@
  * Hay codigo comentado relacionado al lobby que todavia no esta integrado.
  * Y uno de prueba que solo usaba el render.
  */
+
 int main(int argc, char* argv[]) {
-    // std::cout << "Hello client!" << std::endl;
-    // Lobby lobby;
-    // lobby.exec();
-    // Socket&& socket = lobby.get_socket(); //ver si puedo agregar esto.
-    // harcodear socket
-    const char* hostname = "127.0.0.1";
-    const char* servname = "15500";
+    // TODO: REMOVER PARA ENTREGA FINAL
+
+    std::optional<Socket> socket_a_usar;
+    auto playerIdAndMap = std::make_pair(0, std::string(""));
+
+    if (argc == 2 && std::string(argv[1]) == "manual") {
+        GuiLobby gui_lobby(argc, argv);
+        gui_lobby.execute();
+
+        if (!gui_lobby.isConnectedToMatch()) {
+            return 0;
+        }
+
+        playerIdAndMap = gui_lobby.getPlayerIdAndMapName();
+        socket_a_usar = gui_lobby.extractMatchConnection();
+
+    } else {
+        const char* hostname = "127.0.0.1";
+        const char* servname = "15500";
+
+        Lobby lobby;
+        lobby.connectToServer(hostname, servname);
+        lobby.connectToMatch(1);
+
+        playerIdAndMap = lobby.getPlayerIdAndMapName();
+        socket_a_usar = lobby.extractMatchConnection();
+    }
+
     SDL2pp::SDL sdl(SDL_INIT_VIDEO);
     SDL2pp::Window window("TEST", SDL_WINDOWPOS_CENTERED,
                           SDL_WINDOWPOS_CENTERED, 800, 600,
                           SDL_WindowFlags::SDL_WINDOW_RESIZABLE);
 
-    Socket socket(hostname, servname);
-    Client client(std::move(socket), window);
+    uint16_t player_id = playerIdAndMap.first;
+    std::string map_name = playerIdAndMap.second;
+
+    Client client(std::move(socket_a_usar.value()), window, player_id,
+                  map_name);
 
     // Como esta funcion bloquea hasta que el cliente se cierre
     // (o termine con un error), no es necesario esperar

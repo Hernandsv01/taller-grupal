@@ -96,13 +96,13 @@ void Render::copyPlayer(PlayerState jugador) {
     int xPos = jugador.position.x;
     int yPos = jugador.position.y;
 
-    if (jugador.state == Idle) {
+    if (jugador.state == enums_value_update::Idle) {
         copyEntity(xPos, yPos, JAZZSTANDX, JAZZSTANDY, STANDSPRITELONG,
                    standSpritesJazz);
-    } else if (jugador.state == Running) {
+    } else if (jugador.state == enums_value_update::Running) {
         copyEntity(xPos, yPos, JAZZRUNX, JAZZRUNY, RUNSPRITELONG,
                    runSpritesJazz);
-    } else if (jugador.state == Intoxicated) {
+    } else if (jugador.state == enums_value_update::Intoxicated) {
         copyEntity(xPos, yPos, JAZZINTOXX, JAZZINTOXY, INTOXSPRITELONG,
                    intoxJazz);
     } else {

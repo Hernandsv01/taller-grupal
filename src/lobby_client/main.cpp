@@ -1,13 +1,6 @@
-#include "mainwindow.h"
+#include "gui_lobby.h"
 
-#include <QApplication>
-#include "lobby.h"
-
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    Lobby lobby;
-    MainWindow w(lobby);
-    w.show();
-    return a.exec();
+int main(int argc, char* argv[]) {
+    GuiLobby gui_lobby(argc, argv);
+    gui_lobby.execute();
 }
