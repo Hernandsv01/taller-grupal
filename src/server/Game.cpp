@@ -136,7 +136,6 @@ void Game::send_initial_values() {
     //pickups
     for (const auto& pickup_spawn : map.get_items_spawns()) {
         Update::EntitySubtype pickup_subtype = pickup_subtypes[rand() % pickup_subtypes.size()];
-        //int value = Config::get_pickup_coin;
         Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, (pickup_subtype));
         entity_pool.push_back(std::make_unique<Pickup>(pickup));
 
@@ -169,7 +168,7 @@ std::vector<Update::Update_new> Game::get_full_game_updates(){
             entity_subtype = player->get_player_subtype();
         } else if (auto pickup = dynamic_cast<Pickup*>(entity.get())) {
             entity_type = Update::EntityType::Item;
-            entity_subtype = pickup->get_type();
+            entity_subtype = pickup->get_subtype();
             //FALTA ENEMY
         // } else if (auto enemy = dynamic_cast<Enemy*>(entity.get())) {
         //     entity_type = Update::EntityType::Enemy;
@@ -227,7 +226,7 @@ uint16_t Game::add_player() {
         Update::EntitySubtype::Spaz,
         Update::EntitySubtype::Lori
     };
-    Player player(next_id++, rand_spawn.x, rand_spawn.y, );
+    Player player(next_id++, rand_spawn.x, rand_spawn.y, player_subtypes[rand() % player_subtypes.size()]);
     entity_pool.push_back(std::make_unique<Player>(player));
 
     return player.get_id();
