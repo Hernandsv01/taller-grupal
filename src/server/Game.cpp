@@ -2,8 +2,6 @@
 
 #include <utility>
 
-#define GAME_LENGTH_IN_SECONDS 200
-
 Game::Game(std::string name, Map map)
     : Thread("Game server"),
       status(Game_status::WAITING),
@@ -17,7 +15,7 @@ void Game::stop_custom() { status = Game_status::FINISHED; }
 void Game::run() {
     status = Game_status::RUNNING;
     std::chrono::steady_clock::time_point current_tick_start = std::chrono::steady_clock::now();
-    int time_left = GAME_LENGTH_IN_SECONDS;
+    int time_left = Config::get_game_time();
     std::chrono::steady_clock::time_point next_second_update = current_tick_start + std::chrono::seconds(1);
 
     while (status == Game_status::RUNNING) {
