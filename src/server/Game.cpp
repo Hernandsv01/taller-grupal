@@ -81,24 +81,30 @@ void Game::run_iteration() {
 
 
 
-
-
 void Game::send_initial_values() {
 
-    std::vector<Update::Update_new> creations;
-    std::vector<Update::Update_new> creations;
-    //
-    /*
-        Reveisar orden: 
-        1. crear entidades
-            a. usar next_id para settear id (next_id++ luego)
-            b. usar métodos de spawn de mapa para ver dónde crearlas
-        2. meterlas en la entity_pool
-        3. Crear update de creación de esas entidades
-        4. Mandar paquete de updates de creación a todos los clientes
-        5. Crear update para poner cada entidad en su posición inicial
-        6. Mandar paquete de updates
-    */
+    std::vector<Update::Update_new> creation_updates;
+    std::vector<Update::Update_new> general_updates;
+
+    std::array<Update::EntitySubtype, 3> player_subtypes = {
+        Update::EntitySubtype::Jazz,
+        Update::EntitySubtype::Spaz,
+        Update::EntitySubtype::Lori
+    };
+
+    std::array<Update::EntitySubtype, 3> enemy_subtypes = {
+        Update::EntitySubtype::Enemy1,
+        Update::EntitySubtype::Enemy2,
+        Update::EntitySubtype::Enemy3
+    };
+
+    std::array<Update::EntitySubtype, 5> pickup_subtypes = {
+        Update::EntitySubtype::Coin, 
+        Update::EntitySubtype::Carrot,
+        Update::EntitySubtype::Light,
+        Update::EntitySubtype::Heavy,
+        Update::EntitySubtype::Power
+    };
 
     //player
     Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
@@ -106,60 +112,78 @@ void Game::send_initial_values() {
     Player player(next_id++, rand_spawn.x, rand_spawn.y);
     entity_pool.push_back(std::make_unique<Player>(player));
     // 
-    Update::Update_new::create_create_entity(
+    creation_updates.push_back(Update::Update_new::create_create_entity(
         player.get_id(),
         Update::EntityType::Player,
-        Update::EntitySubtype::Jazz //deberia ser random entre los 3 tipos. 
-    );
+        //Update::EntitySubtype::Jazz //deberia ser random entre los 3 tipos. 
+        player_subtypes[rand() % player_subtypes.size()] 
+    ));
 
-    Update::Update_new::create_position(
+    general_updates.push_back(Update::Update_new::create_position(
         player.get_id(), // usar mismo id que en la creación
         rand_spawn.x,
         rand_spawn.y
-    );
+    ));
     
-
-    Update::Update_new::create_value(player.get_id, )
-
 
     //enemies
     Coordinate rand_enemy_spawn = map.get_enemy_spawns()[rand() % map.get_enemy_spawns().size()];
     /*
+    Falta enemigos: 
     //se deberia chequear al cantidad de enemigos. 
     Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y);
-    Update::Update_new::create_create_entity(
+    creation_updates.push_back(Update::Update_new::create_create_entity(
         enemy.get_id(),
         Update::EntityType::Enemy,
-        Update::EntitySubtype::Enemy1 //deberia ser random entre los tres tipos. 
+        player_subtypes[rand() % player_subtypes.size()]
     
-    );
-    Update::Update_new::create_position(
+    ));
+    general_updates.push_back(Update::Update_new::create_position(
         enemy.get_id(), // usar mismo id que en la creación
         rand_spawn.x,
         rand_spawn.y
-    );
+    ));
     */
    
     //pickups
-    //ver como se maneja la cantidad 
-    //ver como hacer para tomar la configuracion, si lo hago yo desde aca o si se hace desde el constructor. 
-    Coordinate rand_pickup_spawn = map.get_items_spawns()[rand() % map.get_items_spawns().size()];
-    Pickup pickup(next_id++, rand_pickup_spawn.x, rand_pickup_spawn.y, Pickup_type::COIN, Config::get_pickup_coin());  
-    entity_pool.push_back(std::make_unique<Pickup>(pickup));
+    for (const auto& pickup_spawn : map.get_items_spawns()) {
+        Update::EntitySubtype pickup_subtype = pickup_subtypes[rand() % pickup_subtypes.size()];
+        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, 
+                      static_cast<Pickup_type>(pickup_subtype), 
+                      pickup_subtype);
+        entity_pool.push_back(std::make_unique<Pickup>(pickup));
 
-    Coordinate rand_pickup_spawn = map.get_items_spawns()[rand() % map.get_items_spawns().size()];
-    Pickup pickup(next_id++, rand_pickup_spawn.x, rand_pickup_spawn.y, Pickup_type::COIN, Config::get_pickup_coin());  
-    entity_pool.push_back(std::make_unique<Pickup>(pickup));
+        creation_updates.push_back(Update::Update_new::create_create_entity(
+            pickup.get_id(),
+            Update::EntityType::Item,
+            pickup_subtype 
+        ));
+
+        general_updates.push_back(Update::Update_new::create_position(
+            pickup.get_id(),
+            pickup_spawn.x,
+            pickup_spawn.y
+        ));
+    }
 
 
+    sendAll(creation_updates);
+    sendAll(general_updates);
+}
+
+
+std::vector<Update::Update_new> Game::get_full_game_updates(){
+    std::vector<Update::Update_new> updates;
+    //recorre la entity pool 
+    //crea un update
+    return updates;
 }
 
 uint16_t Game::add_player() {
-    //Cuando se suma un jugador a una partida, es random? 
-    //Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
-    //Player player(next_id++, rand_spawn.x, rand_spawn.y);
-    Player player(next_id++, 4, 4);
+    Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
+    Player player(next_id++, rand_spawn.x, rand_spawn.y);
     entity_pool.push_back(std::make_unique<Player>(player));
+
     return player.get_id();
 }
 
@@ -173,11 +197,13 @@ std::string Game::get_map_name() { return this->map.get_name(); }
 
 void Game::add_socket_for_player(uint16_t player_id, Socket socket) {
     clients.push_back(std::make_unique<Server_Client>(static_cast<int>(player_id), std::move(socket)));
-
+    
     sendAll({Update::Update_new::create_create_entity(
         player_id, Update::EntityType::Player, Update::EntitySubtype::Jazz)});
 
     // Send create existing entitys to this player
+    std::vector<Update::Update_new> full_updates = get_full_game_updates();
+    sendAll(full_updates);
 }
 
 void Game::sendAll(std::vector<Update::Update_new> updates) {

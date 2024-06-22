@@ -44,6 +44,7 @@ class Game : public Thread {
     void set_id(uint8_t id);
     std::string get_match_name();
     std::string get_map_name();
+    std::vector<Update::Update_new> get_full_game_updates();
 
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
