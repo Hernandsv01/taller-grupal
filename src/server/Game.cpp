@@ -163,9 +163,11 @@ std::vector<Update::Update_new> Game::get_full_game_updates(){
         uint16_t entity_id = entity->get_id();
         Update::EntityType entity_type;
         Update::EntitySubtype entity_subtype;
+        Coordinate positiion;
         if (auto player = dynamic_cast<Player*>(entity.get())) {
             entity_type = Update::EntityType::Player;
             entity_subtype = player->get_player_subtype();
+            position
         } else if (auto pickup = dynamic_cast<Pickup*>(entity.get())) {
             entity_type = Update::EntityType::Item;
             entity_subtype = pickup->get_subtype();
@@ -183,6 +185,7 @@ std::vector<Update::Update_new> Game::get_full_game_updates(){
             entity_subtype
         ));
 
+       
     
     }
     return updates;
