@@ -65,7 +65,8 @@ set(SOURCES_CLIENT
         src/client/client.cpp
         
         src/client/client_main.cpp
-        )
+        src/server/model/constants/Ammo_data.h
+)
 
 set(SOURCES_COMMON
 src/common/library/liberror.cpp
@@ -108,6 +109,7 @@ src/server/clients/server_client.cpp
         src/server/game_pool_monitor.h
         src/server/loader/config.h
         src/server/loader/config.cpp
+        src/server/model/constants/Ammo_data.h
 )
 
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})

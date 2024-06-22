@@ -55,7 +55,7 @@ public:
     ~Dynamic_entity() {};
 
     virtual std::vector<Update::Update_new> tick(const Map& map,
-        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) = 0;
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) = 0;
 
     void setXSpeed(float vel_x_param) { vel_x = vel_x_param; }
     float getXSpeed() const { return vel_x; }
