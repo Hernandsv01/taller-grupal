@@ -57,8 +57,10 @@ class Dynamic_entity : public RigidBox {
 
     ~Dynamic_entity(){};
 
-    virtual std::vector<Update::Update_new> tick(const Map& map,
-        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) = 0;
+    virtual std::vector<Update::Update_new> tick(
+        const Map& map,
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool,
+        int& next_id) = 0;
 
     void setXSpeed(float vel_x_param) { vel_x = vel_x_param; }
     float getXSpeed() const { return vel_x; }
@@ -90,9 +92,6 @@ class Dynamic_entity : public RigidBox {
         int x_max = static_cast<int>(std::floor(this->x_max()));
         int y_min = static_cast<int>(std::floor(this->y_min()));
         int y_max = static_cast<int>(std::floor(this->y_max()));
-
-        std::cout << "x_min: " << x_min << " x_max: " << x_max
-                  << " y_min: " << y_min << " y_max: " << y_max << "\n";
 
         for (int x = x_min; x <= x_max; ++x) {
             for (int y = y_min; y <= y_max; ++y) {

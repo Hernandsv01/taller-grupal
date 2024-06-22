@@ -78,7 +78,7 @@ void Game::run_iteration() {
 
 uint16_t Game::add_player() {
     uint16_t id_player = next_id++;
-    entity_pool.push_back(std::make_unique<Player>(id_player, 4, 4));
+    entity_pool.push_back(std::make_unique<Player>(id_player, 3, 3));
     return id_player;
 }
 

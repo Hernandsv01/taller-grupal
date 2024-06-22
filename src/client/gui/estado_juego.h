@@ -13,7 +13,7 @@
 #include "entityGame.h"
 #include "playableCharacter.h"
 
-#define FACTOR_TAMANIO 5
+#define FACTOR_TAMANIO 32
 
 typedef uint8_t Id_t;
 typedef uint8_t HealthPoints_t;

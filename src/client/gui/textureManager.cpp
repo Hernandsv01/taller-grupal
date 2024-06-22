@@ -1,11 +1,15 @@
 #include "textureManager.h"
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
 #ifndef DATA_PATH
 #define DATA_PATH "src/client/gui/data/"
 #endif
+
+#define BACKGROUND_TEXTURES_PATH "src/textures/backgrounds/"
+#define TILE_TEXTURES_PATH "src/textures/tiles/"
 
 #define JAZZSTAND "/jazz_stand.png"
 #define JAZZRUN "/jazz_run.png"
@@ -30,6 +34,26 @@ const std::vector<std::string> typeOfState = {"Stand", "Run",       "Dash",
 std::map<std::string, std::shared_ptr<SDL2pp::Texture>>
     TextureManager::textures;
 
+std::map<std::string, SDL2pp::Texture*> TextureManager::backgrounds;
+
+std::map<std::string, SDL2pp::Texture*> TextureManager::tiles;
+
+void TextureManager::load_textures_from_path_into_map(
+    SDL2pp::Renderer& renderer, const std::string& path,
+    std::map<std::string, SDL2pp::Texture*>& map) {
+    for (const auto& texture_path :
+         std::filesystem::recursive_directory_iterator(path)) {
+        // This is the filename without extension.
+        std::string texture_id = texture_path.path().stem().string();
+        SDL2pp::Texture* texture =
+            new SDL2pp::Texture(renderer, texture_path.path().string());
+
+        std::cout << "Created texture: " << texture_path.path().string()
+                  << " with id: " << texture_id << std::endl;
+        map[texture_id] = texture;
+    }
+}
+
 void TextureManager::Init(SDL2pp::Renderer& renderer) {
     for (std::string character : typeOfCharacter) {
         for (std::string state : typeOfState) {
@@ -40,6 +64,11 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
                 std::make_shared<SDL2pp::Texture>(std::move(texture));
         }
     }
+
+    load_textures_from_path_into_map(renderer, BACKGROUND_TEXTURES_PATH,
+                                     backgrounds);
+    load_textures_from_path_into_map(renderer, TILE_TEXTURES_PATH, tiles);
+
     /*
     SDL2pp::Texture jazzStand(renderer, DATA_PATH JAZZSTAND);
     textures["JazzStand"] =
@@ -80,5 +109,22 @@ std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
     } catch (const std::out_of_range& e) {
         std::cerr << "ACA ESTAB EL ERROR: " << e.what() << std::endl;
         return nullptr;
+    }
+}
+
+SDL2pp::Texture& TextureManager::getBackground(const std::string& texture_id) {
+    return *(TextureManager::backgrounds.at(texture_id));
+}
+
+SDL2pp::Texture& TextureManager::getTile(const std::string& texture_id) {
+    return *(TextureManager::tiles.at(texture_id));
+}
+
+TextureManager::~TextureManager() {
+    for (auto& texture : backgrounds) {
+        delete texture.second;
+    }
+    for (auto& texture : tiles) {
+        delete texture.second;
     }
 }
