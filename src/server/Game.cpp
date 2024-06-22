@@ -69,7 +69,7 @@ void Game::run_iteration() {
     }
 
     for (std::unique_ptr<Dynamic_entity>& entity_ptr : entity_pool) {
-        tick_updates = entity_ptr->tick(map, entity_pool);
+        tick_updates = entity_ptr->tick(map, entity_pool, next_id);
         total_updates.insert(total_updates.end(), tick_updates.begin(),
                              tick_updates.end());
     }
