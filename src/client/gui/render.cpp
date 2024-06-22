@@ -45,8 +45,15 @@ Render::Render(Window& window, const int& id)
 void Render::presentGame2(UpdatableGameState2 gameState, MapInfo mapInfo) {
     xReference = gameState.getEntityPositionX(mainPlayerID);
     yReference = gameState.getEntityPositionY(mainPlayerID);
+
+    // Renderizar mapa
     copyMap(mapInfo);
+
+    // Renderiza ¿entidades? ¿solo jugadores?
     gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter);
+
+    // Renderiza UI
+
     renderer.Present();
 }
 
