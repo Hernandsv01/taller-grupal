@@ -130,12 +130,21 @@ public:
                         break;
                     case LIGHT_AMMO:
                         ammo[enums_value_update::LIGHT] += pickup->getValue();
+                        if (ammo[enums_value_update::LIGHT] > ammo_config[enums_value_update::LIGHT].get_max_ammo()) {
+                            ammo[enums_value_update::LIGHT] = ammo_config[enums_value_update::LIGHT].get_max_ammo();
+                        }
                         break;
                     case HEAVY_AMMO:
                         ammo[enums_value_update::HEAVY] += pickup->getValue();
+                        if (ammo[enums_value_update::HEAVY] > ammo_config[enums_value_update::HEAVY].get_max_ammo()) {
+                            ammo[enums_value_update::HEAVY] = ammo_config[enums_value_update::HEAVY].get_max_ammo();
+                        }
                         break;
                     case POWER_AMMO:
                         ammo[enums_value_update::POWER] += pickup->getValue();
+                        if (ammo[enums_value_update::HEAVY] > ammo_config[enums_value_update::HEAVY].get_max_ammo()) {
+                            ammo[enums_value_update::HEAVY] = ammo_config[enums_value_update::HEAVY].get_max_ammo();
+                        }
                         break;
                 }
                 updates.push_back(Update::Update_new::create_delete_entity(other->get_id()));
