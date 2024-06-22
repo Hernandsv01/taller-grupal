@@ -10,6 +10,9 @@ LobbyManager::LobbyManager(Socket socket, GamePoolMonitor& game_pool_monitor)
     map_list.push_back(new_map);
     Map new_map2 = Map::fromYaml("testmap2");
     map_list.push_back(new_map2);
+
+    Map new_map3 = Map::fromYaml("map3");
+    map_list.push_back(new_map3);
 }
 
 uint8_t LobbyManager::create_game(GameMatch& match_info) {

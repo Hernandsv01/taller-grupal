@@ -4,32 +4,32 @@
 #include <SDL2pp/SDL2pp.hh>
 
 class Entity2 {
-    protected:
-        int positionX;
-        int positionY;
-        bool direction;
-        
-    public:
-        Entity2();
+   protected:
+    int positionX = 0;
+    int positionY = 0;
+    bool direction = true;
 
-        virtual void updatePosition(const int &posX, const int &posY);
+   public:
+    Entity2();
 
-        virtual int getPosX() const;
+    virtual void updatePosition(const int &posX, const int &posY);
 
-        virtual int getPosY() const;
+    virtual int getPosX() const;
 
-        virtual void renderize(SDL2pp::Renderer &renderer,
-                            const int &xRef, const int &yRef,
-                            const int &xCenter, const int &yCenter) {};
+    virtual int getPosY() const;
 
-        virtual void renderMainPj(SDL2pp::Renderer &renderer,
-                            const int &xCenter, const int &yCenter) {};
+    virtual void renderize(SDL2pp::Renderer &renderer, const int &xRef,
+                           const int &yRef, const int &xCenter,
+                           const int &yCenter) {};
 
-        virtual void updateState(const std::string &newState) {};
+    virtual void renderMainPj(SDL2pp::Renderer &renderer, const int &xCenter,
+                              const int &yCenter) {};
 
-        virtual void updateHealth(const int &newHealth) {};
+    virtual void updateState(const std::string &newState) {};
 
-        virtual void updateDirection(bool &isFacingRight) {};
+    virtual void updateHealth(const int &newHealth) {};
+
+    virtual void updateDirection(bool &isFacingRight) {};
 };
 
 #endif

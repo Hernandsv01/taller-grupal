@@ -1,4 +1,5 @@
 #include "render.h"
+
 #include "textureManager.h"
 
 #define BASESPRITE 0
@@ -29,24 +30,23 @@
 //       runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
 //       frame(0) {}
 
-Render::Render(Window& window, const int &id) :
-    window(window),
-    renderer(window, -1, SDL_RENDERER_ACCELERATED),
-    mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
-    mainPlayerID(id),
-    xCenter(window.GetWidth() / 2),
-    yCenter(window.GetHeight() / 2),
-    xReference(0),
-    yReference(0) {
+Render::Render(Window& window, const int& id)
+    : window(window),
+      renderer(window, -1, SDL_RENDERER_ACCELERATED),
+      mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
+      mainPlayerID(id),
+      xCenter(window.GetWidth() / 2),
+      yCenter(window.GetHeight() / 2),
+      xReference(0),
+      yReference(0) {
     TextureManager::Init(renderer);
 }
 
-
 void Render::presentGame2(UpdatableGameState2 gameState, MapInfo mapInfo) {
-    int xReference = gameState.getEntityPositionX(mainPlayerID);
-    int yReference = gameState.getEntityPositionY(mainPlayerID);
+    xReference = gameState.getEntityPositionX(mainPlayerID);
+    yReference = gameState.getEntityPositionY(mainPlayerID);
     copyMap(mapInfo);
-    gameState.copyAllEntities(this->renderer, mainPlayerID, xReference, yReference);
+    gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter);
     renderer.Present();
 }
 
@@ -81,7 +81,6 @@ void Render::copyMapPart(int typeOfPart, int part,
 void Render::presentImage() { renderer.Present(); }
 
 void Render::sleep(int millisecond) { SDL_Delay(millisecond); }
-
 
 /*
 void Render::presentGame(GameStateRenderer gameStatus, MapInfo mapInfo) {

@@ -1,17 +1,16 @@
 #ifndef ESTADO_JUEGO_H
 #define ESTADO_JUEGO_H
 
-#include <map>
+#include <SDL2pp/SDL2pp.hh>
 #include <algorithm>
 #include <cstdint>
 #include <map>
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
-#include <SDL2pp/SDL2pp.hh>
 #include "../../common/Update.h"
-#include "entityGame.h"
 #include "entityFactory.h"
+#include "entityGame.h"
 #include "playableCharacter.h"
 
 #define FACTOR_TAMANIO 5
@@ -28,8 +27,8 @@ struct Item;
 struct Position {
     // La posicion estaría definida en pixeles, para que le sea más util al
     // renderer.
-    int x;
-    int y;
+    int x = 0;
+    int y = 0;
 };
 // Direccion a la que apunta la entidad (para saber si voltear horizontalmente
 // la textura)
@@ -38,13 +37,13 @@ struct Position {
 struct Entity {
     Id_t id;
     Position position{0, 0};
-    enums_value_update::Direction direction = enums_value_update::Direction::Right;
+    enums_value_update::Direction direction =
+        enums_value_update::Direction::Right;
 };
 
-const std::vector<std::string> posibleStates = {"Stand", "Shot", "Jump",
-                            "Fall", "Run", "Intox", "Intoxwalk", 
-                            "Roasted", "Gethit", "Dash", "Shotfall", 
-                            "Special"};
+const std::vector<std::string> posibleStates = {
+    "Stand",     "Shot",    "Jump",   "Fall", "Run",      "Intox",
+    "Intoxwalk", "Roasted", "Gethit", "Dash", "Shotfall", "Special"};
 // Posibles estados de ¿solo jugador?
 enum State_enum {
     Idle,
@@ -56,10 +55,11 @@ enum State_enum {
     IntoxWalking,
     Dead,
     TakingDamage
-    
+
 };
 
-//enums_value_update::Direction direction = enums_value_update::Direction::Right;
+// enums_value_update::Direction direction =
+// enums_value_update::Direction::Right;
 
 struct State {
    private:
@@ -128,27 +128,23 @@ struct MapInfo {
     std::vector<Position> underPosition;
 };
 
-
 class UpdatableGameState2 {
-    private:
-        std::map<int, std::shared_ptr<Entity2>> gameState;
-       
+   private:
+    std::map<int, std::shared_ptr<Entity2>> gameState;
 
-    public:
-        explicit UpdatableGameState2() {
-            // std::shared_ptr<Entity2> ptr = std::make_unique<Entity2>();
-            // gameState.emplace(1, std::move(ptr));
-        }
+   public:
+    explicit UpdatableGameState2() {
+        // std::shared_ptr<Entity2> ptr = std::make_unique<Entity2>();
+        // gameState.emplace(1, std::move(ptr));
+    }
 
-        void handleUpdate(Update::Update_new update, int tick) {
-            switch (update.get_update_type()) {
-                case Update::CreateEntity: {
-                Update::EntityType entityType =
-                                            update.getEntityType();
-                Update::EntitySubtype entitySubtype =
-                                            update.getEntitySubType();
+    void handleUpdate(Update::Update_new update, int tick) {
+        switch (update.get_update_type()) {
+            case Update::CreateEntity: {
+                Update::EntityType entityType = update.getEntityType();
+                Update::EntitySubtype entitySubtype = update.getEntitySubType();
                 addEntity(update.get_id(), entityType, entitySubtype);
-                break;   
+                break;
             }
             case Update::Position: {
                 int xPosition = update.getPositionX() * FACTOR_TAMANIO;
@@ -157,7 +153,7 @@ class UpdatableGameState2 {
                 break;
             }
             case Update::Direction: {
-                bool isRight =  (update.get_value() == 0) ? true : false;
+                bool isRight = (update.get_value() == 0) ? true : false;
                 updateDirection(update.get_id(), isRight);
                 break;
             }
@@ -176,95 +172,118 @@ class UpdatableGameState2 {
                 updateScore(update.get_id(), score);
                 break;
             }
+            case Update::DeleteEntity: {
+                gameState.erase(update.get_id());
+                break;
+            }
+
+            case Update::MatchEnded: {
+                // No se que hacer con esto
+                break;
+            }
+
+            case Update::RemainingSeconds: {
+                // No se que hacer con esto
+                break;
+            }
+
+            case Update::ChangeAmmoType: {
+                // No se que hacer con esto
+                break;
+            }
+
+            case Update::BulletsRemaining: {
+                // No se que hacer con esto
+                break;
+            }
+
             default:
                 throw std::runtime_error("Faltan valores para los cases");
                 break;
+        }
+    }
+
+    void copyAllEntities(SDL2pp::Renderer &renderer, const int &mainId,
+                         const int &xCenter, const int &yCenter) {
+        const auto &entity = gameState.at(mainId);
+        const int xRef = entity->getPosX();
+        const int yRef = entity->getPosY();
+        for (auto &pair : gameState) {
+            if (isNotMain(pair.first, mainId)) {
+                pair.second->renderize(renderer, xRef, yRef, xCenter, yCenter);
             }
         }
+        entity->renderMainPj(renderer, xCenter, yCenter);
+    }
 
-        void copyAllEntities(SDL2pp::Renderer &renderer,
-                            const int &mainId, const int &xCenter,
-                            const int &yCenter) {
-            const auto& entity = gameState.at(mainId);
-            const int xRef = entity->getPosX();
-            const int yRef = entity->getPosY();
-            for (auto& pair: gameState) {
-                if (isNotMain(pair.first, mainId)) {
-                    pair.second->renderize(renderer, xRef, yRef,
-                                        xCenter, yCenter);
-                }
+    /*
+    std::vector<std::tuple<int , std::string, int>> getPlayersScores() {
+        std::vector<std::tuple<int , std::string, int>> scores;
+        for (auto& pair: gameState) {
+            if (pair.second->isPlayer()) {
+                std::string playerType = pair.second->getType();
+                int score = pair.second->getScore();
+                scores.push_back(std::make_tuple(pair.first, playerType,
+    score));
             }
-            entity->renderMainPj(renderer, xCenter, yCenter);
         }
+        return std::move(scores);
+    */
+    // Devuelve los puntajes de los jugadores.
+    // El formato es (Id, tipo de jugador, puntaje)
 
-        /*
-        std::vector<std::tuple<int , std::string, int>> getPlayersScores() {
-            std::vector<std::tuple<int , std::string, int>> scores;
-            for (auto& pair: gameState) {
-                if (pair.second->isPlayer()) {
-                    std::string playerType = pair.second->getType();
-                    int score = pair.second->getScore();
-                    scores.push_back(std::make_tuple(pair.first, playerType, score));
-                }
-            }
-            return std::move(scores);
-        */
-        //Devuelve los puntajes de los jugadores.
-        //El formato es (Id, tipo de jugador, puntaje)
-        
-        //devolver vector de todos id tipo puntaje
+    // devolver vector de todos id tipo puntaje
 
-        void addEntity(const int &id, const int &type, const int &subType) {
-            std::shared_ptr<Entity2> entity = EntityFactory::createEntity(type, subType);
-            //std::shared_ptr<Entity2> entity = std::make_unique<PlayableCharacter>("Jazz");
-            //gameState.emplace(id, std::move(entity));
-            //gameState[id] = std::move(entity);
-            gameState.insert(std::make_pair(id, std::move(entity)));
-        }
+    void addEntity(const int &id, const int &type, const int &subType) {
+        std::shared_ptr<Entity2> entity =
+            EntityFactory::createEntity(type, subType);
+        // std::shared_ptr<Entity2> entity =
+        // std::make_unique<PlayableCharacter>("Jazz"); gameState.emplace(id,
+        // std::move(entity)); gameState[id] = std::move(entity);
 
-        void updatePosition(const int &id, const int &x, const int &y) {
-            std::shared_ptr<Entity2>& entity = gameState.at(id);
-            entity->updatePosition(x, y);
-        }
+        gameState.insert(std::make_pair(id, std::move(entity)));
+    }
 
-        void updateState(const int &id, std::string newState) {
-            std::shared_ptr<Entity2>& entity = gameState.at(id);
-            entity->updateState(newState);
-        }
+    void updatePosition(const int &id, const int &x, const int &y) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        entity->updatePosition(x, y);
+    }
 
-        void updateDirection(const int &id, bool &isRight) {
-            std::shared_ptr<Entity2>& entity = gameState.at(id);
-            entity->updateDirection(isRight);
-        }
+    void updateState(const int &id, std::string newState) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        entity->updateState(newState);
+    }
 
-        void updateHealthPoints(const int &id, const int &healthPoint) {
-            std::shared_ptr<Entity2>& entity = gameState.at(id);
-            entity->updateHealth(healthPoint);
-        }
+    void updateDirection(const int &id, bool &isRight) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        entity->updateDirection(isRight);
+    }
 
-        void updateScore(const int &id, const int &score) {
-            std::shared_ptr<Entity2>& entity = gameState.at(id);
-            entity->updateHealth(score);
-        }
+    void updateHealthPoints(const int &id, const int &healthPoint) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        entity->updateHealth(healthPoint);
+    }
 
-        int getEntityPositionX(int id) const {
-            const auto& entity = gameState.at(id);
-            return entity->getPosX();
-        }
+    void updateScore(const int &id, const int &score) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        entity->updateHealth(score);
+    }
 
-        int getEntityPositionY(int id) const {
-            const auto& entity = gameState.at(id);
-            return entity->getPosY();
-        }
+    int getEntityPositionX(int id) const {
+        const auto &entity = gameState.at(id);
+        return entity->getPosX();
+    }
 
-    private:
-        bool isNotMain(const int &playerId, const int& mainId) {
-            return (playerId != mainId);
-        }
+    int getEntityPositionY(int id) const {
+        const auto &entity = gameState.at(id);
+        return entity->getPosY();
+    }
+
+   private:
+    bool isNotMain(const int &playerId, const int &mainId) {
+        return (playerId != mainId);
+    }
 };
-
-
-
 
 // Clase que se encarga de mantener el estado del juego actualizado.
 // Incluye todos los jugadores, proyectiles, enemigos e items, indexado por ID,
@@ -504,4 +523,4 @@ class UpdatableGameState {
     }
 };
 
-#endif //ESTADO_JUEGO_H
+#endif  // ESTADO_JUEGO_H
