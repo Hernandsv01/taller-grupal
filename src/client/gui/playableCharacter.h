@@ -11,13 +11,21 @@ class PlayableCharacter : public Entity2 {
         std::string characterType;
         bool isRight;
         std::string state;
-        int Score;
+        int score;
         int health;
 
         std::shared_ptr<SDL2pp::Texture> stateTexture;
         int actualSpriteNumber;
         int spriteSize;
         int spriteLenght;
+
+        std::shared_ptr<SDL2pp::Texture> hudTexture;
+        int hudSpriteNumber;
+        int hudSpriteSize;
+        int hudSpriteLenght;
+
+
+        void showScore(SDL2pp::Renderer &renderer);
         
     public:
         PlayableCharacter(const std::string& type);
@@ -29,6 +37,8 @@ class PlayableCharacter : public Entity2 {
         virtual void renderMainPj(SDL2pp::Renderer &renderer,
                             const int &xCenter, const int &yCenter);
 
+        void showHud(SDL2pp::Renderer &renderer, const int &windowWidth, const int &windowHeight);
+        
         void updateHealth(const int &newHealthPoint);
 
         void updateScore(const int &newScore);

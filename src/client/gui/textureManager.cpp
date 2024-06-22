@@ -18,11 +18,13 @@
 #define JAZZSHOT "/jazz_shot.png"
 #define JAZZSHOTFALL "/jazz_shotfall.png"
 
+#define SEPARATOR "separator"
 #define EXTENSION ".png"
 const std::vector<std::string> typeOfCharacter = {"Jazz"};
 const std::vector<std::string> typeOfState = {"Stand", "Run",       "Dash",
                                               "Intox", "Intoxwalk", "Fall",
-                                              "Jump",  "Shot",      "Shotfall"};
+                                              "Jump",  "Shot",      "Shotfall",
+                                              "Gethit", "Hud"};
 // "Gethit", "Roasted",
 // "Special", "Hud"};
 
@@ -40,6 +42,18 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
                 std::make_shared<SDL2pp::Texture>(std::move(texture));
         }
     }
+    //Carga numeros
+    for (int i =0; i<10; i++) {
+        std::string textureName = std::to_string(i);
+        SDL2pp::Texture texture(renderer,
+                                    DATA_PATH + textureName + EXTENSION);
+        textures[textureName] =
+                std::make_shared<SDL2pp::Texture>(std::move(texture));                           
+    }
+    SDL2pp::Texture texture(renderer,
+                                    std::string(DATA_PATH) + SEPARATOR + EXTENSION);
+        textures[SEPARATOR] =
+                std::make_shared<SDL2pp::Texture>(std::move(texture));   
     /*
     SDL2pp::Texture jazzStand(renderer, DATA_PATH JAZZSTAND);
     textures["JazzStand"] =
@@ -76,6 +90,7 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
 std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
     const std::string& textureName) {
     try {
+        //std::cout << "En el manager: " << textureName << "\n";
         return textures.at(textureName);
     } catch (const std::out_of_range& e) {
         std::cerr << "ACA ESTAB EL ERROR: " << e.what() << std::endl;

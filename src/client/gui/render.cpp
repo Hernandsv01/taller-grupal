@@ -17,7 +17,7 @@
 #define WINDOW_TITLE "SDL2pp demo"
 
 #ifndef DATA_PATH
-#define DATA_PATH "src/client/gui/data"
+#define DATA_PATH "src/client/gui/data/"
 #endif
 
 // Render::Render(int width, int height)
@@ -33,7 +33,7 @@
 Render::Render(Window& window, const int& id)
     : window(window),
       renderer(window, -1, SDL_RENDERER_ACCELERATED),
-      mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
+      mapsTexture(renderer, DATA_PATH "map_diamond.png"),
       mainPlayerID(id),
       xCenter(window.GetWidth() / 2),
       yCenter(window.GetHeight() / 2),
