@@ -91,11 +91,11 @@ class Dynamic_entity : public RigidBox {
         int y_min = static_cast<int>(std::floor(this->y_min()));
         int y_max = static_cast<int>(std::floor(this->y_max()));
 
-        std::cout << "x_min: " << x_min << " x_max: " << x_max
-                  << " y_min: " << y_min << " y_max: " << y_max << "\n";
-
         for (int x = x_min; x <= x_max; ++x) {
             for (int y = y_min; y <= y_max; ++y) {
+                if (x < 0 || x >= map.get_map_size().x || y < 0 || y >= map.get_map_size().y) {
+                    return true;
+                }
                 Collision collision = map.get_block_collision(
                     {static_cast<uint8_t>(x), static_cast<uint8_t>(y)});
                 if (collision != Collision::Air) {

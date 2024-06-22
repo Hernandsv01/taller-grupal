@@ -10,13 +10,13 @@
 #include "Pickup.h"
 #include "constants/pickup_type.h"
 #include "Ammo_data.h"
+#include "../loader/config.h"
 
-#define PLAYER_HEIGHT 1
+#define PLAYER_HEIGHT 2
 #define PLAYER_WIDTH 1
-#define PLAYER_HEALTH 100
 #define PLAYER_INITIAL_X_VEL 0
 #define PLAYER_INITIAL_Y_VEL 0
-#define GRAVITY +0.05
+#define GRAVITY 0.05
 #define SECONDS_UNTIL_RESPAWN 3
 #define SECONDS_IMMUNE_AFTER_DAMAGE 2
 
@@ -34,8 +34,8 @@ class Player : public Dynamic_entity {
     std::chrono::steady_clock::time_point last_shot_time;
     Update::EntitySubtype type;
 public:
-    Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, PLAYER_HEALTH, true, true),
+    Player(int id, float x_spawn, float y_spawn)
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true, true),
           points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), last_shot_time(std::chrono::steady_clock::time_point(), type(type)) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
@@ -101,10 +101,6 @@ public:
         }
 
         if (x_pos != old_x || y_pos != old_y) {
-            std::cout << "Player " << id << " moved to (" << x_pos << ", "
-                      << y_pos << ")" << std::endl
-                      << std::endl;
-
             Update::Update_new update = Update::Update_new::create_position(
                 static_cast<uint16_t>(id), x_pos, y_pos);
             updates.push_back(update);
@@ -135,12 +131,21 @@ public:
                         break;
                     case LIGHT_AMMO:
                         ammo[enums_value_update::LIGHT] += pickup->getValue();
+                        if (ammo[enums_value_update::LIGHT] > ammo_config[enums_value_update::LIGHT].get_max_ammo()) {
+                            ammo[enums_value_update::LIGHT] = ammo_config[enums_value_update::LIGHT].get_max_ammo();
+                        }
                         break;
                     case HEAVY_AMMO:
                         ammo[enums_value_update::HEAVY] += pickup->getValue();
+                        if (ammo[enums_value_update::HEAVY] > ammo_config[enums_value_update::HEAVY].get_max_ammo()) {
+                            ammo[enums_value_update::HEAVY] = ammo_config[enums_value_update::HEAVY].get_max_ammo();
+                        }
                         break;
                     case POWER_AMMO:
                         ammo[enums_value_update::POWER] += pickup->getValue();
+                        if (ammo[enums_value_update::HEAVY] > ammo_config[enums_value_update::HEAVY].get_max_ammo()) {
+                            ammo[enums_value_update::HEAVY] = ammo_config[enums_value_update::HEAVY].get_max_ammo();
+                        }
                         break;
                 }
                 updates.push_back(Update::Update_new::create_delete_entity(other->get_id()));
@@ -155,14 +160,14 @@ public:
         std::vector<Update::Update_new> action_updates;
         switch (action) {
             case JUMP:
-                setYSpeed(-3);
+                setYSpeed(Config::get_player_jump() * (-1));
                 break;
             case RUN_LEFT:
-                setXSpeed(-1);
+                setXSpeed(Config::get_player_speed() * (-1));
                 break;
 
             case RUN_RIGHT:
-                setXSpeed(1);
+                setXSpeed(Config::get_player_speed());
                 break;
 
             case SHOOT:
@@ -251,7 +256,7 @@ public:
         x_pos = spawn.x;
         y_pos = spawn.y;
 
-        health = PLAYER_HEALTH;
+        health = Config::get_player_max_health();
         is_active = true;
     }
 
