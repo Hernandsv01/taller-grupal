@@ -2,6 +2,7 @@
 #define AMMO_DATA_H
 
 #include "Update.h"
+#include "../loader/config.h"
 
 class Ammo {
 private:
@@ -14,10 +15,10 @@ private:
 public:
     Ammo() {}
     // TODO: Usar valores de la config
-    static Ammo create_normal() { return {enums_value_update::NORMAL, 0, 0, 0}; }
-    static Ammo create_light() { return {enums_value_update::LIGHT, 0, 0, 0}; }
-    static Ammo create_heavy() { return {enums_value_update::HEAVY, 0, 0, 0}; }
-    static Ammo create_power() { return {enums_value_update::POWER, 0, 0, 0}; }
+    static Ammo create_normal() { return {enums_value_update::NORMAL, Config::get_normal_bpm(), Config::get_normal_speed(), Config::get_normal_damage()}; }
+    static Ammo create_light() { return {enums_value_update::LIGHT, Config::get_light_bpm(), Config::get_light_speed(), Config::get_light_damage()}; }
+    static Ammo create_heavy() { return {enums_value_update::LIGHT, Config::get_heavy_bpm(), Config::get_heavy_speed(), Config::get_heavy_damage()}; }
+    static Ammo create_power() { return {enums_value_update::LIGHT, Config::get_power_bpm(), Config::get_power_speed(), Config::get_power_damage()}; }
 
     enums_value_update::Ammo_type get_type() const { return type; }
     int get_rate_of_fire() const { return rate_of_fire; }
