@@ -18,7 +18,7 @@ public:
     };
                                                                                      // ...is_damageable, damage_on_contact, is_item,health, is_active,looking_right                        
     std::vector<Update::Update_new> tick(const Map& map, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) override {}
-    Update::EntitySubtype getType() { return type; }
+    Update::EntitySubtype get_type() { return type; }
     int getValue() { return value; }
 };
 

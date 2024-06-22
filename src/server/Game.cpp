@@ -100,11 +100,10 @@ void Game::send_initial_values() {
    
     Player player(next_id++, rand_spawn.x, rand_spawn.y, player_subtypes[rand() % player_subtypes.size()]);
     entity_pool.push_back(std::make_unique<Player>(player));
-    // 
+
     creation_updates.push_back(Update::Update_new::create_create_entity(
         player.get_id(),
         Update::EntityType::Player,
-        //Update::EntitySubtype::Jazz //deberia ser random entre los 3 tipos. 
         player.get_player_subtype()
     ));
 
@@ -138,7 +137,7 @@ void Game::send_initial_values() {
     for (const auto& pickup_spawn : map.get_items_spawns()) {
         Update::EntitySubtype pickup_subtype = pickup_subtypes[rand() % pickup_subtypes.size()];
         //int value = Config::get_pickup_coin;
-        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, (pickup_subtype), value);
+        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, (pickup_subtype));
         entity_pool.push_back(std::make_unique<Pickup>(pickup));
 
         creation_updates.push_back(Update::Update_new::create_create_entity(
@@ -154,7 +153,6 @@ void Game::send_initial_values() {
         ));
     }
 
-
     sendAll(creation_updates);
     sendAll(general_updates);
 }
@@ -162,25 +160,31 @@ void Game::send_initial_values() {
 
 std::vector<Update::Update_new> Game::get_full_game_updates(){
     std::vector<Update::Update_new> updates;
-    //recorre la entity pool 
-    //crea un update]
     for(const auto& entity: entity_pool){
         uint16_t entity_id = entity->get_id();
         Update::EntityType entity_type;
         Update::EntitySubtype entity_subtype;
         if (auto player = dynamic_cast<Player*>(entity.get())) {
             entity_type = Update::EntityType::Player;
-            //entity_subtype ??? 
+            entity_subtype = player->get_player_subtype();
         } else if (auto pickup = dynamic_cast<Pickup*>(entity.get())) {
             entity_type = Update::EntityType::Item;
-            entity_subtype = pickup.get
-        } else if (auto enemy = dynamic_cast<Enemy*>(entity.get())) {
-            entity_type = Update::EntityType::Enemy;
-            entity_subtype = enemy->get_subtype(); 
+            entity_subtype = pickup->get_type();
+            //FALTA ENEMY
+        // } else if (auto enemy = dynamic_cast<Enemy*>(entity.get())) {
+        //     entity_type = Update::EntityType::Enemy;
+        //     entity_subtype = enemy->get_subtype(); 
         }   else {
             continue;
         }
 
+        updates.push_back(Update::Update_new::create_create_entity(
+            entity_id,
+            entity_type,
+            entity_subtype
+        ));
+
+    
     }
     return updates;
 }
