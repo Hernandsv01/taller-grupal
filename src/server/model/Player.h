@@ -34,9 +34,9 @@ class Player : public Dynamic_entity {
     std::chrono::steady_clock::time_point last_shot_time;
     Update::EntitySubtype type;
 public:
-    Player(int id, float x_spawn, float y_spawn)
+    Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true, true),
-          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), last_shot_time(std::chrono::steady_clock::time_point(), type(type)) {
+          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), last_shot_time(std::chrono::steady_clock::time_point()), type(type){
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
