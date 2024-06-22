@@ -8,7 +8,7 @@ private:
     Pickup_type type;
     int value;
 public:
-    std::vector<Update::Update_new> tick(const Map& map, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) override {}
+    std::vector<Update::Update_new> tick(const Map& map, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) override {}
     Pickup_type getType() { return type; }
     int getValue() { return value; }
 };
