@@ -11,12 +11,12 @@
 #include "constants/pickup_type.h"
 #include "Ammo_data.h"
 
-#define PLAYER_HEIGHT 1
+#define PLAYER_HEIGHT 2
 #define PLAYER_WIDTH 1
 #define PLAYER_HEALTH 100
 #define PLAYER_INITIAL_X_VEL 0
 #define PLAYER_INITIAL_Y_VEL 0
-#define GRAVITY +0.05
+#define GRAVITY 0.05
 #define SECONDS_UNTIL_RESPAWN 3
 #define SECONDS_IMMUNE_AFTER_DAMAGE 2
 
@@ -100,10 +100,6 @@ public:
         }
 
         if (x_pos != old_x || y_pos != old_y) {
-            std::cout << "Player " << id << " moved to (" << x_pos << ", "
-                      << y_pos << ")" << std::endl
-                      << std::endl;
-
             Update::Update_new update = Update::Update_new::create_position(
                 static_cast<uint16_t>(id), x_pos, y_pos);
             updates.push_back(update);
