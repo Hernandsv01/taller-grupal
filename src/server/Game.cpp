@@ -163,14 +163,16 @@ std::vector<Update::Update_new> Game::get_full_game_updates(){
         uint16_t entity_id = entity->get_id();
         Update::EntityType entity_type;
         Update::EntitySubtype entity_subtype;
-        Coordinate positiion;
+        Coordinate position;
         if (auto player = dynamic_cast<Player*>(entity.get())) {
             entity_type = Update::EntityType::Player;
             entity_subtype = player->get_player_subtype();
-            position
+            //deberia acceder a la posicion en x y en y de la rigid box 
+
         } else if (auto pickup = dynamic_cast<Pickup*>(entity.get())) {
             entity_type = Update::EntityType::Item;
             entity_subtype = pickup->get_subtype();
+            //deberia acceder a la posicion
             //FALTA ENEMY
         // } else if (auto enemy = dynamic_cast<Enemy*>(entity.get())) {
         //     entity_type = Update::EntityType::Enemy;
@@ -184,8 +186,12 @@ std::vector<Update::Update_new> Game::get_full_game_updates(){
             entity_type,
             entity_subtype
         ));
-
-       
+        
+        updates.push_back(Update::Update_new::create_position(
+            entity_id, 
+            position.x,
+            position.y
+        ));
     
     }
     return updates;
