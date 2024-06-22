@@ -45,6 +45,8 @@ class GamePoolMonitor {
         games.insert({id, std::make_unique<Game>(name, map)});
         games[id]->set_id(id);
 
+        games.at(id)->start();
+
         return id;
     }
 

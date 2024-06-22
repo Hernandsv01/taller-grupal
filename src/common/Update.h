@@ -117,6 +117,14 @@ class Update_new {
     Update::EntityTypeAndSubtype get_entity_type_and_subtype() const;
 
     Update::PositionFloat get_position() const;
+
+    Update::EntityType getEntityType();
+
+    Update::EntitySubtype getEntitySubType();
+
+    int getPositionX();
+
+    int getPositionY();
 };
 }  // namespace Update
 

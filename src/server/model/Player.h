@@ -1,29 +1,29 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "../../common/Update.h"
-#include "Dynamic_entity.h"
-#include "Pickup.h"
-#include "Bullet.h"
-#include "constants/pickup_type.h"
-#include "Ammo_data.h"
-
 #include <cmath>
 #include <map>
 
-#define PLAYER_HEIGHT 5
-#define PLAYER_WIDTH 5
+#include "../../common/Update.h"
+#include "Bullet.h"
+#include "Dynamic_entity.h"
+#include "Pickup.h"
+#include "constants/pickup_type.h"
+#include "Ammo_data.h"
+
+#define PLAYER_HEIGHT 1
+#define PLAYER_WIDTH 1
 #define PLAYER_HEALTH 100
 #define PLAYER_INITIAL_X_VEL 0
 #define PLAYER_INITIAL_Y_VEL 0
-#define GRAVITY 5
+#define GRAVITY +0.05
 #define SECONDS_UNTIL_RESPAWN 3
 #define SECONDS_IMMUNE_AFTER_DAMAGE 2
 
 #define MILLISECONDS_IN_A_MINUTE 60000
 
 class Player : public Dynamic_entity {
-private:
+   private:
     int points;
     std::map<enums_value_update::Ammo_type, int> ammo;
     enums_value_update::Ammo_type current_ammo_type;
@@ -56,12 +56,11 @@ public:
         std::vector<Update::Update_new> updates;
 
         if (!is_active) {
-            if (std::chrono::steady_clock::now() >= inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
+            if (std::chrono::steady_clock::now() >=
+                inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
                 revive(map.get_player_spawns());
                 updates.push_back(Update::Update_new::create_position(
-                        static_cast<uint16_t>(id),
-                        x_pos,
-                        y_pos));
+                    static_cast<uint16_t>(id), x_pos, y_pos));
             }
             return updates;
         }
@@ -101,10 +100,12 @@ public:
         }
 
         if (x_pos != old_x || y_pos != old_y) {
+            std::cout << "Player " << id << " moved to (" << x_pos << ", "
+                      << y_pos << ")" << std::endl
+                      << std::endl;
+
             Update::Update_new update = Update::Update_new::create_position(
-                    static_cast<uint16_t>(id),
-                    x_pos,
-                    y_pos);
+                static_cast<uint16_t>(id), x_pos, y_pos);
             updates.push_back(update);
         }
 
@@ -120,16 +121,16 @@ public:
                     case COIN:
                         points += pickup->getValue();
                         updates.push_back(Update::Update_new::create_value(
-                                static_cast<uint16_t>(id),
-                                Update::UpdateType::Score,
-                                static_cast<uint8_t>(points)));
+                            static_cast<uint16_t>(id),
+                            Update::UpdateType::Score,
+                            static_cast<uint8_t>(points)));
                         break;
                     case CARROT:
                         health += pickup->getValue();
                         updates.push_back(Update::Update_new::create_value(
-                                static_cast<uint16_t>(id),
-                                Update::UpdateType::Health,
-                                static_cast<uint8_t>(health)));
+                            static_cast<uint16_t>(id),
+                            Update::UpdateType::Health,
+                            static_cast<uint8_t>(health)));
                         break;
                     case LIGHT_AMMO:
                         ammo[enums_value_update::LIGHT] += pickup->getValue();
@@ -153,14 +154,14 @@ public:
         std::vector<Update::Update_new> action_updates;
         switch (action) {
             case JUMP:
-                setYSpeed(10);
+                setYSpeed(-3);
                 break;
             case RUN_LEFT:
-                setXSpeed(-3);
+                setXSpeed(-1);
                 break;
 
             case RUN_RIGHT:
-                setXSpeed(3);
+                setXSpeed(1);
                 break;
 
             case SHOOT:

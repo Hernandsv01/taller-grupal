@@ -235,3 +235,20 @@ PositionFloat Update_new::get_position() const {
     }
     return PositionFloat{x, y};
 }
+
+Update::EntityType Update_new::getEntityType() {
+    return entity_type_value;
+}
+
+Update::EntitySubtype Update_new::getEntitySubType() {
+    return entity_subtype_value;
+}
+
+int Update_new::getPositionX() {
+    return x;
+}
+
+int Update_new::getPositionY() {
+    return y;
+}
+
