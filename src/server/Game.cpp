@@ -109,14 +109,14 @@ void Game::send_initial_values() {
     //player
     Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
    
-    Player player(next_id++, rand_spawn.x, rand_spawn.y);
+    Player player(next_id++, rand_spawn.x, rand_spawn.y, player_subtypes[rand() % player_subtypes.size()]);
     entity_pool.push_back(std::make_unique<Player>(player));
     // 
     creation_updates.push_back(Update::Update_new::create_create_entity(
         player.get_id(),
         Update::EntityType::Player,
         //Update::EntitySubtype::Jazz //deberia ser random entre los 3 tipos. 
-        player_subtypes[rand() % player_subtypes.size()] 
+        player.get_player_subtype()
     ));
 
     general_updates.push_back(Update::Update_new::create_position(
@@ -130,7 +130,7 @@ void Game::send_initial_values() {
     Coordinate rand_enemy_spawn = map.get_enemy_spawns()[rand() % map.get_enemy_spawns().size()];
     /*
     Falta enemigos: 
-    //se deberia chequear al cantidad de enemigos. 
+    //se deberia chequear al cantidad de enemigos. Config::get_enemy_count...
     Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y);
     creation_updates.push_back(Update::Update_new::create_create_entity(
         enemy.get_id(),
@@ -148,9 +148,8 @@ void Game::send_initial_values() {
     //pickups
     for (const auto& pickup_spawn : map.get_items_spawns()) {
         Update::EntitySubtype pickup_subtype = pickup_subtypes[rand() % pickup_subtypes.size()];
-        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, 
-                      static_cast<Pickup_type>(pickup_subtype), 
-                      pickup_subtype);
+        //int value = Config::get_pickup_coin;
+        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, (pickup_subtype), value);
         entity_pool.push_back(std::make_unique<Pickup>(pickup));
 
         creation_updates.push_back(Update::Update_new::create_create_entity(
@@ -175,13 +174,67 @@ void Game::send_initial_values() {
 std::vector<Update::Update_new> Game::get_full_game_updates(){
     std::vector<Update::Update_new> updates;
     //recorre la entity pool 
-    //crea un update
+    //crea un update]
+    for(const auto& entity: entity_pool){
+        uint16_t entity_id = entity->get_id();
+        Update::EntityType entity_type;
+        Update::EntitySubtype entity_subtype;
+        if (auto player = dynamic_cast<Player*>(entity.get())) {
+            entity_type = Update::EntityType::Player;
+            //entity_subtype ??? 
+        } else if (auto pickup = dynamic_cast<Pickup*>(entity.get())) {
+            entity_type = Update::EntityType::Item;
+            entity_subtype = pickup.get
+        } else if (auto enemy = dynamic_cast<Enemy*>(entity.get())) {
+            entity_type = Update::EntityType::Enemy;
+            entity_subtype = enemy->get_subtype(); 
+        }   else {
+            continue;
+        }
+
+    }
     return updates;
 }
 
+//Otra opcion pero optimizada
+/*
+std::vector<Update::Update_new> Game::get_full_game_updates() {
+    std::vector<Update::Update_new> updates;
+
+    for (const auto& entity : entity_pool) {
+        uint16_t entity_id = entity->get_id();
+        Update::EntityType entity_type = entity->get_entity_type();
+        Update::EntitySubtype entity_subtype = entity->get_entity_subtype();
+        Coordinate position = entity->get_position();
+
+        // Create creation update
+        updates.push_back(Update::Update_new::create_create_entity(
+            entity_id,
+            entity_type,
+            entity_subtype
+        ));
+
+        // Create position update
+        updates.push_back(Update::Update_new::create_position(
+            entity_id,
+            position.x,
+            position.y
+        ));
+    }
+
+    return updates;
+}
+*/
+
+
 uint16_t Game::add_player() {
     Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
-    Player player(next_id++, rand_spawn.x, rand_spawn.y);
+    std::array<Update::EntitySubtype, 3> player_subtypes = {
+        Update::EntitySubtype::Jazz,
+        Update::EntitySubtype::Spaz,
+        Update::EntitySubtype::Lori
+    };
+    Player player(next_id++, rand_spawn.x, rand_spawn.y, );
     entity_pool.push_back(std::make_unique<Player>(player));
 
     return player.get_id();
