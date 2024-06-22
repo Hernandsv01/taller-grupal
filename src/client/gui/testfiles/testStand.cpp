@@ -27,7 +27,6 @@ int main() {
     mapInfo.underPosition = positionUnder;
 
     // Jugador principal
-
     PlayerState mainPlayer;
     mainPlayer.characterType = Jazz;
     mainPlayer.healthPoints = 10;
@@ -36,6 +35,7 @@ int main() {
     mainPlayer.position = Position{pjPosX, pjPosY};
     mainPlayer.direction = Direction::Right;
 
+    
     // State_enum del juego
     GameStateRenderer gameCondition;
     gameCondition.mainPlayer = mainPlayer;
