@@ -155,7 +155,9 @@ void Game::send_initial_values() {
 }
 
 uint16_t Game::add_player() {
+    //Cuando se suma un jugador a una partida, es random? 
     //Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
+    //Player player(next_id++, rand_spawn.x, rand_spawn.y);
     Player player(next_id++, 4, 4);
     entity_pool.push_back(std::make_unique<Player>(player));
     return player.get_id();
