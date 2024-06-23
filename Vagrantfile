@@ -56,13 +56,13 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
+  config.vm.provider "virtualbox" do |vb|
   #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
+    vb.gui = true
   #
   #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
+    vb.memory = "1024"
+  end
   #
   # View the documentation for the provider you are using for more
   # information on available options.
@@ -73,26 +73,36 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "shell", inline: <<-SHELL
   #   apt-get update
   #   apt-get install -y apache2
+
+  #installer_script = "install.sh" 
+
+  #config.vm.provision "shell", path:installer_script
+
   # SHELL
   config.vm.provision "shell", inline: <<-SHELL
-    sudo apt-get update
+     sudo apt-get update
 
-    # Instalo herramientas y librerias
-    sudo apt-get install -y git cmake g++ make
+    sudo apt-get install -y xubuntu-desktop
+    sudo apt-get install -y git g++ make
+    
+    sudo snap install cmake --classic
     sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libsdl2-gfx-dev
     sudo apt-get install -y qtbase5-dev qt5-qmake
     sudo apt-get install libyaml-cpp-dev
 
-    # Clono el repositorio
-    # git clone https://github.com/Hernandsv01/taller-grupal.git /home/ubuntu/taller-grupal
+  echo "Clonando el repo" 
+  #   # Clono el repositorio
+    git clone https://github.com/Hernandsv01/taller-grupal.git /home/ubuntu/taller-grupal
 
-    # Compilo el proyecto 
-    # cd /home/ubuntu/taller-grupal
-    # cmake .
-    # make
+    # Instalo herramientas y librerias
 
-    ## Instalacion del juego 
+  #   # Compilo el proyecto 
+     cd /home/ubuntu/taller-grupal
+     cmake .
+     make
+
+  #   ## Instalacion del juego 
 
     
-  SHELL
+   SHELL
 end
