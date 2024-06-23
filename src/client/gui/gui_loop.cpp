@@ -134,8 +134,10 @@ void GuiLoop::updateGameState() {
                 {Update::EntityType::Enemy, Update::EntitySubtype::Enemy3},
                 {Update::EntityType::Bullet, Update::EntitySubtype::No_subtype},
                 {Update::EntityType::Item, Update::EntitySubtype::Coin},
-                {Update::EntityType::Item, Update::EntitySubtype::Weapon},
-            };
+                {Update::EntityType::Item, Update::EntitySubtype::Carrot},
+                {Update::EntityType::Item, Update::EntitySubtype::Light},
+                {Update::EntityType::Item, Update::EntitySubtype::Power},
+                {Update::EntityType::Item, Update::EntitySubtype::Heavy}};
         int id = 100;
         int position = 10;
         for (auto entity : entities) {

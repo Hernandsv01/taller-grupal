@@ -44,18 +44,23 @@ enum UpdateType : uint8_t {
     BulletsRemaining = 10  // value
 };
 
+// El subtypo de bullet no es considerado. Para el cliente todas las balas son
+// iguales
 enum EntityType : uint8_t { Player = 0, Bullet = 1, Enemy = 2, Item = 3 };
 
 enum EntitySubtype : uint8_t {
     No_subtype = 0,
-    Jazz = 1,
-    Spaz = 2,
-    Lori = 3,
-    Enemy1 = 4,
-    Enemy2 = 5,
-    Enemy3 = 6,
-    Coin = 7,
-    Weapon = 8
+    Jazz = 1,    // type player
+    Spaz = 2,    // type player
+    Lori = 3,    // type player
+    Enemy1 = 4,  // type enemy
+    Enemy2 = 5,  // type enemy
+    Enemy3 = 6,  // type enemy
+    Coin = 7,    // type item
+    Carrot = 8,  // type item
+    Light = 9,   // type item
+    Heavy = 10,  // type item
+    Power = 11   // type item
 };
 
 struct EntityTypeAndSubtype {

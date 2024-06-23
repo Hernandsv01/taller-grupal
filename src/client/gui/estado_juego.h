@@ -397,8 +397,8 @@ class UpdatableGameState {
                 switch (entity_subtype_value) {
                     case Update::Coin:
                         return static_cast<uint8_t>(ItemType::Coin);
-                    case Update::Weapon:
-                        return static_cast<uint8_t>(ItemType::Weapon);
+                        // case Update::Carrot:
+                        //     return static_cast<uint8_t>(ItemType::Carrot);
                 }
 
             default:

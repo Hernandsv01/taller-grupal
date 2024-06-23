@@ -76,7 +76,11 @@ std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
 
 SDL2pp::Texture* TextureManager::getEntityTexture(
     const std::string& textureName) {
-    return entity_textures[textureName];
+    try {
+        return entity_textures[textureName];
+    } catch (const std::out_of_range& e) {
+        return entity_textures["placeholder"];
+    }
 }
 
 TextureManager::~TextureManager() {
