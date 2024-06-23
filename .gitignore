@@ -55,4 +55,5 @@ cmake_install.cmake
 Makefile
 
 map/
+!src/common/map/
 
