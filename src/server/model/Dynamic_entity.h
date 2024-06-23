@@ -41,8 +41,8 @@ class Dynamic_entity : public RigidBox {
                    float vel_x, float vel_y, float acc_y, bool is_damageable,
                    int damage_on_contact, bool is_item, int health,
                    bool is_active, bool looking_right)
-        : id(id),
-          RigidBox(pos_x, pos_y, width, height),
+        :  RigidBox(pos_x, pos_y, width, height),
+          id(id),
           vel_x(vel_x),
           vel_y(vel_y),
           acc_y(acc_y),
@@ -55,7 +55,7 @@ class Dynamic_entity : public RigidBox {
           inactive_time(std::chrono::steady_clock::time_point()),
           looking_right(looking_right){};
 
-    ~Dynamic_entity(){};
+    ~Dynamic_entity() = default;
 
     virtual std::vector<Update::Update_new> tick(
         const Map& map,

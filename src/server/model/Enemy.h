@@ -6,18 +6,17 @@
 #define ENEMY_WIDTH 1
 #define ENEMY_HEIGHT 2
 #define ENEMY_MAX_MOVEMENT_RANGE 50
-#define GRAVITY 0.05
 #define SECONDS_UNTIL_RESPAWN 3
 
 class Enemy : public Dynamic_entity {
 private:
     int movement_range;
+    Update::EntitySubtype subtype;
 public:
-    Enemy(int id, float x_spawn, float y_spawn) : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
+    Enemy(int id, float x_spawn, float y_spawn,Update::EntitySubtype subtype ) : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
                                                                  Config::get_crawler_speed(),
                                                                  0, GRAVITY, true, Config::get_crawler_damage(), false,
-                                                                 Config::get_crawler_life(), true, true),
-                                                  movement_range(ENEMY_MAX_MOVEMENT_RANGE) {}
+                                                                 Config::get_crawler_life(), true, true), movement_range(ENEMY_MAX_MOVEMENT_RANGE), subtype(subtype) {}
     std::vector<Update::Update_new> tick(const Map& map,
                                          std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) override {
         std::vector<Update::Update_new> updates;
@@ -99,6 +98,8 @@ public:
         is_active = true;
         is_damageable = true;
     }
+
+    Update::EntitySubtype get_subtype(){ return subtype;}
 };
 
 #endif //ENEMY_H

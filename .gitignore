@@ -30,18 +30,18 @@
 *.exe
 *.out
 *.app
-client
-!client/
-server
-!server/
-testsdl
-lobby_client
-!lobby_client/
-editor_niveles
-!editor_niveles/
-moc_server
-map
-!map/
+# client
+# !client/
+# server
+# !server/
+# testsdl
+# lobby_client
+# !lobby_client/
+# editor_niveles
+# !editor_niveles/
+# moc_server
+# map
+# !map/
 
 # Idea
 .idea/

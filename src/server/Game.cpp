@@ -118,12 +118,12 @@ void Game::send_initial_values() {
     //enemies
     Coordinate rand_enemy_spawn = map.get_enemy_spawns()[rand() % map.get_enemy_spawns().size()];
     //se deberia chequear al cantidad de enemigos. Config::get_enemy_count...
-    Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y);
+    Update::EntitySubtype enemy_subtype = enemy_subtypes[rand() % enemy_subtypes.size()];
+    Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y, enemy_subtype);
     creation_updates.push_back(Update::Update_new::create_create_entity(
         enemy.get_id(),
-        Update::EntityType::Enemy,
-        player_subtypes[rand() % player_subtypes.size()]
-    
+        Update::EntityType::Enemy, 
+        enemy_subtype
     ));
     general_updates.push_back(Update::Update_new::create_position(
         enemy.get_id(), 
@@ -135,7 +135,8 @@ void Game::send_initial_values() {
     //pickups
     for (const auto& pickup_spawn : map.get_items_spawns()) {
         Update::EntitySubtype pickup_subtype = pickup_subtypes[rand() % pickup_subtypes.size()];
-        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, (pickup_subtype));
+        Pickup_type type = static_cast<Pickup_type>(pickup_subtype);
+        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, type, pickup_subtype);
         entity_pool.push_back(std::make_unique<Pickup>(pickup));
 
         creation_updates.push_back(Update::Update_new::create_create_entity(
@@ -176,8 +177,7 @@ std::vector<Update::Update_new> Game::get_full_game_updates(){
             position_y = pickup->getYPos();
         } else if (auto enemy = dynamic_cast<Enemy*>(entity.get())) {
             entity_type = Update::EntityType::Enemy;
-
-            //entity_subtype = enemy->get_subtype(); 
+            entity_subtype = enemy->get_subtype(); 
             position_x = enemy->getXPos();
            position_y = enemy->getYPos();
         }   else {

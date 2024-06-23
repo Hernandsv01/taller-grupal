@@ -8,11 +8,14 @@
 
 GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
     : Thread("GuiLoop cliente"),
-      currentTick(0),
+      clock(),
       windowForRender(window),
-      map(Map::fromYaml(map_name)),
+      render(nullptr),
+      gameState(),  
+    // updatableGameState(?),
       mainId(player_id),
-      gameState(){
+      currentTick(0),
+      map(Map::fromYaml(map_name)){
           // Harcodeo un player dummy. En la version final del juego, esto lo
           // recibiría del servidor.
       };

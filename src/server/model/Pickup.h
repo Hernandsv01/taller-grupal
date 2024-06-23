@@ -4,10 +4,11 @@
 #include "./constants/pickup_type.h"
 #include "./loader/config.h"
 
-#define PICKUP_W 1
-#define PICKUP_H 1
+#define PICKUP_WIDTH 1
+#define PICKUP_HEIGHT 1
 #define PICKUP_VEL 0 
-#define GRAVITY 0
+
+
 
 class Pickup : public Dynamic_entity {
 private:
@@ -15,8 +16,8 @@ private:
     Pickup_type type; 
     int value;
 public:
-    Pickup(int id, float x_spawn, float y_spawn, Update::EntitySubtype subtype):  subtype(subtype), 
-    Dynamic_entity(id, x_spawn, y_spawn, PICKUP_W, PICKUP_H, PICKUP_VEL, PICKUP_VEL, GRAVITY, false, 0, true, 0, true, true){
+    Pickup(int id, float x_spawn, float y_spawn, Pickup_type type, Update::EntitySubtype subtype):  Dynamic_entity(id, x_spawn, y_spawn, PICKUP_WIDTH, PICKUP_HEIGHT, PICKUP_VEL, PICKUP_VEL, 0, false, 0, true, 0, true, true), 
+    subtype(subtype), type(type){
         
         switch (subtype) {
         case Update::EntitySubtype::Coin:
@@ -39,7 +40,7 @@ public:
         }
     };
                                                                                      // ...is_damageable, damage_on_contact, is_item,health, is_active,looking_right                        
-    std::vector<Update::Update_new> tick(const Map& map, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) override {}
+    std::vector<Update::Update_new> tick(const Map& map, std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) override { return {}; }
     Update::EntitySubtype get_subtype() { return subtype; }
     int getValue() { return value; }
     Pickup_type getType(){return type;}
