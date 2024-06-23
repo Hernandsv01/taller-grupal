@@ -1,41 +1,38 @@
 #ifndef PLAYABLE_CHARACTER
 #define PLAYABLE_CHARACTER
 
+#include <SDL2pp/SDL2pp.hh>
 #include <memory>
 #include <string>
+
 #include "entityGame.h"
-#include <SDL2pp/SDL2pp.hh>
 
 class PlayableCharacter : public Entity2 {
-    private:
-        std::string characterType;
-        bool isRight;
-        std::string state;
-        int Score;
-        int health;
+   private:
+    std::string characterType;
+    std::string state;
+    int Score;
+    int health;
 
-        std::shared_ptr<SDL2pp::Texture> stateTexture;
-        int actualSpriteNumber;
-        int spriteSize;
-        int spriteLenght;
-        
-    public:
-        PlayableCharacter(const std::string& type);
+    std::shared_ptr<SDL2pp::Texture> stateTexture;
+    int spriteSize;
+    int spriteLenght;
 
-        virtual void renderize(SDL2pp::Renderer &renderer,
-                            const int &xRef, const int &yRef,
-                            const int &xCenter, const int &yCenter) override;
+   public:
+    PlayableCharacter(const std::string &type);
 
-        virtual void renderMainPj(SDL2pp::Renderer &renderer,
-                            const int &xCenter, const int &yCenter);
+    virtual void renderize(SDL2pp::Renderer &renderer, const int &xRef,
+                           const int &yRef, const int &xCenter,
+                           const int &yCenter) override;
 
-        void updateHealth(const int &newHealthPoint);
+    virtual void renderMainPj(SDL2pp::Renderer &renderer, const int &xCenter,
+                              const int &yCenter);
 
-        void updateScore(const int &newScore);
+    void updateHealth(const int &newHealthPoint);
 
-        void updateState(const std::string &newState);
+    void updateScore(const int &newScore);
 
-        void updateDirection(bool &isFacingRight);
+    void updateState(const std::string &newState);
 };
 
 #endif
