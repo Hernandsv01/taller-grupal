@@ -1,5 +1,6 @@
 #include "textureManager.h"
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
@@ -8,23 +9,26 @@
 #endif
 
 #define WEAPON "Weapon"
+
+#define ENTITY_TEXTURE_PATH "src/textures/entities"
+
 #define EXTENSION ".png"
 #define INFTEXTURE "infinity"
 
 const std::vector<std::string> typeOfCharacter = {"Jazz"};
-const std::vector<std::string> typeOfState = {"Stand", "Run",       "Dash",
-                                              "Intox", "Intoxwalk", "Fall",
-                                              "Jump",  "Shot",      "Shotfall",
-                                              "Gethit", "Hud"};
+const std::vector<std::string> typeOfState = {
+    "Stand", "Run",  "Dash",     "Intox",  "Intoxwalk", "Fall",
+    "Jump",  "Shot", "Shotfall", "Gethit", "Hud"};
 
 const std::vector<std::string> typeOfWeapons = {"Default", "Rapid"};
 // "Gethit", "Roasted",
 // "Special", "Hud"};
 
-
 // Defino el mapa estatico (nombre: textura)
 std::map<std::string, std::shared_ptr<SDL2pp::Texture>>
     TextureManager::textures;
+
+std::map<std::string, SDL2pp::Texture*> TextureManager::entity_textures;
 
 void TextureManager::Init(SDL2pp::Renderer& renderer) {
     for (std::string character : typeOfCharacter) {
@@ -36,67 +40,67 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
                 std::make_shared<SDL2pp::Texture>(std::move(texture));
         }
     }
-    //Carga numeros
-    for (int i =0; i<10; i++) {
+    // Carga numeros
+    for (int i = 0; i < 10; i++) {
         std::string textureName = std::to_string(i);
-        SDL2pp::Texture texture(renderer,
-                                    DATA_PATH + textureName + EXTENSION);
+        SDL2pp::Texture texture(renderer, DATA_PATH + textureName + EXTENSION);
         textures[textureName] =
-                std::make_shared<SDL2pp::Texture>(std::move(texture));                           
+            std::make_shared<SDL2pp::Texture>(std::move(texture));
     }
-    //Carga armas
+    // Carga armas
     for (auto weapon : typeOfWeapons) {
         std::string textureName = WEAPON + weapon;
-        SDL2pp::Texture texture(renderer,
-                                    DATA_PATH + textureName + EXTENSION);
+        SDL2pp::Texture texture(renderer, DATA_PATH + textureName + EXTENSION);
         textures[textureName] =
-                std::make_shared<SDL2pp::Texture>(std::move(texture)); 
+            std::make_shared<SDL2pp::Texture>(std::move(texture));
     }
     std::string textureName = INFTEXTURE;
-    SDL2pp::Texture texture(renderer,
-                                DATA_PATH + textureName + EXTENSION);
+    SDL2pp::Texture texture(renderer, DATA_PATH + textureName + EXTENSION);
     textures[textureName] =
-            std::make_shared<SDL2pp::Texture>(std::move(texture)); 
-    /*
-    SDL2pp::Texture jazzStand(renderer, DATA_PATH JAZZSTAND);
-    textures["JazzStand"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzStand));
+        std::make_shared<SDL2pp::Texture>(std::move(texture));
 
-    SDL2pp::Texture jazzRun(renderer, DATA_PATH JAZZRUN);
-    textures["JazzRun"] = std::make_shared<SDL2pp::Texture>(std::move(jazzRun));
+    load_textures_from_path_into_map(renderer, ENTITY_TEXTURE_PATH,
+                                     entity_textures);
+}
 
-    SDL2pp::Texture jazzIntox(renderer, DATA_PATH JAZZINTOX);
-    textures["JazzIntox"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzIntox));
+void TextureManager::load_textures_from_path_into_map(
+    SDL2pp::Renderer& renderer, const std::string& path,
+    std::map<std::string, SDL2pp::Texture*>& map) {
+    for (const auto& texture_path :
+         std::filesystem::recursive_directory_iterator(path)) {
+        // This is the filename without extension.
+        std::string texture_id = texture_path.path().stem().string();
+        SDL2pp::Texture* texture =
+            new SDL2pp::Texture(renderer, texture_path.path().string());
 
-    SDL2pp::Texture jazzIntoxWalk(renderer, DATA_PATH JAZZINTOXWALK);
-    textures["JazzIntoxWalk"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzIntoxWalk));
-
-    SDL2pp::Texture jazzDash(renderer, DATA_PATH JAZZDASH);
-    textures["JazzDash"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzDash));
-    */
-
-    /*
-    SDL2pp::Texture jazzIntox(renderer, DATA_PATH JAZZINTOX);
-    textures["JazzIntox"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzIntox)); SDL2pp::Texture
-    jazzIntoxWalk(renderer, DATA_PATH JAZZINTOXWALK); textures["JazzIntoxWalk"]
-    = std::make_shared<SDL2pp::Texture>(std::move(jazzIntoxWalk));
-    SDL2pp::Texture jazzGetHit(renderer, DATA_PATH JAZZGETHIT);
-    textures["JazzGetHit"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzGetHit));
-    */
+        std::cout << "Created texture: " << texture_path.path().string()
+                  << " with id: " << texture_id << std::endl;
+        map[texture_id] = texture;
+    }
 }
 
 std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
     const std::string& textureName) {
     try {
-        //std::cout << "En el manager: " << textureName << "\n";
+        // std::cout << "En el manager: " << textureName << "\n";
         return textures.at(textureName);
     } catch (const std::out_of_range& e) {
         std::cerr << "ACA ESTAB EL ERROR: " << e.what() << std::endl;
         return nullptr;
+    }
+}
+
+SDL2pp::Texture* TextureManager::getEntityTexture(
+    const std::string& textureName) {
+    try {
+        return entity_textures[textureName];
+    } catch (const std::out_of_range& e) {
+        return entity_textures["placeholder"];
+    }
+}
+
+TextureManager::~TextureManager() {
+    for (auto& texture : entity_textures) {
+        delete texture.second;
     }
 }

@@ -238,9 +238,6 @@ class UpdatableGameState2 {
     void addEntity(const int &id, const int &type, const int &subType) {
         std::shared_ptr<Entity2> entity =
             EntityFactory::createEntity(type, subType);
-        // std::shared_ptr<Entity2> entity =
-        // std::make_unique<PlayableCharacter>("Jazz"); gameState.emplace(id,
-        // std::move(entity)); gameState[id] = std::move(entity);
 
         gameState.insert(std::make_pair(id, std::move(entity)));
     }
@@ -401,8 +398,8 @@ class UpdatableGameState {
                 switch (entity_subtype_value) {
                     case Update::Coin:
                         return static_cast<uint8_t>(ItemType::Coin);
-                    case Update::Weapon:
-                        return static_cast<uint8_t>(ItemType::Weapon);
+                        // case Update::Carrot:
+                        //     return static_cast<uint8_t>(ItemType::Carrot);
                 }
 
             default:
