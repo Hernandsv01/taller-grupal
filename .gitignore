@@ -40,6 +40,8 @@ lobby_client
 editor_niveles
 !editor_niveles/
 moc_server
+map
+!map/
 
 # Idea
 .idea/

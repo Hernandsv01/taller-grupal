@@ -11,6 +11,7 @@
 #include "clients/server_client.h"
 #include "model/Dynamic_entity.h"
 #include "model/Player.h"
+#include "model/Enemy.h"
 #include "model/constants/game_status.h"
 
 #define TPS 24
@@ -34,6 +35,7 @@ class Game : public Thread {
     explicit Game(std::string name, Map map);
     void run() override;
     void run_iteration();
+    void send_initial_values();
     void stop_custom() override;
     uint16_t add_player();
     void add_socket_for_player(uint16_t player_id, Socket socket);
@@ -43,6 +45,7 @@ class Game : public Thread {
     void set_id(uint8_t id);
     std::string get_match_name();
     std::string get_map_name();
+    std::vector<Update::Update_new> get_full_game_updates();
 
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;

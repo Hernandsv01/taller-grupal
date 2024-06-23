@@ -1,6 +1,7 @@
 #include "renderizadomapa.h"
 
 #include <QVector>
+#include <cmath>
 
 #define MAX_TILE_SIZE 120.0
 #define MIN_TILE_SIZE 10.0
