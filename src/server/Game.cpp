@@ -9,27 +9,19 @@ Game::Game(std::string name, Map map)
       status(Game_status::WAITING),
       map(std::move(map)),
       name(name),
-      next_id(0) {
-    // Hardcodeado para que se asocie un jugador al único cliente que se conecta
-
-    // entity_pool.push_back(std::make_unique<Player>(0, 0, 0));
-    // mapa
-}
+      next_id(0) {}
 
 // Agregado para poder parar el loop del servidor, antes de joinear este thread
 void Game::stop_custom() { status = Game_status::FINISHED; }
 
 void Game::run() {
     status = Game_status::RUNNING;
-    std::chrono::steady_clock::time_point current_tick_start =
-        std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point current_tick_start = std::chrono::steady_clock::now();
     int time_left = GAME_LENGTH_IN_SECONDS;
-    std::chrono::steady_clock::time_point next_second_update =
-        current_tick_start + std::chrono::seconds(1);
+    std::chrono::steady_clock::time_point next_second_update = current_tick_start + std::chrono::seconds(1);
 
     while (status == Game_status::RUNNING) {
-        std::chrono::steady_clock::time_point current_tick_end =
-            current_tick_start + TICK_DURATION;
+        std::chrono::steady_clock::time_point current_tick_end = current_tick_start + TICK_DURATION;
 
         run_iteration();
 
@@ -41,8 +33,7 @@ void Game::run() {
 
         if (time_left < 0) {
             status = Game_status::FINISHED;
-            sendAll(
-                {Update::Update_new::create_value(0, Update::MatchEnded, 0)});
+            sendAll({Update::Update_new::create_value(0, Update::MatchEnded, 0)});
         } else if (std::chrono::steady_clock::now() >= next_second_update) {
             time_left--;
             next_second_update += std::chrono::seconds(1);
