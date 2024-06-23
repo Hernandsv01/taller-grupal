@@ -16,6 +16,8 @@ int main(int argc, char* argv[]) {
     //version con game manager
     //no deberia tener el puerto hardcodeado!
     Socket socket(puerto);
+
+    Config::load_config("./config.yaml");
     
     GamePoolMonitor game_pool_monitor;
 

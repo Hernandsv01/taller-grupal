@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include <utility>
+#include <algorithm>
 
 Game::Game(std::string name, Map map)
     : Thread("Game server"),

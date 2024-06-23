@@ -2,6 +2,7 @@
 #define BULLET_H
 
 #include "Dynamic_entity.h"
+#include <algorithm>
 
 #define BULLET_HEIGHT 1
 #define BULLET_WIDTH 1
