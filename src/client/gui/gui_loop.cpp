@@ -123,6 +123,25 @@ void GuiLoop::updateGameState() {
     // aplicar de a una las updates en orden (las ultimas son las más
     // recientes).
     // Si no hay ninguna update, no se updatea nada.
+    static bool paso = false;
+
+    if (!paso) {
+        all_updates.emplace_back(Update::Update_new::create_create_entity(
+            100, Update::EntityType::Enemy, Update::EntitySubtype::Enemy1));
+        all_updates.emplace_back(Update::Update_new::create_create_entity(
+            101, Update::EntityType::Bullet, Update::EntitySubtype::Enemy1));
+        all_updates.emplace_back(Update::Update_new::create_create_entity(
+            102, Update::EntityType::Item, Update::EntitySubtype::Enemy1));
+
+        all_updates.emplace_back(
+            Update::Update_new::create_position(100, 20, 0));
+        all_updates.emplace_back(
+            Update::Update_new::create_position(101, 30, 0));
+        all_updates.emplace_back(
+            Update::Update_new::create_position(102, 40, 0));
+        paso = true;
+    }
+
     for (Update::Update_new update : all_updates) {
         gameState.handleUpdate(update, currentTick);
         // updatableGameState.handleUpdate(update, currentTick);

@@ -237,9 +237,6 @@ class UpdatableGameState2 {
     void addEntity(const int &id, const int &type, const int &subType) {
         std::shared_ptr<Entity2> entity =
             EntityFactory::createEntity(type, subType);
-        // std::shared_ptr<Entity2> entity =
-        // std::make_unique<PlayableCharacter>("Jazz"); gameState.emplace(id,
-        // std::move(entity)); gameState[id] = std::move(entity);
 
         gameState.insert(std::make_pair(id, std::move(entity)));
     }

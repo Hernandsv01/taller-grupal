@@ -47,15 +47,15 @@ enum UpdateType : uint8_t {
 enum EntityType : uint8_t { Player = 0, Bullet = 1, Enemy = 2, Item = 3 };
 
 enum EntitySubtype : uint8_t {
-    No_subtype,
-    Jazz,
-    Spaz,
-    Lori,
-    Enemy1,
-    Enemy2,
-    Enemy3,
-    Coin,
-    Weapon
+    No_subtype = 0,
+    Jazz = 1,
+    Spaz = 2,
+    Lori = 3,
+    Enemy1 = 4,
+    Enemy2 = 5,
+    Enemy3 = 6,
+    Coin = 7,
+    Weapon = 8
 };
 
 struct EntityTypeAndSubtype {
