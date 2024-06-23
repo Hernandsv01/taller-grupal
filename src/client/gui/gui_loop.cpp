@@ -4,25 +4,18 @@
 #include <thread>
 
 #include "../update_queue.h"
+#include "textureManager.h"
 
 GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
     : Thread("GuiLoop cliente"),
       currentTick(0),
       windowForRender(window),
-      mapName(map_name) {
-    // Harcodeo un player dummy. En la version final del juego, esto lo
-    // recibiría del servidor.
-    PlayerState player;
-    player.direction = enums_value_update::Direction::Right;
-    player.id = player_id;
-    player.position = Position{0, 0};
-    player.healthPoints = 10;
-    player.characterType = CharacterType::Jazz;
-    player.score = 0;
-    player.state = State(enums_value_update::Player_State_Enum::Idle, 0);
-
-    updatableGameState.addMainPlayer(player);
-};
+      mapName(map_name),
+      mainId(player_id),
+      gameState(){
+          // Harcodeo un player dummy. En la version final del juego, esto lo
+          // recibiría del servidor.
+      };
 
 void GuiLoop::stop_custom() {
     // No tengo que hacer nada, ya que ninguna funcion de GuiLoop, es
@@ -30,7 +23,9 @@ void GuiLoop::stop_custom() {
     // iteracion actual, y keep_running() sea false.
 }
 
-void GuiLoop::initializeRender() { render = new Render(windowForRender); }
+void GuiLoop::initializeRender() {
+    render = new Render(windowForRender, mainId);
+}
 
 GuiLoop::~GuiLoop() {
     delete render;
@@ -85,7 +80,6 @@ void GuiLoop::run() {
             // En el caso de que ya haya consumido todo el tiempo del tick
             // actual, Decido ni siquiera ejecutar el renderer para , tal vez,
             // llegar al proximo tick a tiempo.
-
             runRenderer(mapInfo);
         } else {
 #ifndef NDEBUG
@@ -129,22 +123,51 @@ void GuiLoop::updateGameState() {
     // aplicar de a una las updates en orden (las ultimas son las más
     // recientes).
     // Si no hay ninguna update, no se updatea nada.
+    static bool paso = false;
+
+    if (!paso) {
+        std::vector<std::pair<Update::EntityType, Update::EntitySubtype>>
+            entities = {
+                {Update::EntityType::Player, Update::EntitySubtype::Jazz},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy2},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy3},
+                {Update::EntityType::Bullet, Update::EntitySubtype::No_subtype},
+                {Update::EntityType::Item, Update::EntitySubtype::Coin},
+                {Update::EntityType::Item, Update::EntitySubtype::Carrot},
+                {Update::EntityType::Item, Update::EntitySubtype::Light},
+                {Update::EntityType::Item, Update::EntitySubtype::Power},
+                {Update::EntityType::Item, Update::EntitySubtype::Heavy}};
+        int id = 100;
+        int position = 10;
+        for (auto entity : entities) {
+            all_updates.emplace_back(Update::Update_new::create_create_entity(
+                id, entity.first, entity.second));
+            all_updates.emplace_back(
+                Update::Update_new::create_position(id, position, 0));
+            id++;
+            position += 10;
+        }
+        paso = true;
+    }
+
     for (Update::Update_new update : all_updates) {
-        updatableGameState.handleUpdate(update, currentTick);
+        gameState.handleUpdate(update, currentTick);
+        // updatableGameState.handleUpdate(update, currentTick);
     }
 }
 
 void GuiLoop::runRenderer(MapInfo& mapInfo) {
     // Genero un nuevo estado apto para que lo consuma el renderer
-    GameStateRenderer gameStateRenderer =
-        updatableGameState.getStateRenderer(currentTick);
+    // GameStateRenderer gameStateRenderer =
+    //    updatableGameState.getStateRenderer(currentTick);
 
     if (render == nullptr)
         throw std::runtime_error(
             "Se debe inicializar el render antes de usarlo");
 
-    render->presentGame(gameStateRenderer, mapInfo);
-
+    // render->presentGame(gameStateRenderer, mapInfo);
+    render->presentGame2(gameState, mapInfo);
     // std::cout << "tick: " << tick_actual << "\n";
     // std::cout << "(" << gameStateRenderer.mainPlayer.position.x
     // << ", "

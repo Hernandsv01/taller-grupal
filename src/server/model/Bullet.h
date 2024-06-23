@@ -2,17 +2,18 @@
 #define BULLET_H
 
 #include "Dynamic_entity.h"
+#include <algorithm>
 
 #define BULLET_HEIGHT 1
 #define BULLET_WIDTH 1
 
 class Bullet : public Dynamic_entity {
 public:
-    Bullet(int id, float x_spawn, float y_spawn, float vel_x)
-            : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT, vel_x, 0, 0, false, 5, false, 0, true, true) {};
+    Bullet(int id, float x_spawn, float y_spawn, float vel_x, int damage)
+            : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT, vel_x, 0, 0, false, damage, false, 0, true, true) {};
 
     std::vector<Update::Update_new> tick(const Map& map,
-                             std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool) override {
+                             std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) override {
         std::vector<Update::Update_new> updates;
 
         // validar movimiento contra mapa
