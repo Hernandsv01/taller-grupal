@@ -65,7 +65,7 @@ void PlayableCharacter::renderize(SDL2pp::Renderer &renderer, const int &xRef,
         SDL2pp::Rect(spriteSize * actualSpriteNumber, 0, spriteSize,
                      spriteSize),
         SDL2pp::Rect(xPosInRender - spriteSize / 2, (yPosInRender - spriteSize),
-                     spriteSize, spriteSize),
+                     spriteSize / 10, spriteSize / 10),
         0.0, SDL2pp::NullOpt, turntoLeft);
 
     actualSpriteNumber = (actualSpriteNumber + 1) % spriteLenght;
