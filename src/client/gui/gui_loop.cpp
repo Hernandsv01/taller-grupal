@@ -130,13 +130,11 @@ void GuiLoop::updateGameState() {
             entities = {
                 {Update::EntityType::Player, Update::EntitySubtype::Jazz},
                 {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
-                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
-                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
-                {Update::EntityType::Bullet, Update::EntitySubtype::Enemy1},
-                {Update::EntityType::Item, Update::EntitySubtype::Enemy1},
-                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
-                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
-                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy2},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy3},
+                {Update::EntityType::Bullet, Update::EntitySubtype::No_subtype},
+                {Update::EntityType::Item, Update::EntitySubtype::Coin},
+                {Update::EntityType::Item, Update::EntitySubtype::Weapon},
             };
         int id = 100;
         int position = 10;
