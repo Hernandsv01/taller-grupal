@@ -7,7 +7,6 @@ class Entity2 {
    protected:
     int positionX = 0;
     int positionY = 0;
-    bool direction = true;
 
    public:
     Entity2();

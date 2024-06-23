@@ -1,8 +1,7 @@
 #include "entityGame.h"
 
 Entity2::Entity2() :
-    positionX(0), positionY(0),
-    direction(true) {
+    positionX(0), positionY(0) {
 }
 
 void Entity2::updatePosition(const int &posX, const int &posY) {

@@ -7,28 +7,22 @@
 #define DATA_PATH "src/client/gui/data/"
 #endif
 
-#define JAZZSTAND "/jazz_stand.png"
-#define JAZZRUN "/jazz_run.png"
-#define JAZZDASH "/jazz_dash.png"
-#define JAZZINTOX "/jazz_intox.png"
-#define JAZZINTOXWALK "/jazz_intoxwalk.png"
-
-#define JAZZFALL "/jazz_fall.png"
-#define JAZZJUMP "/jazz_jump.png"
-#define JAZZSHOT "/jazz_shot.png"
-#define JAZZSHOTFALL "/jazz_shotfall.png"
-
-#define SEPARATOR "separator"
+#define WEAPON "Weapon"
 #define EXTENSION ".png"
+#define INFTEXTURE "infinity"
+
 const std::vector<std::string> typeOfCharacter = {"Jazz"};
 const std::vector<std::string> typeOfState = {"Stand", "Run",       "Dash",
                                               "Intox", "Intoxwalk", "Fall",
                                               "Jump",  "Shot",      "Shotfall",
                                               "Gethit", "Hud"};
+
+const std::vector<std::string> typeOfWeapons = {"Default", "Rapid"};
 // "Gethit", "Roasted",
 // "Special", "Hud"};
 
-// Defino el mapa estatico
+
+// Defino el mapa estatico (nombre: textura)
 std::map<std::string, std::shared_ptr<SDL2pp::Texture>>
     TextureManager::textures;
 
@@ -50,10 +44,19 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
         textures[textureName] =
                 std::make_shared<SDL2pp::Texture>(std::move(texture));                           
     }
+    //Carga armas
+    for (auto weapon : typeOfWeapons) {
+        std::string textureName = WEAPON + weapon;
+        SDL2pp::Texture texture(renderer,
+                                    DATA_PATH + textureName + EXTENSION);
+        textures[textureName] =
+                std::make_shared<SDL2pp::Texture>(std::move(texture)); 
+    }
+    std::string textureName = INFTEXTURE;
     SDL2pp::Texture texture(renderer,
-                                    std::string(DATA_PATH) + SEPARATOR + EXTENSION);
-        textures[SEPARATOR] =
-                std::make_shared<SDL2pp::Texture>(std::move(texture));   
+                                DATA_PATH + textureName + EXTENSION);
+    textures[textureName] =
+            std::make_shared<SDL2pp::Texture>(std::move(texture)); 
     /*
     SDL2pp::Texture jazzStand(renderer, DATA_PATH JAZZSTAND);
     textures["JazzStand"] =

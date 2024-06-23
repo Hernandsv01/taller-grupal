@@ -6,6 +6,9 @@
 #include "entityGame.h"
 #include <SDL2pp/SDL2pp.hh>
 
+typedef std::shared_ptr<SDL2pp::Texture> SharedTexturePtr;
+
+
 class PlayableCharacter : public Entity2 {
     private:
         std::string characterType;
@@ -13,19 +16,28 @@ class PlayableCharacter : public Entity2 {
         std::string state;
         int score;
         int health;
+        int ammoQuantity;
 
-        std::shared_ptr<SDL2pp::Texture> stateTexture;
+        SharedTexturePtr weaponTexture;
+        int weaponSpriteNumber;
+
+        SharedTexturePtr stateTexture;
         int actualSpriteNumber;
         int spriteSize;
         int spriteLenght;
 
-        std::shared_ptr<SDL2pp::Texture> hudTexture;
+        SharedTexturePtr hudTexture;
         int hudSpriteNumber;
         int hudSpriteSize;
         int hudSpriteLenght;
 
-
+        void showHealth(SDL2pp::Renderer &renderer, const int & windowHeight);
         void showScore(SDL2pp::Renderer &renderer);
+        void showAmmoQuantity(SDL2pp::Renderer &renderer, const int & windowHeight);
+
+        void showNumber(SDL2pp::Renderer &renderer, const int& number,
+                                    const int& quantity, const int& initialPos,
+                                    const int& initialPosY);
         
     public:
         PlayableCharacter(const std::string& type);

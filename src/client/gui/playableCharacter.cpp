@@ -1,8 +1,15 @@
 #include "playableCharacter.h"
 #include "textureManager.h"
+#include <cmath>
 
 #define HUD "Hud"
 #define STAND "Stand"
+#define WEAPON "Weapon"
+#define DEFAULTWEAPON "Default"
+#define INF "infinity"
+#define SPACETOBORDER 5
+#define MAXSCOREDIGIT 7
+
 #define INITIALHEALTH 10
 #define INITIALSCORE 0
 #define INITIALBULLETQUANTITY 10
@@ -13,6 +20,10 @@ PlayableCharacter::PlayableCharacter(const std::string& type) :
     state(STAND),
     score(INITIALSCORE),
     health(INITIALHEALTH),
+    ammoQuantity(-1),
+
+    weaponTexture(TextureManager::getTexture(std::string(WEAPON)+DEFAULTWEAPON)),
+    weaponSpriteNumber(0),
 
     stateTexture(TextureManager::getTexture(characterType+state)),
     actualSpriteNumber(0),
@@ -71,36 +82,77 @@ void PlayableCharacter::renderMainPj(SDL2pp::Renderer &renderer,
 
 void PlayableCharacter::showHud(SDL2pp::Renderer &renderer,
                     const int &windowWidth, const int &windowHeight) {
-    
+
+    showHealth(renderer, windowHeight);
+    showScore(renderer);
+    showAmmoQuantity(renderer, windowHeight);
+}
+
+void PlayableCharacter::showAmmoQuantity(SDL2pp::Renderer &renderer,
+                                        const int & windowHeight) {
+    int textureSize = weaponTexture->GetHeight();
+    int textureLength = weaponTexture->GetWidth() / textureSize;
+    renderer.Copy(*weaponTexture,
+                SDL2pp::Rect(textureSize* weaponSpriteNumber, 0,
+                                    textureSize, textureSize),
+                SDL2pp::Rect(560, 450,
+                                    textureSize, textureSize));
+
+    weaponSpriteNumber = (weaponSpriteNumber + 1) % textureLength;
+
+    if (ammoQuantity <0) {
+        SharedTexturePtr infinityTexture = TextureManager::getTexture(INF);
+        int infinityWidth = infinityTexture->GetWidth();
+        int infinityHeight = infinityTexture->GetHeight();
+        renderer.Copy(*infinityTexture,
+                SDL2pp::NullOpt,
+                SDL2pp::Rect(textureSize+560, 450, infinityWidth, infinityHeight));
+    } else {
+        showNumber(renderer, ammoQuantity, std::to_string(ammoQuantity).length(),
+                        textureSize+560, 450);
+    }
+}
+
+void PlayableCharacter::showHealth(SDL2pp::Renderer &renderer,
+                                    const int & windowHeight) {
+
     renderer.Copy(*hudTexture,
                 SDL2pp::Rect(hudSpriteSize* hudSpriteNumber, 0,
                                     hudSpriteSize, hudSpriteSize),
-                SDL2pp::Rect(5, windowHeight*0.72,
+                SDL2pp::Rect(SPACETOBORDER, 434,
                                     hudSpriteSize, hudSpriteSize));
 
     hudSpriteNumber = (hudSpriteNumber + 1) % hudSpriteLenght;
 
-    showScore(renderer);
+    showNumber(renderer, health, std::to_string(health).length(),
+                hudSpriteSize+SPACETOBORDER, 450);
 }
 
+
 void PlayableCharacter::showScore(SDL2pp::Renderer &renderer) {
-    int numberPos = 5;
-    int scoreRemainig = score;
-    for (int i = 1000000; i>0; i /= 10) {
-        int number = scoreRemainig/i;
-        scoreRemainig = scoreRemainig % i;
-        std::shared_ptr<SDL2pp::Texture> numberTexture = 
+    showNumber(renderer, score, MAXSCOREDIGIT, SPACETOBORDER, SPACETOBORDER);
+}
+
+void PlayableCharacter::showNumber(SDL2pp::Renderer &renderer, const int& number,
+                                    const int& quantity, const int& initialPosX,
+                                    const int& initialPosY) {
+    int digitToShow = pow(10,quantity-1);
+    int numberRemaining = number;
+    int posInScreen = initialPosX;
+    for (int i = digitToShow; i>0; i /= 10) {
+        int number = numberRemaining/i;
+        numberRemaining = numberRemaining % i;
+        SharedTexturePtr numberTexture = 
                             TextureManager::getTexture(std::to_string(number));
     
         int numberWidth = numberTexture->GetWidth();
         int numberHeight = numberTexture->GetHeight();
         renderer.Copy(*numberTexture,
                 SDL2pp::NullOpt,
-                SDL2pp::Rect(numberPos, 5, numberWidth, numberHeight));
+                SDL2pp::Rect(posInScreen, initialPosY, numberWidth, numberHeight));
 
-        numberPos += numberTexture->GetWidth();
+        posInScreen += numberTexture->GetWidth();
     }
-
 }
 
 void PlayableCharacter::updateDirection(bool &isFacingRight) {
