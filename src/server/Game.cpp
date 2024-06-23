@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include <utility>
+#include <algorithm>
 #include "./loader/config.h"
 
 Game::Game(std::string name, Map map)

@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <map>
+#include <algorithm>
 
 #include "../../common/Update.h"
 #include "Bullet.h"
@@ -57,8 +58,7 @@ public:
         std::vector<Update::Update_new> updates;
 
         if (!is_active) {
-            if (std::chrono::steady_clock::now() >=
-                inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
+            if (std::chrono::steady_clock::now() >= inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
                 revive(map.get_player_spawns());
                 updates.push_back(Update::Update_new::create_position(
                     static_cast<uint16_t>(id), x_pos, y_pos));
@@ -258,6 +258,7 @@ public:
 
         health = Config::get_player_max_health();
         is_active = true;
+        is_damageable = true;
     }
 
     void delete_pickup(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int pickup_id) {

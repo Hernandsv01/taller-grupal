@@ -81,6 +81,7 @@ class Dynamic_entity : public RigidBox {
             inactive_time = std::chrono::steady_clock::now();
             return true;
         } else {
+            // cooldown of being hit
             is_damageable = false;
         }
         return false;
