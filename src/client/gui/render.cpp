@@ -42,12 +42,15 @@ Render::Render(Window& window, const int& id)
     TextureManager::Init(renderer);
 }
 
-void Render::presentGame2(UpdatableGameState2 gameState, MapInfo mapInfo) {
+void Render::presentGame2(UpdatableGameState2 gameState, Map& map) {
+    xCenter = window.GetWidth() / 2;
+    yCenter = window.GetHeight() / 2;
+
     xReference = gameState.getEntityPositionX(mainPlayerID);
     yReference = gameState.getEntityPositionY(mainPlayerID);
 
     // Renderizar mapa
-    copyMap(mapInfo);
+    renderMap(map);
 
     // Renderiza ¿entidades? ¿solo jugadores?
     gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter);
@@ -57,74 +60,38 @@ void Render::presentGame2(UpdatableGameState2 gameState, MapInfo mapInfo) {
     renderer.Present();
 }
 
-void Render::copyMap(MapInfo mapInfo) {
-    copyWall();
-    copyMapPart(GROUND, mapInfo.typeOfGround, mapInfo.groundPosition);
-    copyMapPart(UNDER, mapInfo.typeOfUnder, mapInfo.underPosition);
-}
+void Render::renderMap(Map& map) {
+    renderMapBackground(map);
 
-void Render::copyWall() {
-    for (int i = 0; i < window.GetWidth(); i += WALLDIMENSION) {
-        for (int j = 0; j < window.GetHeight(); j += WALLDIMENSION) {
-            renderer.Copy(
-                mapsTexture,
-                Rect(0, WALL * PARTDIMY, WALLDIMENSION, WALLDIMENSION),
-                Rect(i, j, WALLDIMENSION, WALLDIMENSION));
-        }
+    std::vector<BlockOnlyTexture> map_tiles = map.get_all_block_textures();
+
+    for (const BlockOnlyTexture& block : map_tiles) {
+        renderer.Copy(
+            TextureManager::getTile(block.texture), NullOpt,
+            Rect((block.coordinate.x) * sizeFactor - xReference + xCenter,
+                 (block.coordinate.y) * sizeFactor - yReference + yCenter,
+                 sizeFactor, sizeFactor));
     }
 }
 
-void Render::copyMapPart(int typeOfPart, int part,
-                         std::vector<Position> positions) {
-    for (auto position : positions) {
-        renderer.Copy(
-            mapsTexture,
-            Rect(part * PARTDIMX, typeOfPart * PARTDIMY, PARTDIMX, PARTDIMY),
-            Rect(position.x - xReference + xCenter,
-                 position.y - yReference + yCenter, PARTDIMX, PARTDIMY));
+void Render::renderMapBackground(Map& map) {
+    IdTexture background_id = map.get_background();
+
+    SDL2pp::Texture& background_texture =
+        TextureManager::getBackground(background_id);
+
+    auto texture_size = background_texture.GetSize();
+
+    for (int x = 0; x < window.GetWidth(); x += texture_size.x) {
+        for (int y = 0; y < window.GetHeight(); y += texture_size.y) {
+            auto start_point = Point(x, y);
+            auto rect = Rect(start_point, texture_size);
+
+            renderer.Copy(background_texture, NullOpt, rect);
+        }
     }
 }
 
 void Render::presentImage() { renderer.Present(); }
 
 void Render::sleep(int millisecond) { SDL_Delay(millisecond); }
-
-/*
-void Render::presentGame(GameStateRenderer gameStatus, MapInfo mapInfo) {
-    xReference = gameStatus.mainPlayer.position.x;
-    yReference = gameStatus.mainPlayer.position.y;
-    copyMap(mapInfo);
-    copyPlayer(gameStatus.mainPlayer);
-    renderer.Present();
-}
-
-void Render::copyPlayer(PlayerState jugador) {
-    int xPos = jugador.position.x;
-    int yPos = jugador.position.y;
-
-    if (jugador.state == enums_value_update::Idle) {
-        copyEntity(xPos, yPos, JAZZSTANDX, JAZZSTANDY, STANDSPRITELONG,
-                   standSpritesJazz);
-    } else if (jugador.state == enums_value_update::Running) {
-        copyEntity(xPos, yPos, JAZZRUNX, JAZZRUNY, RUNSPRITELONG,
-                   runSpritesJazz);
-    } else if (jugador.state == enums_value_update::Intoxicated) {
-        copyEntity(xPos, yPos, JAZZINTOXX, JAZZINTOXY, INTOXSPRITELONG,
-                   intoxJazz);
-    } else {
-        copyEntity(xPos, yPos, JAZZINTOXWALKX, JAZZINTOXWALKY,
-                   INTOXWALKSPRITELONG, intoxWalkJazz);
-    }
-}
-
-void Render::copyEntity(int xPos, int yPos, int spriteLong, int spriteHigh,
-                        int animationLong, Texture& sprite) {
-    int srcX = frame * spriteLong;
-
-    renderer.Copy(
-        sprite, Rect(srcX, BASESPRITE, spriteLong, spriteHigh),
-        Rect(xCenter - spriteLong / 2, yCenter, spriteLong, spriteHigh));
-
-    frame = (frame + 1) % animationLong;
-}
-*/

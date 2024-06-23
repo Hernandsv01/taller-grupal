@@ -11,6 +11,7 @@
 #include <chrono>
 
 #include "../../common/library/thread.h"
+#include "../../common/map/map.h"
 #include "estado_juego.h"
 #include "render.h"
 
@@ -28,6 +29,7 @@ class GuiLoop : public Thread {
     uint32_t currentTick;
 
     std::string mapName;
+    Map map;
 
    public:
     // GuiLoop();
@@ -41,7 +43,7 @@ class GuiLoop : public Thread {
 
     void stop_custom() override;
 
-    void runRenderer(MapInfo& mapInfo);
+    void runRenderer();
 
     void updateGameState();
 };
