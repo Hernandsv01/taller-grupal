@@ -21,15 +21,10 @@ public:
             x_pos += vel_x;
             y_pos += vel_y;
 
-            for (float i = this->x_min(); i <= this->x_max(); i++) {
-                for (float j = this->y_min(); j < this->y_max(); j++) {
-                    Collision collision = map.get_block_collision({static_cast<uint8_t>(std::floor(i)),static_cast<uint8_t>(std::floor(j))});
-                    if (collision != Collision::Air) {
-                        updates.push_back(Update::Update_new::create_delete_entity(id));
-                        delete_bullet(entity_pool, id);
-                        return updates;
-                    }
-                }
+            if (collides_with_map(map)) {
+                updates.push_back(Update::Update_new::create_delete_entity(id));
+                delete_bullet(entity_pool, id);
+                return updates;
             }
         }
 

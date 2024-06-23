@@ -1,5 +1,11 @@
 #include "lobby_manager.h"
 
+#include <filesystem>
+
+#ifndef MAP_PATH
+#define MAP_PATH ""
+#endif
+
 // Deberia recibir un socket conectado.
 LobbyManager::LobbyManager(Socket socket, GamePoolMonitor& game_pool_monitor)
     : Thread("LobbyManager"),
@@ -7,13 +13,20 @@ LobbyManager::LobbyManager(Socket socket, GamePoolMonitor& game_pool_monitor)
       is_running(true),
       game_pool(game_pool_monitor),
       map_list() {
-    Map new_map = Map::fromYaml("testmap");
-    map_list.push_back(new_map);
-    Map new_map2 = Map::fromYaml("testmap2");
-    map_list.push_back(new_map2);
+    // Map new_map = Map::fromYaml("testmap");
+    // map_list.push_back(new_map);
+    // Map new_map2 = Map::fromYaml("testmap2");
+    // map_list.push_back(new_map2);
 
-    Map new_map3 = Map::fromYaml("map3");
-    map_list.push_back(new_map3);
+    // Map new_map3 = Map::fromYaml("map3");
+    // map_list.push_back(new_map3);
+
+    for (const auto& map_path :
+         std::filesystem::recursive_directory_iterator(MAP_PATH)) {
+            std::string map_name = map_path.path().stem().string();
+            Map new_map = Map::fromYaml(map_name);
+            map_list.push_back(new_map);
+        }
 }
 
 uint8_t LobbyManager::create_game(GameMatch& match_info) {

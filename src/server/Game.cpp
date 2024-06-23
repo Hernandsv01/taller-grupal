@@ -20,7 +20,7 @@ void Game::run() {
     int time_left = Config::get_game_time();
     std::chrono::steady_clock::time_point next_second_update = current_tick_start + std::chrono::seconds(1);
 
-    //send_initial_values();
+    initialize_values();
 
     while (status == Game_status::RUNNING) {
         std::chrono::steady_clock::time_point current_tick_end = current_tick_start + TICK_DURATION;
@@ -71,7 +71,7 @@ void Game::run_iteration() {
 
 
 
-void Game::send_initial_values() {
+void Game::initialize_values() {
 
     std::vector<Update::Update_new> creation_updates;
     std::vector<Update::Update_new> general_updates;
@@ -98,38 +98,50 @@ void Game::send_initial_values() {
 
     //player
     Coordinate rand_spawn = map.get_player_spawns()[rand() % map.get_player_spawns().size()];
-   
+    std::cout <<  std::to_string(rand_spawn.x) << std::endl;
+    std::cout <<  std::to_string(rand_spawn.y) << std::endl;
+    std::cout << "-------" << std::endl;
     Player player(next_id++, rand_spawn.x, rand_spawn.y, player_subtypes[rand() % player_subtypes.size()]);
     entity_pool.push_back(std::make_unique<Player>(player));
 
-    creation_updates.push_back(Update::Update_new::create_create_entity(
-        player.get_id(),
-        Update::EntityType::Player,
-        player.get_player_subtype()
-    ));
+    // creation_updates.push_back(Update::Update_new::create_create_entity(
+    //     player.get_id(),
+    //     Update::EntityType::Player,
+    //     player.get_player_subtype()
+    // ));
+   // std::cout << "Update de creación de player agregada" << std::endl;
 
-    general_updates.push_back(Update::Update_new::create_position(
-        player.get_id(), 
-        rand_spawn.x,
-        rand_spawn.y
-    ));
+    // general_updates.push_back(Update::Update_new::create_position(
+    //     player.get_id(), 
+    //     rand_spawn.x,
+    //     rand_spawn.y
+    // ));
+    //std::cout << "Update de posición de player agregada" << std::endl;
     
-
     //enemies
-    Coordinate rand_enemy_spawn = map.get_enemy_spawns()[rand() % map.get_enemy_spawns().size()];
-    //se deberia chequear al cantidad de enemigos. Config::get_enemy_count...
-    Update::EntitySubtype enemy_subtype = enemy_subtypes[rand() % enemy_subtypes.size()];
-    Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y, enemy_subtype);
-    creation_updates.push_back(Update::Update_new::create_create_entity(
-        enemy.get_id(),
-        Update::EntityType::Enemy, 
-        enemy_subtype
-    ));
-    general_updates.push_back(Update::Update_new::create_position(
-        enemy.get_id(), 
-        rand_spawn.x,
-        rand_spawn.y
-    ));
+    std::cout <<  std::to_string(map.get_enemy_spawns().size()) << std::endl;
+    std::cout << "<------->" << std::endl;
+    if(map.get_enemy_spawns().size() != 0) {
+        std::vector<Coordinate> enemy_spawns = map.get_enemy_spawns();
+        int enemy_spawn_size = enemy_spawns.size();
+        int rand_value = rand();
+        int spawn_pos_selected = rand_value % enemy_spawn_size;
+        Coordinate rand_enemy_spawn = map.get_enemy_spawns()[spawn_pos_selected];
+        //se deberia chequear al cantidad de enemigos. Config::get_enemy_count...
+        Update::EntitySubtype enemy_subtype = enemy_subtypes[rand() % enemy_subtypes.size()];
+        Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y, enemy_subtype);
+        entity_pool.push_back(std::make_unique<Enemy>(enemy));
+        // creation_updates.push_back(Update::Update_new::create_create_entity(
+        //     enemy.get_id(),
+        //     Update::EntityType::Enemy, 
+        //     enemy_subtype
+        // ));
+        // general_updates.push_back(Update::Update_new::create_position(
+        //     enemy.get_id(), 
+        //     rand_spawn.x,
+        //     rand_spawn.y
+        // ));
+    }
 
    
     //pickups
@@ -139,21 +151,21 @@ void Game::send_initial_values() {
         Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, type, pickup_subtype);
         entity_pool.push_back(std::make_unique<Pickup>(pickup));
 
-        creation_updates.push_back(Update::Update_new::create_create_entity(
-            pickup.get_id(),
-            Update::EntityType::Item,
-            pickup_subtype 
-        ));
+        // creation_updates.push_back(Update::Update_new::create_create_entity(
+        //     pickup.get_id(),
+        //     Update::EntityType::Item,
+        //     pickup_subtype 
+        // ));
 
-        general_updates.push_back(Update::Update_new::create_position(
-            pickup.get_id(),
-            pickup_spawn.x,
-            pickup_spawn.y
-        ));
+        // general_updates.push_back(Update::Update_new::create_position(
+        //     pickup.get_id(),
+        //     pickup_spawn.x,
+        //     pickup_spawn.y
+        // ));
     }
 
-    sendAll(creation_updates);
-    sendAll(general_updates);
+    // sendAll(creation_updates);
+    // sendAll(general_updates);
 }
 
 
@@ -225,12 +237,12 @@ std::string Game::get_map_name() { return this->map.get_name(); }
 void Game::add_socket_for_player(uint16_t player_id, Socket socket) {
     clients.push_back(std::make_unique<Server_Client>(static_cast<int>(player_id), std::move(socket)));
     
-    sendAll({Update::Update_new::create_create_entity(
-        player_id, Update::EntityType::Player, Update::EntitySubtype::Jazz)});
+    // sendAll({Update::Update_new::create_create_entity(
+    // player_id, Update::EntityType::Player, Update::EntitySubtype::Jazz)});
 
     // Send create existing entitys to this player
-    //std::vector<Update::Update_new> full_updates = get_full_game_updates();
-    //sendAll(full_updates);
+    std::vector<Update::Update_new> full_updates = get_full_game_updates();
+    sendAll(full_updates);
 }
 
 void Game::sendAll(std::vector<Update::Update_new> updates) {

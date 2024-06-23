@@ -44,6 +44,7 @@ class UpdatableGameState2 {
     }
 
     void handleUpdate(Update::Update_new update, int tick) {
+        std::cout << "parseando update de tipo:" << std::to_string(update.get_update_type()) << std::endl;
         switch (update.get_update_type()) {
             case Update::CreateEntity: {
                 Update::EntityType entityType = update.getEntityType();
@@ -52,6 +53,8 @@ class UpdatableGameState2 {
                 break;
             }
             case Update::Position: {
+                std::cout << "actualizando posicion (server):" << std::to_string(update.getPositionX()) << "," << std::to_string(update.getPositionY()) << std::endl;
+
                 int xPosition = update.getPositionX() * FACTOR_TAMANIO;
                 int yPosition = update.getPositionY() * FACTOR_TAMANIO;
                 updatePosition(update.get_id(), xPosition, yPosition);

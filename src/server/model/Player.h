@@ -13,8 +13,8 @@
 #include "Ammo_data.h"
 #include "../loader/config.h"
 
-#define PLAYER_HEIGHT 2
-#define PLAYER_WIDTH 1
+#define PLAYER_HEIGHT 0.5
+#define PLAYER_WIDTH 0.2
 #define PLAYER_INITIAL_X_VEL 0
 #define PLAYER_INITIAL_Y_VEL 0
 #define GRAVITY 0.05
@@ -85,7 +85,10 @@ public:
         if (vel_x != 0) {
             x_pos += vel_x;
 
+            std::cout << "Intentando mover a X=" << x_pos << std::endl;
+
             if (collides_with_map(map)) {
+                std::cout << "Colisionando con mapa en X!" << std::endl;
                 x_pos -= vel_x;
             }
         }
@@ -94,7 +97,10 @@ public:
         if (vel_y != 0) {
             y_pos += vel_y;
 
+            std::cout << "Intentando mover a Y=" << y_pos << std::endl;
+
             if (collides_with_map(map)) {
+                std::cout << "Colisionando con mapa en Y!" << std::endl;
                 y_pos -= vel_y;
                 vel_y = 0;
             }
