@@ -20,7 +20,7 @@ void Game::run() {
     int time_left = Config::get_game_time();
     std::chrono::steady_clock::time_point next_second_update = current_tick_start + std::chrono::seconds(1);
 
-    send_initial_values();
+    //send_initial_values();
 
     while (status == Game_status::RUNNING) {
         std::chrono::steady_clock::time_point current_tick_end = current_tick_start + TICK_DURATION;
@@ -109,7 +109,7 @@ void Game::send_initial_values() {
     ));
 
     general_updates.push_back(Update::Update_new::create_position(
-        player.get_id(), // usar mismo id que en la creación
+        player.get_id(), 
         rand_spawn.x,
         rand_spawn.y
     ));
@@ -117,8 +117,6 @@ void Game::send_initial_values() {
 
     //enemies
     Coordinate rand_enemy_spawn = map.get_enemy_spawns()[rand() % map.get_enemy_spawns().size()];
-    /*
-    Falta enemigos: 
     //se deberia chequear al cantidad de enemigos. Config::get_enemy_count...
     Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y);
     creation_updates.push_back(Update::Update_new::create_create_entity(
@@ -128,11 +126,11 @@ void Game::send_initial_values() {
     
     ));
     general_updates.push_back(Update::Update_new::create_position(
-        enemy.get_id(), // usar mismo id que en la creación
+        enemy.get_id(), 
         rand_spawn.x,
         rand_spawn.y
     ));
-    */
+
    
     //pickups
     for (const auto& pickup_spawn : map.get_items_spawns()) {
@@ -176,12 +174,12 @@ std::vector<Update::Update_new> Game::get_full_game_updates(){
             entity_subtype = pickup->get_subtype();
             position_x = pickup->getXPos();
             position_y = pickup->getYPos();
-            //FALTA ENEMY
-        // } else if (auto enemy = dynamic_cast<Enemy*>(entity.get())) {
-        //     entity_type = Update::EntityType::Enemy;
-        //     entity_subtype = enemy->get_subtype(); 
-            //position_x = enemy->getXPos();
-           // position_y = enemy->getYPos();
+        } else if (auto enemy = dynamic_cast<Enemy*>(entity.get())) {
+            entity_type = Update::EntityType::Enemy;
+
+            //entity_subtype = enemy->get_subtype(); 
+            position_x = enemy->getXPos();
+           position_y = enemy->getYPos();
         }   else {
             continue;
         }
@@ -231,8 +229,8 @@ void Game::add_socket_for_player(uint16_t player_id, Socket socket) {
         player_id, Update::EntityType::Player, Update::EntitySubtype::Jazz)});
 
     // Send create existing entitys to this player
-    std::vector<Update::Update_new> full_updates = get_full_game_updates();
-    sendAll(full_updates);
+    //std::vector<Update::Update_new> full_updates = get_full_game_updates();
+    //sendAll(full_updates);
 }
 
 void Game::sendAll(std::vector<Update::Update_new> updates) {
