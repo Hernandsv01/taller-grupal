@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "outside_map_limits_error.h"
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 typedef uint8_t coord_unit;
 

@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <map>
+#include <algorithm>
 
 #include "../../common/Update.h"
 #include "Bullet.h"
@@ -32,10 +33,11 @@ class Player : public Dynamic_entity {
 
     bool is_shooting;
     std::chrono::steady_clock::time_point last_shot_time;
+    Update::EntitySubtype type;
 public:
-    Player(int id, float x_spawn, float y_spawn)
+    Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true, true),
-          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), last_shot_time(std::chrono::steady_clock::time_point()) {
+          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), last_shot_time(std::chrono::steady_clock::time_point()), type(type){
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
@@ -56,8 +58,7 @@ public:
         std::vector<Update::Update_new> updates;
 
         if (!is_active) {
-            if (std::chrono::steady_clock::now() >=
-                inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
+            if (std::chrono::steady_clock::now() >= inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
                 revive(map.get_player_spawns());
                 updates.push_back(Update::Update_new::create_position(
                     static_cast<uint16_t>(id), x_pos, y_pos));
@@ -257,6 +258,7 @@ public:
 
         health = Config::get_player_max_health();
         is_active = true;
+        is_damageable = true;
     }
 
     void delete_pickup(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int pickup_id) {
@@ -268,6 +270,8 @@ public:
             entity_pool.erase(it);
         }
     }
+
+    Update::EntitySubtype get_player_subtype(){return type;}
 };
 
 #endif  // PLAYER_H
