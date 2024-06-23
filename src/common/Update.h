@@ -55,7 +55,11 @@ enum EntitySubtype : uint8_t {
     Enemy2,
     Enemy3,
     Coin,
-    Weapon
+    Weapon,
+    Carrot,
+    Light, 
+    Heavy, 
+    Power
 };
 
 struct EntityTypeAndSubtype {
