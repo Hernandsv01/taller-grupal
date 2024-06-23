@@ -9,5 +9,6 @@
         <file alias="backgrounds/beach_world.png">../textures/backgrounds/beach_world.png</file>
         <file alias="backgrounds/grass.jpg">../textures/backgrounds/grass.jpg</file>
         <file alias="backgrounds/sky.jpg">../textures/backgrounds/sky.jpg</file>
+        <file alias="backgrounds/sky2.png">../textures/backgrounds/sky2.png</file>
     </qresource>
 </RCC>
