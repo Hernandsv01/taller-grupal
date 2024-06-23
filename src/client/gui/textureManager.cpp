@@ -1,11 +1,14 @@
 #include "textureManager.h"
 
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
 #ifndef DATA_PATH
 #define DATA_PATH "src/client/gui/data/"
 #endif
+
+#define ENTITY_TEXTURE_PATH "src/textures/entities"
 
 #define JAZZSTAND "/jazz_stand.png"
 #define JAZZRUN "/jazz_run.png"
@@ -23,12 +26,12 @@ const std::vector<std::string> typeOfCharacter = {"Jazz"};
 const std::vector<std::string> typeOfState = {"Stand", "Run",       "Dash",
                                               "Intox", "Intoxwalk", "Fall",
                                               "Jump",  "Shot",      "Shotfall"};
-// "Gethit", "Roasted",
-// "Special", "Hud"};
 
 // Defino el mapa estatico
 std::map<std::string, std::shared_ptr<SDL2pp::Texture>>
     TextureManager::textures;
+
+std::map<std::string, SDL2pp::Texture*> TextureManager::entity_textures;
 
 void TextureManager::Init(SDL2pp::Renderer& renderer) {
     for (std::string character : typeOfCharacter) {
@@ -40,37 +43,25 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
                 std::make_shared<SDL2pp::Texture>(std::move(texture));
         }
     }
-    /*
-    SDL2pp::Texture jazzStand(renderer, DATA_PATH JAZZSTAND);
-    textures["JazzStand"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzStand));
 
-    SDL2pp::Texture jazzRun(renderer, DATA_PATH JAZZRUN);
-    textures["JazzRun"] = std::make_shared<SDL2pp::Texture>(std::move(jazzRun));
+    load_textures_from_path_into_map(renderer, ENTITY_TEXTURE_PATH,
+                                     entity_textures);
+}
 
-    SDL2pp::Texture jazzIntox(renderer, DATA_PATH JAZZINTOX);
-    textures["JazzIntox"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzIntox));
+void TextureManager::load_textures_from_path_into_map(
+    SDL2pp::Renderer& renderer, const std::string& path,
+    std::map<std::string, SDL2pp::Texture*>& map) {
+    for (const auto& texture_path :
+         std::filesystem::recursive_directory_iterator(path)) {
+        // This is the filename without extension.
+        std::string texture_id = texture_path.path().stem().string();
+        SDL2pp::Texture* texture =
+            new SDL2pp::Texture(renderer, texture_path.path().string());
 
-    SDL2pp::Texture jazzIntoxWalk(renderer, DATA_PATH JAZZINTOXWALK);
-    textures["JazzIntoxWalk"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzIntoxWalk));
-
-    SDL2pp::Texture jazzDash(renderer, DATA_PATH JAZZDASH);
-    textures["JazzDash"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzDash));
-    */
-
-    /*
-    SDL2pp::Texture jazzIntox(renderer, DATA_PATH JAZZINTOX);
-    textures["JazzIntox"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzIntox)); SDL2pp::Texture
-    jazzIntoxWalk(renderer, DATA_PATH JAZZINTOXWALK); textures["JazzIntoxWalk"]
-    = std::make_shared<SDL2pp::Texture>(std::move(jazzIntoxWalk));
-    SDL2pp::Texture jazzGetHit(renderer, DATA_PATH JAZZGETHIT);
-    textures["JazzGetHit"] =
-    std::make_shared<SDL2pp::Texture>(std::move(jazzGetHit));
-    */
+        std::cout << "Created texture: " << texture_path.path().string()
+                  << " with id: " << texture_id << std::endl;
+        map[texture_id] = texture;
+    }
 }
 
 std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
@@ -80,5 +71,20 @@ std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
     } catch (const std::out_of_range& e) {
         std::cerr << "ACA ESTAB EL ERROR: " << e.what() << std::endl;
         return nullptr;
+    }
+}
+
+SDL2pp::Texture* TextureManager::getEntityTexture(
+    const std::string& textureName) {
+    try {
+        return entity_textures[textureName];
+    } catch (const std::out_of_range& e) {
+        return entity_textures["placeholder"];
+    }
+}
+
+TextureManager::~TextureManager() {
+    for (auto& texture : entity_textures) {
+        delete texture.second;
     }
 }
