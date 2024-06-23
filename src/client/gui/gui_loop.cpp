@@ -126,19 +126,28 @@ void GuiLoop::updateGameState() {
     static bool paso = false;
 
     if (!paso) {
-        all_updates.emplace_back(Update::Update_new::create_create_entity(
-            100, Update::EntityType::Enemy, Update::EntitySubtype::Enemy1));
-        all_updates.emplace_back(Update::Update_new::create_create_entity(
-            101, Update::EntityType::Bullet, Update::EntitySubtype::Enemy1));
-        all_updates.emplace_back(Update::Update_new::create_create_entity(
-            102, Update::EntityType::Item, Update::EntitySubtype::Enemy1));
-
-        all_updates.emplace_back(
-            Update::Update_new::create_position(100, 20, 0));
-        all_updates.emplace_back(
-            Update::Update_new::create_position(101, 30, 0));
-        all_updates.emplace_back(
-            Update::Update_new::create_position(102, 40, 0));
+        std::vector<std::pair<Update::EntityType, Update::EntitySubtype>>
+            entities = {
+                {Update::EntityType::Player, Update::EntitySubtype::Jazz},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Bullet, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Item, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+            };
+        int id = 100;
+        int position = 10;
+        for (auto entity : entities) {
+            all_updates.emplace_back(Update::Update_new::create_create_entity(
+                id, entity.first, entity.second));
+            all_updates.emplace_back(
+                Update::Update_new::create_position(id, position, 0));
+            id++;
+            position += 10;
+        }
         paso = true;
     }
 

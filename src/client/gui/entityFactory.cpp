@@ -14,8 +14,15 @@ std::shared_ptr<Entity2> EntityFactory::createEntity(const int& type,
             return std::make_shared<PlayableCharacter>(subtype_chart[subtype]);
         case Update::EntityType::Bullet:
             return std::make_shared<Entity2>("bullet");
-        case Update::EntityType::Enemy:
-            return std::make_shared<Entity2>("enemy1");
+        case Update::EntityType::Enemy: {
+            std::vector<std::string> enemy_types = {"enemy1", "enemy2",
+                                                    "enemy3"};
+
+            std::string textura_a_usar =
+                enemy_types[std::rand() % enemy_types.size()];
+
+            return std::make_shared<Entity2>(textura_a_usar);
+        }
         default:
             return std::make_shared<Entity2>("placeholder");
     }
