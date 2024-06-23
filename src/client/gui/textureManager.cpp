@@ -8,7 +8,6 @@
 #define DATA_PATH "src/client/gui/data/"
 #endif
 
-
 #define WEAPON "Weapon"
 
 #define BACKGROUND_TEXTURES_PATH "src/textures/backgrounds/"
@@ -31,7 +30,6 @@ const std::vector<std::string> typeOfWeapons = {"Default", "Rapid"};
 std::map<std::string, std::shared_ptr<SDL2pp::Texture>>
     TextureManager::textures;
 
-
 std::map<std::string, SDL2pp::Texture*> TextureManager::backgrounds;
 std::map<std::string, SDL2pp::Texture*> TextureManager::tiles;
 std::map<std::string, SDL2pp::Texture*> TextureManager::entity_textures;
@@ -51,8 +49,6 @@ void TextureManager::load_textures_from_path_into_map(
         map[texture_id] = texture;
     }
 }
-
-
 
 void TextureManager::Init(SDL2pp::Renderer& renderer) {
     for (std::string character : typeOfCharacter) {
@@ -83,29 +79,12 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
     textures[textureName] =
         std::make_shared<SDL2pp::Texture>(std::move(texture));
 
-
     load_textures_from_path_into_map(renderer, BACKGROUND_TEXTURES_PATH,
                                      backgrounds);
     load_textures_from_path_into_map(renderer, TILE_TEXTURES_PATH, tiles);
 
     load_textures_from_path_into_map(renderer, ENTITY_TEXTURE_PATH,
                                      entity_textures);
-}
-
-void TextureManager::load_textures_from_path_into_map(
-    SDL2pp::Renderer& renderer, const std::string& path,
-    std::map<std::string, SDL2pp::Texture*>& map) {
-    for (const auto& texture_path :
-         std::filesystem::recursive_directory_iterator(path)) {
-        // This is the filename without extension.
-        std::string texture_id = texture_path.path().stem().string();
-        SDL2pp::Texture* texture =
-            new SDL2pp::Texture(renderer, texture_path.path().string());
-
-        std::cout << "Created texture: " << texture_path.path().string()
-                  << " with id: " << texture_id << std::endl;
-        map[texture_id] = texture;
-    }
 }
 
 std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
@@ -118,7 +97,6 @@ std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
         return nullptr;
     }
 }
-
 
 SDL2pp::Texture& TextureManager::getBackground(const std::string& texture_id) {
     return *(TextureManager::backgrounds.at(texture_id));
@@ -147,4 +125,3 @@ SDL2pp::Texture* TextureManager::getEntityTexture(
         return entity_textures["placeholder"];
     }
 }
-

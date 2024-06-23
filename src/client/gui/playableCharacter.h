@@ -53,8 +53,6 @@ class PlayableCharacter : public Entity2 {
     virtual void renderMainPj(SDL2pp::Renderer &renderer, const int &xCenter,
                               const int &yCenter);
 
-    void updateHealth(const int &newHealthPoint);
-
     void updateScore(const int &newScore);
 
     void updateState(const std::string &newState);

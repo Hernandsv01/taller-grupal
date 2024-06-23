@@ -149,7 +149,3 @@ void PlayableCharacter::showNumber(SDL2pp::Renderer &renderer,
         posInScreen += numberTexture->GetWidth();
     }
 }
-
-void PlayableCharacter::updateDirection(bool &isFacingRight) {
-    isRight = isFacingRight;
-}
