@@ -2,7 +2,7 @@ name: map3
 size:
   x: 23
   y: 6
-texture_background: sky
+texture_background: sky2
 blocks:
   -
     -

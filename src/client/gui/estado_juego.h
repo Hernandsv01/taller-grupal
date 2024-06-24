@@ -13,7 +13,7 @@
 #include "entityGame.h"
 #include "playableCharacter.h"
 
-#define FACTOR_TAMANIO 5
+#define FACTOR_TAMANIO 32
 
 typedef uint8_t Id_t;
 typedef uint8_t HealthPoints_t;
@@ -205,15 +205,16 @@ class UpdatableGameState2 {
 
     void copyAllEntities(SDL2pp::Renderer &renderer, const int &mainId,
                          const int &xCenter, const int &yCenter) {
-        const auto &entity = gameState.at(mainId);
-        const int xRef = entity->getPosX();
-        const int yRef = entity->getPosY();
+        const auto &mainPlayer = gameState.at(mainId);
+        const int xRef = mainPlayer->getPosX();
+        const int yRef = mainPlayer->getPosY();
         for (auto &pair : gameState) {
             if (isNotMain(pair.first, mainId)) {
                 pair.second->renderize(renderer, xRef, yRef, xCenter, yCenter);
             }
         }
-        entity->renderMainPj(renderer, xCenter, yCenter);
+        mainPlayer->renderMainPj(renderer, xCenter, yCenter);
+        mainPlayer->showHud(renderer, xCenter*2, yCenter*2);
     }
 
     /*

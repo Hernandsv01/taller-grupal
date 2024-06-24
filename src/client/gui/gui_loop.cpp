@@ -10,7 +10,7 @@ GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
     : Thread("GuiLoop cliente"),
       currentTick(0),
       windowForRender(window),
-      mapName(map_name),
+      map(Map::fromYaml(map_name)),
       mainId(player_id),
       gameState(){
           // Harcodeo un player dummy. En la version final del juego, esto lo
@@ -34,21 +34,21 @@ GuiLoop::~GuiLoop() {
 
 void GuiLoop::run() {
     ////////   Harcodeo un mapa   ////////
-    int groundPosY = 0;
-    std::vector<Position> positionGround;
-    for (int i = 0; i < 640; i += 32) {
-        positionGround.push_back(Position{i, groundPosY});
-    }
-    std::vector<Position> positionUnder;
-    for (int i = 0; i < 640; i += 32) {
-        positionUnder.push_back(Position{i, 64});
-    }
-    MapInfo mapInfo;
-    mapInfo.mapTexture = Diamond;
-    mapInfo.typeOfGround = RightSign;
-    mapInfo.groundPosition = positionGround;
-    mapInfo.typeOfUnder = RedDiamond;
-    mapInfo.underPosition = positionUnder;
+    // int groundPosY = 0;
+    // std::vector<Position> positionGround;
+    // for (int i = 0; i < 640; i += 32) {
+    //     positionGround.push_back(Position{i, groundPosY});
+    // }
+    // std::vector<Position> positionUnder;
+    // for (int i = 0; i < 640; i += 32) {
+    //     positionUnder.push_back(Position{i, 64});
+    // }
+    // MapInfo mapInfo;
+    // mapInfo.mapTexture = Diamond;
+    // mapInfo.typeOfGround = RightSign;
+    // mapInfo.groundPosition = positionGround;
+    // mapInfo.typeOfUnder = RedDiamond;
+    // mapInfo.underPosition = positionUnder;
     //////////////
 
     // Estoy obligado a construir el renderer acá, porque para que el renderer
@@ -80,7 +80,7 @@ void GuiLoop::run() {
             // En el caso de que ya haya consumido todo el tiempo del tick
             // actual, Decido ni siquiera ejecutar el renderer para , tal vez,
             // llegar al proximo tick a tiempo.
-            runRenderer(mapInfo);
+            runRenderer();
         } else {
 #ifndef NDEBUG
             std::cout << "Render cancelado. ";
@@ -157,7 +157,7 @@ void GuiLoop::updateGameState() {
     }
 }
 
-void GuiLoop::runRenderer(MapInfo& mapInfo) {
+void GuiLoop::runRenderer() {
     // Genero un nuevo estado apto para que lo consuma el renderer
     // GameStateRenderer gameStateRenderer =
     //    updatableGameState.getStateRenderer(currentTick);
@@ -167,7 +167,7 @@ void GuiLoop::runRenderer(MapInfo& mapInfo) {
             "Se debe inicializar el render antes de usarlo");
 
     // render->presentGame(gameStateRenderer, mapInfo);
-    render->presentGame2(gameState, mapInfo);
+    render->presentGame2(gameState, map);
     // std::cout << "tick: " << tick_actual << "\n";
     // std::cout << "(" << gameStateRenderer.mainPlayer.position.x
     // << ", "

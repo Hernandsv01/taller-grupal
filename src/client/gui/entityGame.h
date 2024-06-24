@@ -30,6 +30,9 @@ class Entity2 {
     virtual void renderMainPj(SDL2pp::Renderer &renderer, const int &xCenter,
                               const int &yCenter) {};
 
+    virtual void showHud(SDL2pp::Renderer &renderer, const int &windowWidth,
+                         const int &windowHeight) {};
+
     virtual void updateState(const std::string &newState) {};
 
     virtual void updateHealth(const int &newHealth) {};

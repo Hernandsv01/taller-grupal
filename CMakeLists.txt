@@ -130,6 +130,7 @@ target_link_libraries(client PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE GuiLobby)
 #target_link_libraries(testsdl PRIVATE Threads::Threads)
 target_link_libraries(server PRIVATE map)
+target_link_libraries(client PRIVATE map)
 
 
 set(SDL2PP_WITH_IMAGE YES)
