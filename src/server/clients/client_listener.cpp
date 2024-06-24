@@ -12,6 +12,8 @@ void Client_listener::run() {
 
             clientes_en_lobby.back()->start();
 
+            joinEndedLobbyManagers();
+
         } catch (ClosedConnectionError& e) {
             // Se cerró manualmente el listener para terminar el hilo.
             is_running = false;
@@ -22,4 +24,18 @@ void Client_listener::run() {
 void Client_listener::kill() {
     is_running = false;
     skt_listener.close_and_shutdown();
+}
+
+void Client_listener::joinEndedLobbyManagers() {
+    for (auto it = clientes_en_lobby.begin(); it != clientes_en_lobby.end();) {
+        LobbyManager* lobbyThread = (*it).get();
+
+        if (!lobbyThread->has_ended()) {
+            // No necesito stopearlo porque ya terminó.
+            lobbyThread->join();
+            it = clientes_en_lobby.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }

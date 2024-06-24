@@ -55,7 +55,6 @@ std::pair<uint16_t, std::string> LobbyManager::join_game(uint8_t game_id) {
 
 void LobbyManager::sendSocketOfClientToGame(uint8_t game_id, uint16_t player_id,
                                             LobbyProtocol& client) {
-
     Socket socket_client = protocol.extract_socket();
 
     game_pool.add_socket_for_player(game_id, player_id,
@@ -92,8 +91,16 @@ void LobbyManager::process_command(MessageType command) {
 
 void LobbyManager::run() {
     while (is_running) {
-        MessageType command = protocol.receive_command();
-        process_command(command);
+        try {
+            MessageType command = protocol.receive_command();
+
+            process_command(command);
+        } catch (const ClosedConnectionError& e) {
+            // En el caso de que se cierre la conexion, simplemente dejo de
+            // ejecutar el hilo. Eventualmente ClientListener joineará este
+            // hilo.
+            is_running = false;
+        }
     }
 }
 
