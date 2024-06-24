@@ -36,12 +36,11 @@ class Player : public Dynamic_entity {
     bool is_running;
     bool is_jumping;
     bool is_falling;
-    bool is_damaged;
     std::chrono::steady_clock::time_point last_shot_time;
 public:
     Player(int id, float x_spawn, float y_spawn)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true, true),
-          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), is_damaged(false), last_shot_time(std::chrono::steady_clock::time_point()) {
+          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
@@ -67,7 +66,6 @@ public:
                 revive(map.get_player_spawns());
                 updates.push_back(Update::Update_new::create_position(
                     static_cast<uint16_t>(id), x_pos, y_pos));
-
             }
             return updates;
         }
@@ -98,6 +96,13 @@ public:
 
         // validar movimiento en Y
         if (vel_y != 0) {
+            if (vel_y > 0) {
+                is_falling = true;
+                is_jumping = false;
+            } else {
+                is_falling = false;
+                is_jumping = true;
+            }
             y_pos += vel_y;
 
             if (collides_with_map(map)) {
@@ -167,18 +172,22 @@ public:
         switch (action) {
             case JUMP:
                 setYSpeed(Config::get_player_jump() * (-1));
+                is_jumping = true;
                 break;
             case RUN_LEFT:
                 setXSpeed(Config::get_player_speed() * (-1));
+                is_running = true;
                 break;
 
             case RUN_RIGHT:
                 setXSpeed(Config::get_player_speed());
+                is_running = true;
                 break;
 
             case SHOOT:
                 action_updates = shoot(entity_pool, next_id);
                 total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
+                is_shooting = true;
                 break;
 
             case STOP_SHOOT:
@@ -201,12 +210,14 @@ public:
             case STOP_RUN_RIGHT:
                 if (vel_x > 0) {
                     vel_x = 0;
+                    is_running = false;
                 }
                 break;
 
             case STOP_RUN_LEFT:
                 if (vel_x < 0) {
                     vel_x = 0;
+                    is_running = false;
                 }
                 break;
 
@@ -266,17 +277,22 @@ public:
     }
 
     void revive(std::vector<Coordinate> spawns) {
-        // TODO: send update...? Position for sure, but events?
         Coordinate spawn = spawns[rand() % spawns.size()];
         x_pos = spawn.x;
         y_pos = spawn.y;
 
         health = Config::get_player_max_health();
         is_active = true;
+        is_shooting = false;
+        is_doing_special = false;
+        is_running = false;
+        is_jumping = false;
+        is_falling = false;
+        is_damageable = true;
     }
 
     enums_value_update::Player_State_Enum get_player_state() {
-        if (is_damaged) {
+        if (!is_damageable) {
             return enums_value_update::Player_State_Enum::TakingDamage;
         } else if (is_shooting) {
             return enums_value_update::Player_State_Enum::Shooting;
