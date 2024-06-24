@@ -22,22 +22,6 @@ int main() {
     Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
     TextureManager::Init(renderer);
 
-    // Map
-    std::vector<Position> positionGround;
-    for (int i = 0; i < 640; i += 32) {
-        positionGround.push_back(Position{i, groundPosY});
-    }
-    std::vector<Position> positionUnder;
-    for (int i = 0; i < 640; i += 32) {
-        positionUnder.push_back(Position{i, 364});
-    }
-    MapInfo mapInfo;
-    mapInfo.mapTexture = Diamond;
-    mapInfo.typeOfGround = RightSign;
-    mapInfo.groundPosition = positionGround;
-    mapInfo.typeOfUnder = RedDiamond;
-    mapInfo.underPosition = positionUnder;
-
     // State del juego
     UpdatableGameState2 gameState;
     gameState.addEntity(mainPlayerID, playerType, jazzType);

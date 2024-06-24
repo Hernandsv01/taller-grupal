@@ -18,13 +18,19 @@ class Client {
     Updater updater;
     Event any_thread_ended;
 
+    void stopThreads();
+
    public:
     explicit Client(Socket socket, SDL2pp::Window& window, uint16_t player_id,
                     std::string map_name);
 
     void exec();
 
+    bool matchEnded();
+
     ~Client();
+
+    std::vector<std::tuple<int, std::string, int>> getPlayersScores();
 };
 
 #endif  // CLIENT_H

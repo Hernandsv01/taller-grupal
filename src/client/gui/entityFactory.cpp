@@ -5,7 +5,8 @@
 
 const std::vector<std::string> EntityFactory::subtype_chart = {
     "no_subtype", "Jazz", "Spaz",   "Lori",  "enemy1", "enemy2",
-    "enemy3",     "coin", "carrot", "light", "heavy",  "power"};
+    "enemy3",     "coin", "carrot",
+    "bulletNormal", "bulletLight", "bulletHeavy",  "bulletPower",};
 
 std::shared_ptr<Entity2> EntityFactory::createEntity(const int& type,
                                                      const int& subtype) {
@@ -13,8 +14,18 @@ std::shared_ptr<Entity2> EntityFactory::createEntity(const int& type,
         case Update::EntityType::Player:
             // return std::make_shared<PlayableCharacter>(subtype_chart[subtype]);
             return std::make_shared<PlayableCharacter>(subtype_chart[1]);
+        
         case Update::EntityType::Bullet:
-            return std::make_shared<Entity2>("bullet");
+            switch (subtype) {
+                case enums_value_update::Ammo_type::NORMAL:
+                    return std::make_shared<PlayableCharacter>(subtype_chart[9]);
+                case enums_value_update::Ammo_type::LIGHT:
+                    return std::make_shared<PlayableCharacter>(subtype_chart[10]);
+                case enums_value_update::Ammo_type::HEAVY:
+                    return std::make_shared<PlayableCharacter>(subtype_chart[11]);
+                case enums_value_update::Ammo_type::POWER:
+                    return std::make_shared<PlayableCharacter>(subtype_chart[12]);
+            }
         case Update::EntityType::Enemy:
         case Update::EntityType::Item: {
             return std::make_shared<Entity2>(subtype_chart[subtype]);

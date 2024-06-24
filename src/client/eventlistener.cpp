@@ -3,16 +3,25 @@
 EventListener::EventListener(SDL2pp::Window& window, Socket& socket)
     : Thread("EventListener cliente"), window(window), protocol(socket) {}
 
-//hay codigo comentado que utilizamos para debuggear
+// hay codigo comentado que utilizamos para debuggear
 void EventListener::run() {
     SDL_Event event;
+  
     bool running = true;
     std::this_thread::sleep_for(std::chrono::milliseconds (100));
-    while (running) {
+
+    uint last_event_type = SDL_QUIT;
+
+    while (_keep_running) {
         bool success = SDL_WaitEvent(&event);
 
+        if (event.type != last_event_type) {
+            std::cout << "Evento: " << event.type << std::endl;
+            last_event_type = event.type;
+        }
+
         if (!success || event.type == SDL_QUIT) {
-            running = false;
+            _keep_running = false;
         } else if ((event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) &&
                    event.key.repeat == 0) {
             // DEBUG:
@@ -28,9 +37,16 @@ void EventListener::run() {
             try {
                 protocol.send_action(action);
             } catch (const ClosedConnectionError& e) {
-                running = false;
+                _keep_running = false;
                 // TODO: Habria que implementar algo para manejar el error.
             }
         }
     }
+}
+
+void EventListener::stop_custom() {
+    _keep_running = false;
+    SDL_Event quit_event;
+    quit_event.type = SDL_QUIT;
+    SDL_PushEvent(&quit_event);
 }
