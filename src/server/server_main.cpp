@@ -2,7 +2,7 @@
 
 #include "Game.h"
 #include "clients/client_listener.h"
-#include "game/game_manager.h"
+#include "game/lobby_manager.h"
 #include "game_pool_monitor.h"
 
 int main(int argc, char* argv[]) {

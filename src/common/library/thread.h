@@ -59,9 +59,10 @@ class Thread : public Runnable {
 
     // Thread se debe crear con un string que describa el thread
     Thread(const std::string& text_description)
-        : _keep_running(true),
+        : thread_ended_event(),
+          _keep_running(true),
           _is_alive(false),
-          thread_ended_event(),
+          _has_been_joined(false),
           _text_description(text_description) {}
 
     void main() {

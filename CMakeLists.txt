@@ -110,8 +110,8 @@ src/server/clients/server_client.cpp
         src/server/model/Bullet.h
         src/server/model/Pickup.h
         src/server/model/constants/pickup_type.h
-        src/server/game/game_manager.h
-        src/server/game/game_manager.cpp
+        src/server/game/lobby_manager.h
+        src/server/game/lobby_manager.cpp
         src/server/game/lobby_protocol.h
         src/server/game/lobby_protocol.cpp
         src/server/game_pool_monitor.h
