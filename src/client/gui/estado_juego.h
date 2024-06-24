@@ -36,6 +36,7 @@ const std::vector<std::string> posibleStates = {
 class UpdatableGameState2 {
    private:
     std::map<int, std::shared_ptr<Entity2>> gameState;
+    int remainingSeconds = 0;
 
    public:
     explicit UpdatableGameState2() {
@@ -94,23 +95,20 @@ class UpdatableGameState2 {
             }
 
             case Update::RemainingSeconds: {
-                // TODO
-                // No se que hacer con esto
+                remainingSeconds = update.get_value();
                 break;
             }
 
             case Update::ChangeAmmoType: {
-                // TODO
-                // No se que hacer con esto
+                int weaponType = update.get_value();
+                updateWeapon(update.get_id(), update.get_value());
                 break;
             }
-
             case Update::BulletsRemaining: {
-                // TODO
-                // No se que hacer con esto
+                int ammoQuantity = update.get_value();
+                updateAmmoQuantity(update.get_id(), ammoQuantity);
                 break;
             }
-
             default:
                 throw std::runtime_error("Faltan valores para los cases");
                 break;
@@ -126,8 +124,10 @@ class UpdatableGameState2 {
                 pair.second->renderize(renderer, xReference, yReference);
             }
         }
-        mainPlayer->renderMainPj(renderer, xReference, yReference);
-        mainPlayer->showHud(renderer, xCenter * 2, yCenter * 2);
+      
+        mainPlayer->renderMainPj(renderer, xCenter, yCenter);
+        mainPlayer->showHud(renderer, xCenter*2, yCenter*2, remainingSeconds);
+
     }
 
     /*
@@ -178,6 +178,33 @@ class UpdatableGameState2 {
     void updateScore(const int &id, const int &score) {
         std::shared_ptr<Entity2> &entity = gameState.at(id);
         entity->updateHealth(score);
+    }
+
+    void updateWeapon(const int &id, const int &weaponCode) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        std::string weaponName;
+        switch (weaponCode) {
+            case (Update::Ammo_type::NORMAL):
+                weaponName = "weaponNormal";
+                break;
+            case (Update::Ammo_type::LIGHT):
+                weaponName = "weaponLight";
+                break;
+            case (Update::Ammo_type::HEAVY):
+                weaponName = "weaponHeavy";
+                break;
+            case (Update::Ammo_type::POWER):
+                weaponName = "weaponPower";
+                break;
+            default:
+                break;
+        }
+        entity->updateWeapon(weaponName);
+    }
+
+    void updateAmmoQuantity(const int &id, const int &ammoQuantity) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        entity->updateAmmoQuantity(ammoQuantity);
     }
 
     int getEntityPositionX(int id) const {

@@ -30,11 +30,13 @@ class Entity2 {
                               const int &yCenter) {};
 
     virtual void showHud(SDL2pp::Renderer &renderer, const int &windowWidth,
-                         const int &windowHeight) {};
+                         const int &windowHeight, const int &seconds) {};
 
     virtual void updateState(const std::string &newState) {};
 
     virtual void updateHealth(const int &newHealth) {};
+
+    virtual void updateWeapon(const std::string &newWeapon) {};
 
     virtual void updateDirection(bool &isFacingRight) {
         isRight = isFacingRight;

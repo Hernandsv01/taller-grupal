@@ -6,11 +6,11 @@
 
 #define HUD "Hud"
 #define STAND "Stand"
-#define WEAPON "Weapon"
-#define DEFAULTWEAPON "Default"
+#define DEFAULTWEAPON "weaponNormal"
 #define INF "infinity"
 #define SPACETOBORDER 5
 #define MAXSCOREDIGIT 7
+#define SECONDINMIN 60
 
 #define INITIALHEALTH 10
 #define INITIALSCORE 0
@@ -24,7 +24,7 @@ PlayableCharacter::PlayableCharacter(const std::string &type)
       ammoQuantity(-1),
 
       weaponTexture(
-          TextureManager::getTexture(std::string(WEAPON) + DEFAULTWEAPON)),
+          TextureManager::getEntityTexture(std::string(DEFAULTWEAPON))),
       weaponSpriteNumber(0),
 
       stateTexture(TextureManager::getTexture(characterType + state)),
@@ -44,13 +44,21 @@ void PlayableCharacter::updateHealth(const int &newHealthPoint) {
 void PlayableCharacter::updateScore(const int &newScore) { score = newScore; }
 
 void PlayableCharacter::updateState(const std::string &newState) {
-    std::string newTexture;
     if (newState != state) {
         actualSpriteNumber = 0;
         stateTexture = TextureManager::getTexture(characterType + newState);
         spriteSize = stateTexture->GetHeight();
         spriteLenght = stateTexture->GetWidth() / spriteSize;
     }
+}
+
+void PlayableCharacter::updateWeapon(const std::string &newWeapon) {
+    weaponTexture = TextureManager::getEntityTexture(newWeapon);
+    weaponSpriteNumber = 0;
+}
+
+void PlayableCharacter::updateAmmoQuantity(const int &newAmmoQuantity) {
+    ammoQuantity = newAmmoQuantity;
 }
 
 void PlayableCharacter::renderize(SDL2pp::Renderer &renderer, const int &xRef,
@@ -81,10 +89,12 @@ void PlayableCharacter::renderMainPj(SDL2pp::Renderer &renderer,
 
 void PlayableCharacter::showHud(SDL2pp::Renderer &renderer,
                                 const int &windowWidth,
-                                const int &windowHeight) {
+                                const int &windowHeight,
+                                const int &seconds) {
     showHealth(renderer, windowHeight);
     showScore(renderer);
     showAmmoQuantity(renderer, windowHeight);
+    showRemainingTime(renderer, windowWidth, seconds);
 }
 
 void PlayableCharacter::showAmmoQuantity(SDL2pp::Renderer &renderer,
@@ -94,7 +104,8 @@ void PlayableCharacter::showAmmoQuantity(SDL2pp::Renderer &renderer,
     renderer.Copy(*weaponTexture,
                   SDL2pp::Rect(textureSize * weaponSpriteNumber, 0, textureSize,
                                textureSize),
-                  SDL2pp::Rect(560, 450, textureSize, textureSize));
+                  SDL2pp::Rect(560, windowHeight-textureSize-SPACETOBORDER,
+                                textureSize, textureSize));
 
     weaponSpriteNumber = (weaponSpriteNumber + 1) % textureLength;
 
@@ -103,12 +114,12 @@ void PlayableCharacter::showAmmoQuantity(SDL2pp::Renderer &renderer,
         int infinityWidth = infinityTexture->GetWidth();
         int infinityHeight = infinityTexture->GetHeight();
         renderer.Copy(*infinityTexture, SDL2pp::NullOpt,
-                      SDL2pp::Rect(textureSize + 560, 450, infinityWidth,
-                                   infinityHeight));
+                      SDL2pp::Rect(textureSize + 560, windowHeight-infinityTexture-SPACETOBORDER,
+                                    infinityWidth, infinityHeight));
     } else {
         showNumber(renderer, ammoQuantity,
                    std::to_string(ammoQuantity).length(), textureSize + 560,
-                   450);
+                   windowHeight-textureSize-SPACETOBORDER);
     }
 }
 
@@ -118,17 +129,38 @@ void PlayableCharacter::showHealth(SDL2pp::Renderer &renderer,
         *hudTexture,
         SDL2pp::Rect(hudSpriteSize * hudSpriteNumber, 0, hudSpriteSize,
                      hudSpriteSize),
-        SDL2pp::Rect(SPACETOBORDER, 434, hudSpriteSize, hudSpriteSize));
+        SDL2pp::Rect(SPACETOBORDER, windowHeight-hudSpriteSize, hudSpriteSize, hudSpriteSize));
 
     hudSpriteNumber = (hudSpriteNumber + 1) % hudSpriteLenght;
 
     showNumber(renderer, health, std::to_string(health).length(),
-               hudSpriteSize + SPACETOBORDER, 450);
+               hudSpriteSize + SPACETOBORDER, windowHeight-hudSpriteSize);
 }
 
 void PlayableCharacter::showScore(SDL2pp::Renderer &renderer) {
     showNumber(renderer, score, MAXSCOREDIGIT, SPACETOBORDER, SPACETOBORDER);
 }
+
+void PlayableCharacter::showRemainingTime(SDL2pp::Renderer &renderer, const int & windowWidth,
+                            const int &totalSeconds) {
+    int minutes = totalSeconds / SECONDINMIN;
+    int seconds = totalSeconds % SECONDINMIN;
+    //Show minutes
+    showNumber(renderer, minutes, 2, 560, SPACETOBORDER);
+
+    //Show ":"
+    SharedTexturePtr separatorTexture = TextureManager::getTexture("separator");
+    int separatorWidth = separatorTexture->GetWidth();
+    int separatorHeight = separatorTexture->GetHeight();
+    renderer.Copy(
+        *separatorTexture,
+        SDL2pp::NullOpt,
+        SDL2pp::Rect(590, SPACETOBORDER, separatorWidth, separatorHeight));
+    
+    //Show seconds
+    showNumber(renderer, seconds, 2, 600+separatorWidth, separatorHeight);
+}
+
 
 void PlayableCharacter::showNumber(SDL2pp::Renderer &renderer,
                                    const int &number, const int &quantity,
