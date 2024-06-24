@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/focal64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -75,11 +75,11 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
-    sudo apt-get install -y xubuntu-desktop
+    sudo apt-get install -y ubuntu-desktop
     sudo usermod -a -G sudo vagrant
     sudo shutdown -r now
   SHELL
 
-  config.vm.provision "shell", path: "install.sh", privileged: false
+  config.vm.provision "shell", path: "install.sh"
 
 end
