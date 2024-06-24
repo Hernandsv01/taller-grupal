@@ -7,20 +7,38 @@
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL2pp/Music.hh>
 #include <SDL2pp/Mixer.hh>
+#include <iostream>
 
-typedef std::shared_ptr<SDL2pp::Music> SharedMusicPtr;
 
 class SoundManager {
-    private:
-        static std::map<std::string, SharedMusicPtr> sounds;
+private:
+    static std::map<std::string, Mix_Music*> sounds;    
+public:
+    static void Init();
+    static void Cleanup();
+    static Mix_Music* LoadMusic(const std::string& soundFilePath);
+    static void PlayMusic(Mix_Music* music, int loops);
+    static void StopMusic();
+    static void SetMusicVolume(int volume); //0-128
 
-    public:
-        //Mixer se encarga de reproducir el sonido
-        static SDL2pp::Mixer* mixer;
-
-        static void Init();
-        static SharedMusicPtr getSound(const std::string& soundName);
-        static void playMusic(SharedMusicPtr);
 };
+
+
+//old version
+//typedef std::shared_ptr<SDL2pp::Music> SharedMusicPtr;
+// class SoundManager {
+//     private:
+//         static std::map<std::string, SharedMusicPtr> sounds;
+
+//     public:
+//         //Mixer se encarga de reproducir el sonido
+//         static SDL2pp::Mixer* mixer;
+
+//         static void Init();
+//         static SharedMusicPtr getSound(const std::string& soundName);
+//         static void playMusic(SharedMusicPtr);
+// };
+
+
 
 #endif
