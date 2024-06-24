@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "../loader/config.h"
 #include "Game.h"
 #include "map/map.h"
 #include "physics/physics.h"
@@ -32,6 +33,7 @@ class Dynamic_entity : public RigidBox {
 
     int health;
     bool is_active;
+    bool pending_deletion;
     std::chrono::steady_clock::time_point inactive_time;
 
     bool looking_right;
@@ -41,8 +43,8 @@ class Dynamic_entity : public RigidBox {
                    float vel_x, float vel_y, float acc_y, bool is_damageable,
                    int damage_on_contact, bool is_item, int health,
                    bool is_active, bool looking_right)
-        : id(id),
-          RigidBox(pos_x, pos_y, width, height),
+        : RigidBox(pos_x, pos_y, width, height),
+          id(id),
           vel_x(vel_x),
           vel_y(vel_y),
           acc_y(acc_y),
@@ -52,13 +54,16 @@ class Dynamic_entity : public RigidBox {
           is_item(is_item),
           health(health),
           is_active(is_active),
+          pending_deletion(false),
           inactive_time(std::chrono::steady_clock::time_point()),
           looking_right(looking_right){};
 
-    ~Dynamic_entity(){};
+    ~Dynamic_entity() = default;
 
-    virtual std::vector<Update::Update_new> tick(const Map& map,
-        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) = 0;
+    virtual std::vector<Update::Update_new> tick(
+        const Map& map,
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool,
+        int& next_id) = 0;
 
     void setXSpeed(float vel_x_param) { vel_x = vel_x_param; }
     float getXSpeed() const { return vel_x; }
@@ -81,6 +86,7 @@ class Dynamic_entity : public RigidBox {
             inactive_time = std::chrono::steady_clock::now();
             return true;
         } else {
+            // cooldown of being hit
             is_damageable = false;
         }
         return false;
@@ -93,7 +99,8 @@ class Dynamic_entity : public RigidBox {
 
         for (int x = x_min; x <= x_max; ++x) {
             for (int y = y_min; y <= y_max; ++y) {
-                if (x < 0 || x >= map.get_map_size().x || y < 0 || y >= map.get_map_size().y) {
+                if (x < 0 || x >= map.get_map_size().x || y < 0 ||
+                    y >= map.get_map_size().y) {
                     return true;
                 }
                 Collision collision = map.get_block_collision(
@@ -105,6 +112,8 @@ class Dynamic_entity : public RigidBox {
         }
         return false;
     }
+
+    bool isPendingDeletion() { return pending_deletion; }
 };
 
 #endif  // DYNAMIC_ENTITY_H

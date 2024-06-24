@@ -34,7 +34,17 @@ int main(int argc, char* argv[]) {
 
         Lobby lobby;
         lobby.connectToServer(hostname, servname);
-        lobby.connectToMatch(1);
+
+        auto avaibleMatches = lobby.getServerMatches();
+
+        uint8_t match_to_connect;
+
+        if (avaibleMatches.empty()) {
+            match_to_connect = lobby.createMatch("map3", "Partida1");
+        } else {
+            match_to_connect = avaibleMatches[0].id;
+        }
+        lobby.connectToMatch(match_to_connect);
 
         playerIdAndMap = lobby.getPlayerIdAndMapName();
         socket_a_usar = lobby.extractMatchConnection();

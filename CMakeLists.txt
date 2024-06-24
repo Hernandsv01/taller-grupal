@@ -110,8 +110,8 @@ src/server/clients/server_client.cpp
         src/server/model/Bullet.h
         src/server/model/Pickup.h
         src/server/model/constants/pickup_type.h
-        src/server/game/game_manager.h
-        src/server/game/game_manager.cpp
+        src/server/game/lobby_manager.h
+        src/server/game/lobby_manager.cpp
         src/server/game/lobby_protocol.h
         src/server/game/lobby_protocol.cpp
         src/server/game_pool_monitor.h
@@ -130,6 +130,7 @@ target_link_libraries(client PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE GuiLobby)
 #target_link_libraries(testsdl PRIVATE Threads::Threads)
 target_link_libraries(server PRIVATE map)
+target_link_libraries(client PRIVATE map)
 
 
 set(SDL2PP_WITH_IMAGE YES)

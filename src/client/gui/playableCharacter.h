@@ -1,41 +1,60 @@
 #ifndef PLAYABLE_CHARACTER
 #define PLAYABLE_CHARACTER
 
+#include <SDL2pp/SDL2pp.hh>
 #include <memory>
 #include <string>
+
 #include "entityGame.h"
-#include <SDL2pp/SDL2pp.hh>
+
+typedef std::shared_ptr<SDL2pp::Texture> SharedTexturePtr;
 
 class PlayableCharacter : public Entity2 {
-    private:
-        std::string characterType;
-        bool isRight;
-        std::string state;
-        int Score;
-        int health;
+   private:
+    std::string characterType;
+    std::string state;
+    int score;
+    int health;
+    int ammoQuantity;
 
-        std::shared_ptr<SDL2pp::Texture> stateTexture;
-        int actualSpriteNumber;
-        int spriteSize;
-        int spriteLenght;
-        
-    public:
-        PlayableCharacter(const std::string& type);
+    SharedTexturePtr weaponTexture;
+    int weaponSpriteNumber;
 
-        virtual void renderize(SDL2pp::Renderer &renderer,
-                            const int &xRef, const int &yRef,
-                            const int &xCenter, const int &yCenter) override;
+    SharedTexturePtr stateTexture;
+    int actualSpriteNumber;
+    int spriteSize;
+    int spriteLenght;
 
-        virtual void renderMainPj(SDL2pp::Renderer &renderer,
-                            const int &xCenter, const int &yCenter);
+    SharedTexturePtr hudTexture;
+    int hudSpriteNumber;
+    int hudSpriteSize;
+    int hudSpriteLenght;
 
-        void updateHealth(const int &newHealthPoint);
+    void showHealth(SDL2pp::Renderer &renderer, const int &windowHeight);
+    void showScore(SDL2pp::Renderer &renderer);
+    void showAmmoQuantity(SDL2pp::Renderer &renderer, const int &windowHeight);
 
-        void updateScore(const int &newScore);
+    void showNumber(SDL2pp::Renderer &renderer, const int &number,
+                    const int &quantity, const int &initialPos,
+                    const int &initialPosY);
 
-        void updateState(const std::string &newState);
+   public:
+    PlayableCharacter(const std::string &type);
 
-        void updateDirection(bool &isFacingRight);
+    virtual void renderize(SDL2pp::Renderer &renderer, const int &xRef,
+                           const int &yRef) override;
+
+    void showHud(SDL2pp::Renderer &renderer, const int &windowWidth,
+                 const int &windowHeight);
+
+    void updateHealth(const int &newHealthPoint);
+
+    virtual void renderMainPj(SDL2pp::Renderer &renderer,
+                                     const int &xRef, const int &yRef);
+
+    void updateScore(const int &newScore);
+
+    void updateState(const std::string &newState);
 };
 
 #endif
