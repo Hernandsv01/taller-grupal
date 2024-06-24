@@ -44,16 +44,15 @@ class PlayableCharacter : public Entity2 {
     PlayableCharacter(const std::string &type);
 
     virtual void renderize(SDL2pp::Renderer &renderer, const int &xRef,
-                           const int &yRef, const int &xCenter,
-                           const int &yCenter) override;
+                           const int &yRef) override;
 
     void showHud(SDL2pp::Renderer &renderer, const int &windowWidth,
                  const int &windowHeight, const int &seconds);
 
     void updateHealth(const int &newHealthPoint);
 
-    virtual void renderMainPj(SDL2pp::Renderer &renderer, const int &xCenter,
-                              const int &yCenter);
+    virtual void renderMainPj(SDL2pp::Renderer &renderer,
+                                     const int &xRef, const int &yRef);
 
     void updateScore(const int &newScore);
 

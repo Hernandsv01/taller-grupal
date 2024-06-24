@@ -123,13 +123,11 @@ void GuiLoop::updateGameState() {
     // Obtener todas las updates encoladas
     std::vector<Update::Update_new> all_updates = Update_queue::try_pop_all();
 
-    std::cout << "Updates recibidas: " << all_updates.size() << "\n";
-
     // aplicar de a una las updates en orden (las ultimas son las más
     // recientes).
     // Si no hay ninguna update, no se updatea nada.
-    static bool paso = false;
 
+    // static bool paso = false;
     // if (!paso) {
     //     std::vector<std::pair<Update::EntityType, Update::EntitySubtype>>
     //         entities = {};
@@ -161,8 +159,6 @@ void GuiLoop::updateGameState() {
         gameState.handleUpdate(update, currentTick);
         // updatableGameState.handleUpdate(update, currentTick);
     }
-
-    std::cout << std::endl;
 }
 
 void GuiLoop::runRenderer() {

@@ -127,9 +127,9 @@ class Update_new {
 
     Update::EntitySubtype getEntitySubType();
 
-    int getPositionX();
+    float getPositionX();
 
-    int getPositionY();
+    float getPositionY();
 };
 }  // namespace Update
 
