@@ -105,7 +105,7 @@ class Dynamic_entity : public RigidBox {
                 }
                 Collision collision = map.get_block_collision(
                     {static_cast<uint8_t>(x), static_cast<uint8_t>(y)});
-                if (collision != Collision::Air) {
+                if (collision == Collision::Cube) {
                     return true;
                 }
             }

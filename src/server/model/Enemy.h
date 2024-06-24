@@ -4,8 +4,8 @@
 #include "Dynamic_entity.h"
 #include "Player.h"
 
-#define ENEMY_WIDTH 1
-#define ENEMY_HEIGHT 2
+#define ENEMY_HEIGHT 0.5
+#define ENEMY_WIDTH 0.2
 #define ENEMY_MAX_MOVEMENT_RANGE 50
 #define SECONDS_UNTIL_RESPAWN 3
 
@@ -37,6 +37,8 @@ class Enemy : public Dynamic_entity {
             }
             return updates;
         }
+
+        is_damageable = true;
 
         float old_x = x_pos;
         float old_y = y_pos;

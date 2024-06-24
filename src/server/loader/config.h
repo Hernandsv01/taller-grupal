@@ -44,7 +44,7 @@ struct EnemyConfig{
     };
     Attributes flyer = Attributes(10, 30, 20, 10);
     Attributes shooter = Attributes(10, 40, 10, 10);
-    Attributes crawler = Attributes(10, 50, 20, 10);
+    Attributes crawler = Attributes(10, 50, 0.01, 10);
 };
 
 struct PlayerConfig{
