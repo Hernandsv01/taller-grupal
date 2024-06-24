@@ -36,13 +36,13 @@ class Dynamic_entity : public RigidBox {
     bool pending_deletion;
     std::chrono::steady_clock::time_point inactive_time;
 
-    bool looking_right;
+    enums_value_update::Direction direction;
 
    public:
     Dynamic_entity(int id, float pos_x, float pos_y, float width, float height,
                    float vel_x, float vel_y, float acc_y, bool is_damageable,
                    int damage_on_contact, bool is_item, int health,
-                   bool is_active, bool looking_right)
+                   bool is_active)
         : RigidBox(pos_x, pos_y, width, height),
           id(id),
           vel_x(vel_x),
@@ -56,7 +56,7 @@ class Dynamic_entity : public RigidBox {
           is_active(is_active),
           pending_deletion(false),
           inactive_time(std::chrono::steady_clock::time_point()),
-          looking_right(looking_right){};
+          direction(enums_value_update::Direction::Right){};
 
     ~Dynamic_entity() = default;
 
