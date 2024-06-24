@@ -15,6 +15,7 @@ class SoundManager {
         static std::map<std::string, SharedMusicPtr> sounds;
 
     public:
+        //Mixer se encarga de reproducir el sonido
         static SDL2pp::Mixer* mixer;
 
         static void Init();
