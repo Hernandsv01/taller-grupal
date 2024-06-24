@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "../loader/config.h"
 #include "Game.h"
 #include "map/map.h"
 #include "physics/physics.h"

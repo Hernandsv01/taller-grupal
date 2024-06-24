@@ -103,14 +103,14 @@ void Game::initialize_values() {
         Update::EntitySubtype::Power};
 
     // player
-    Coordinate rand_spawn =
-        map.get_player_spawns()[rand() % map.get_player_spawns().size()];
-    std::cout << std::to_string(rand_spawn.x) << std::endl;
-    std::cout << std::to_string(rand_spawn.y) << std::endl;
-    std::cout << "-------" << std::endl;
-    Player player(next_id++, rand_spawn.x, rand_spawn.y,
-                  player_subtypes[rand() % player_subtypes.size()]);
-    entity_pool.push_back(std::make_unique<Player>(player));
+    // Coordinate rand_spawn =
+    //     map.get_player_spawns()[rand() % map.get_player_spawns().size()];
+    // std::cout << std::to_string(rand_spawn.x) << std::endl;
+    // std::cout << std::to_string(rand_spawn.y) << std::endl;
+    // std::cout << "-------" << std::endl;
+    // Player player(next_id++, rand_spawn.x, rand_spawn.y,
+    //               player_subtypes[rand() % player_subtypes.size()]);
+    // entity_pool.push_back(std::make_unique<Player>(player));
 
     // creation_updates.push_back(Update::Update_new::create_create_entity(
     //     player.get_id(),

@@ -3,10 +3,11 @@
 
 #include <algorithm>
 
+#include "Player.h"
 #include "Dynamic_entity.h"
 
-#define BULLET_HEIGHT 1
-#define BULLET_WIDTH 1
+#define BULLET_HEIGHT 0.01
+#define BULLET_WIDTH 0.01
 
 class Bullet : public Dynamic_entity {
    public:
@@ -26,6 +27,7 @@ class Bullet : public Dynamic_entity {
             y_pos += vel_y;
 
             if (collides_with_map(map)) {
+                std::cout << "Se la dió contra el mapa" << std::endl;
                 updates.push_back(Update::Update_new::create_delete_entity(id));
                 pending_deletion = true;
                 return updates;
@@ -39,6 +41,7 @@ class Bullet : public Dynamic_entity {
             }
 
             if (other->is_entity_damageable()) {
+                std::cout << "Se la dió contra un player" << std::endl;
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
