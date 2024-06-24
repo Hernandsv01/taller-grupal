@@ -10,8 +10,8 @@
 #include "../common/map/map.h"
 #include "clients/server_client.h"
 #include "model/Dynamic_entity.h"
-#include "model/Player.h"
 #include "model/Enemy.h"
+#include "model/Player.h"
 #include "model/constants/game_status.h"
 
 #define TPS 24
@@ -31,11 +31,13 @@ class Game : public Thread {
     std::vector<std::unique_ptr<Dynamic_entity>> entity_pool;
     std::vector<std::unique_ptr<Server_Client>> clients;
 
+    void delete_inactive_entities();
+
    public:
     explicit Game(std::string name, Map map);
     void run() override;
     void run_iteration();
-    void send_initial_values();
+    void initialize_values();
     void stop_custom() override;
     uint16_t add_player();
     void add_socket_for_player(uint16_t player_id, Socket socket);

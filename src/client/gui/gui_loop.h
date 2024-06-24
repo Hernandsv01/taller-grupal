@@ -22,13 +22,12 @@ class GuiLoop : public Thread {
     Render* render = nullptr;
 
     UpdatableGameState2 gameState;
-    UpdatableGameState updatableGameState;
+    //UpdatableGameState updatableGameState;
 
     int mainId;
 
     uint32_t currentTick;
 
-    std::string mapName;
     Map map;
 
    public:

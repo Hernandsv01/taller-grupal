@@ -43,17 +43,23 @@ Render::Render(Window& window, const int& id)
 }
 
 void Render::presentGame2(UpdatableGameState2 gameState, Map& map) {
+
+    auto mainPlayerPosition = SDL2pp::Point(
+        gameState.getEntityPositionX(mainPlayerID),
+        gameState.getEntityPositionY(mainPlayerID));
+
+
     xCenter = window.GetWidth() / 2;
     yCenter = window.GetHeight() / 2;
 
-    xReference = gameState.getEntityPositionX(mainPlayerID);
-    yReference = gameState.getEntityPositionY(mainPlayerID);
+    xReference = mainPlayerPosition.x - xCenter;
+    yReference = mainPlayerPosition.y - yCenter;
 
     // Renderizar mapa
     renderMap(map);
 
     // Renderiza ¿entidades? ¿solo jugadores?
-    gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter);
+    gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter, xReference, yReference);
 
     // Renderiza UI
 
@@ -68,8 +74,8 @@ void Render::renderMap(Map& map) {
     for (const BlockOnlyTexture& block : map_tiles) {
         renderer.Copy(
             TextureManager::getTile(block.texture), NullOpt,
-            Rect((block.coordinate.x) * sizeFactor - xReference + xCenter,
-                 (block.coordinate.y) * sizeFactor - yReference + yCenter,
+            Rect((block.coordinate.x) * sizeFactor - xReference,
+                 (block.coordinate.y) * sizeFactor - yReference,
                  sizeFactor, sizeFactor));
     }
 }

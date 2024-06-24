@@ -6,7 +6,7 @@
 #include "../../common/library/socket.h"
 #include "../../common/library/thread.h"
 // TODO: RENOMBRAR A LOBBY_MANAGER
-#include "../game/game_manager.h"
+#include "../game/lobby_manager.h"
 #include "server_client.h"
 
 #define SHUTDOWN_MODE 2

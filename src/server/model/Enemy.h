@@ -2,31 +2,38 @@
 #define ENEMY_H
 
 #include "Dynamic_entity.h"
+#include "Player.h"
 
 #define ENEMY_WIDTH 1
 #define ENEMY_HEIGHT 2
 #define ENEMY_MAX_MOVEMENT_RANGE 50
-#define GRAVITY 0.05
 #define SECONDS_UNTIL_RESPAWN 3
 
 class Enemy : public Dynamic_entity {
-private:
+   private:
     int movement_range;
-public:
-    Enemy(int id, float x_spawn, float y_spawn) : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
-                                                                 Config::get_crawler_speed(),
-                                                                 0, GRAVITY, true, Config::get_crawler_damage(), false,
-                                                                 Config::get_crawler_life(), true, true),
-                                                  movement_range(ENEMY_MAX_MOVEMENT_RANGE) {}
-    std::vector<Update::Update_new> tick(const Map& map,
-                                         std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) override {
+    Update::EntitySubtype subtype;
+
+   public:
+    Enemy(int id, float x_spawn, float y_spawn, Update::EntitySubtype subtype)
+        : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
+                         Config::get_crawler_speed(), 0, GRAVITY, true,
+                         Config::get_crawler_damage(), false,
+                         Config::get_crawler_life(), true, true),
+          movement_range(ENEMY_MAX_MOVEMENT_RANGE),
+          subtype(subtype) {}
+    std::vector<Update::Update_new> tick(
+        const Map& map,
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool,
+        int& next_id) override {
         std::vector<Update::Update_new> updates;
 
         if (!is_active) {
-            if (std::chrono::steady_clock::now() >= inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
+            if (std::chrono::steady_clock::now() >=
+                inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
                 revive(map.get_enemy_spawns());
                 updates.push_back(Update::Update_new::create_position(
-                        static_cast<uint16_t>(id), x_pos, y_pos));
+                    static_cast<uint16_t>(id), x_pos, y_pos));
             }
             return updates;
         }
@@ -58,7 +65,7 @@ public:
 
         if (x_pos != old_x || y_pos != old_y) {
             Update::Update_new update = Update::Update_new::create_position(
-                    static_cast<uint16_t>(id), x_pos, y_pos);
+                static_cast<uint16_t>(id), x_pos, y_pos);
             updates.push_back(update);
         }
 
@@ -68,19 +75,20 @@ public:
                 continue;
             }
 
-            if (dynamic_cast<Player*>(other.get()) && other->is_entity_damageable()) {
+            if (dynamic_cast<Player*>(other.get()) &&
+                other->is_entity_damageable()) {
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
                     updates.push_back(Update::Update_new::create_value(
-                            static_cast<uint16_t>(other->get_id()),
-                            Update::UpdateType::State,
-                            enums_value_update::Player_State_Enum::Dead));
+                        static_cast<uint16_t>(other->get_id()),
+                        Update::UpdateType::State,
+                        enums_value_update::Player_State_Enum::Dead));
                 } else {
                     updates.push_back(Update::Update_new::create_value(
-                            static_cast<uint16_t>(other->get_id()),
-                            Update::UpdateType::Health,
-                            static_cast<uint8_t>(health)));
+                        static_cast<uint16_t>(other->get_id()),
+                        Update::UpdateType::Health,
+                        static_cast<uint8_t>(health)));
                 }
 
                 return updates;
@@ -99,6 +107,8 @@ public:
         is_active = true;
         is_damageable = true;
     }
+
+    Update::EntitySubtype get_subtype() { return subtype; }
 };
 
-#endif //ENEMY_H
+#endif  // ENEMY_H
