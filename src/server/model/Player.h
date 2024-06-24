@@ -20,6 +20,8 @@
 #define GRAVITY 0.05
 #define SECONDS_UNTIL_RESPAWN 3
 #define SECONDS_IMMUNE_AFTER_DAMAGE 2
+#define SPECIAL_ATTACK_DAMAGE 30
+#define SPECIAL_ATTACK_SPEED 2
 
 #define MILLISECONDS_IN_A_MINUTE 60000
 
@@ -39,11 +41,14 @@ class Player : public Dynamic_entity {
     bool is_running;
     bool is_jumping;
     bool is_falling;
+
+    bool is_x_move_blocked;
+    bool is_y_move_blocked;
     std::chrono::steady_clock::time_point last_shot_time;
 public:
     Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true),
-          points(0), type(type), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), last_shot_time(std::chrono::steady_clock::time_point()) {
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, 0, true, 0, false, Config::get_player_max_health(), true),
+          points(0), type(type), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), is_x_move_blocked(false), is_y_move_blocked(false), last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
@@ -83,7 +88,7 @@ public:
             return updates;
         }
 
-        if (!is_damageable &&
+        if (!is_damageable && !is_doing_special &&
             std::chrono::steady_clock::now() >=
                 (inactive_time +
                  std::chrono::seconds(SECONDS_IMMUNE_AFTER_DAMAGE))) {
@@ -100,10 +105,22 @@ public:
         float old_y = y_pos;
 
         vel_y += acc_y;
+        vel_x += acc_x;
 
         // validar movimiento en X
         if (vel_x != 0) {
             x_pos += vel_x;
+
+            if (is_doing_special && ((direction == enums_value_update::Direction::Right && vel_x < 0)
+            || (direction == enums_value_update::Direction::Left && vel_x > 0))) {
+                is_doing_special = false;
+                damage_on_contact = 0;
+                is_damageable = true;
+                is_x_move_blocked = false;
+                is_y_move_blocked = false;
+                vel_x = 0;
+                acc_x = 0;
+            }
 
             if (collides_with_map(map)) {
                 x_pos -= vel_x;
@@ -120,6 +137,13 @@ public:
             if (vel_y > 0) {
                 is_falling = true;
                 is_jumping = false;
+                if (is_doing_special) {
+                    is_doing_special = false;
+                    damage_on_contact = 0;
+                    is_damageable = true;
+                    is_x_move_blocked = false;
+                    is_y_move_blocked = false;
+                }
             } else if (vel_y < 0) {
                 is_falling = false;
                 is_jumping = true;
@@ -215,29 +239,36 @@ public:
         std::vector<Update::Update_new> action_updates;
         switch (action) {
             case JUMP:
-                setYSpeed(Config::get_player_jump() * (-1));
-                is_jumping = true;
+                if (!is_y_move_blocked) {
+                    setYSpeed(Config::get_player_jump() * (-1));
+                    is_jumping = true;
+                    is_y_move_blocked = true;
+                }
                 break;
             case RUN_LEFT:
-                direction = enums_value_update::Direction::Left;
-                setXSpeed(Config::get_player_speed() * (-1));
-                action_updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                        ));
-                is_running = true;
+                if (!is_x_move_blocked) {
+                    direction = enums_value_update::Direction::Left;
+                    setXSpeed(Config::get_player_speed() * (-1));
+                    action_updates.push_back(Update::Update_new::create_value(
+                            id,
+                            Update::UpdateType::Direction,
+                            direction
+                    ));
+                    is_running = true;
+                }
                 break;
 
             case RUN_RIGHT:
-                direction = enums_value_update::Direction::Right;
-                setXSpeed(Config::get_player_speed());
-                action_updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                ));
-                is_running = true;
+                if (!is_x_move_blocked) {
+                    direction = enums_value_update::Direction::Right;
+                    setXSpeed(Config::get_player_speed());
+                    action_updates.push_back(Update::Update_new::create_value(
+                            id,
+                            Update::UpdateType::Direction,
+                            direction
+                    ));
+                    is_running = true;
+                }
                 break;
 
             case SHOOT:
@@ -258,18 +289,19 @@ public:
                 break;
 
             case SPECIAL:
-                // Not implemented: SPECIAL action
+                action_updates = special_action();
+                total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
                 break;
 
             case STOP_RUN_RIGHT:
-                if (vel_x > 0) {
+                if (vel_x > 0 && !is_x_move_blocked) {
                     vel_x = 0;
                     is_running = false;
                 }
                 break;
 
             case STOP_RUN_LEFT:
-                if (vel_x < 0) {
+                if (vel_x < 0 && !is_x_move_blocked) {
                     vel_x = 0;
                     is_running = false;
                 }
@@ -352,6 +384,58 @@ public:
         is_jumping = false;
         is_falling = false;
         is_damageable = true;
+        is_x_move_blocked = false;
+        is_y_move_blocked = false;
+    }
+
+    std::vector<Update::Update_new> special_action() {
+        std::vector<Update::Update_new> updates;
+
+        if (!is_active || !is_damageable) {
+            return updates;
+        }
+
+        switch (type) {
+            case Update::EntitySubtype::Jazz:
+                if (!is_y_move_blocked) {
+                    is_doing_special = true;
+                    damage_on_contact = SPECIAL_ATTACK_DAMAGE;
+                    is_jumping = true;
+                    is_damageable = false;
+                    is_x_move_blocked = true;
+                    is_y_move_blocked = true;
+                    setYSpeed(SPECIAL_ATTACK_SPEED * (-1));
+                }
+                break;
+            case Update::EntitySubtype::Spaz:
+                if (!is_x_move_blocked) {
+                    is_doing_special = true;
+                    damage_on_contact = SPECIAL_ATTACK_DAMAGE;
+                    is_damageable = false;
+                    is_x_move_blocked = true;
+                    is_y_move_blocked = true;
+                    setXSpeed(Config::get_player_speed() * (direction == enums_value_update::Direction::Left ? -1.0f : 1.0f));
+                    acc_x = GRAVITY * (direction == enums_value_update::Direction::Right ? -1.0f : 1.0f);
+                }
+                break;
+            case Update::EntitySubtype::Lori:
+                if (!is_y_move_blocked) {
+                    is_doing_special = true;
+                    damage_on_contact = SPECIAL_ATTACK_DAMAGE;
+                    is_jumping = true;
+                    is_damageable = false;
+                    is_y_move_blocked = true;
+                    setYSpeed(SPECIAL_ATTACK_SPEED * (-1));
+                }
+                break;
+            default:
+                break;
+        }
+
+
+
+
+        return updates;
     }
 
     enums_value_update::Player_State_Enum get_player_state() {

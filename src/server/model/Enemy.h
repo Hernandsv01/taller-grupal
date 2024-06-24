@@ -17,7 +17,7 @@ class Enemy : public Dynamic_entity {
    public:
     Enemy(int id, float x_spawn, float y_spawn, Update::EntitySubtype subtype)
         : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
-                         Config::get_crawler_speed(), 0, GRAVITY, true,
+                         Config::get_crawler_speed(), 0, 0, GRAVITY, true,
                          Config::get_crawler_damage(), false,
                          Config::get_crawler_life(), true),
           movement_range(ENEMY_MAX_MOVEMENT_RANGE),
