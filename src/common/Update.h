@@ -19,8 +19,6 @@ enum Player_State_Enum : uint8_t {
     Jumping,
     Falling,
     Running,
-    Intoxicated,
-    IntoxWalking,
     Dead,  // 3 seg hasta respawn
     TakingDamage,
     SpecialAttack

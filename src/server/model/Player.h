@@ -30,12 +30,18 @@ class Player : public Dynamic_entity {
     std::map<enums_value_update::Ammo_type, enums_value_update::Ammo_type> next_ammo_type;
     std::map<enums_value_update::Ammo_type, Ammo> ammo_config;
 
+    enums_value_update::Player_State_Enum current_state;
     bool is_shooting;
+    bool is_doing_special;
+    bool is_running;
+    bool is_jumping;
+    bool is_falling;
+    bool is_damaged;
     std::chrono::steady_clock::time_point last_shot_time;
 public:
     Player(int id, float x_spawn, float y_spawn)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true, true),
-          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), last_shot_time(std::chrono::steady_clock::time_point()) {
+          points(0), current_ammo_type(enums_value_update::Ammo_type::NORMAL), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), is_damaged(false), last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
@@ -61,6 +67,7 @@ public:
                 revive(map.get_player_spawns());
                 updates.push_back(Update::Update_new::create_position(
                     static_cast<uint16_t>(id), x_pos, y_pos));
+
             }
             return updates;
         }
@@ -238,6 +245,15 @@ public:
             ammo[current_ammo_type]--;
         }
 
+        enums_value_update::Player_State_Enum new_player_state = get_player_state();
+        if (new_player_state != current_state) {
+            updates.push_back(Update::Update_new::create_value(
+                    id,
+                    Update::UpdateType::State,
+                    new_player_state
+                    ));
+        }
+
         return updates;
     }
 
@@ -257,6 +273,24 @@ public:
 
         health = Config::get_player_max_health();
         is_active = true;
+    }
+
+    enums_value_update::Player_State_Enum get_player_state() {
+        if (is_damaged) {
+            return enums_value_update::Player_State_Enum::TakingDamage;
+        } else if (is_shooting) {
+            return enums_value_update::Player_State_Enum::Shooting;
+        } else if (is_doing_special) {
+            return enums_value_update::Player_State_Enum::SpecialAttack;
+        } else if (is_jumping) {
+            return enums_value_update::Player_State_Enum::Jumping;
+        } else if (is_falling) {
+            return enums_value_update::Player_State_Enum::Falling;
+        } else if (is_running) {
+            return enums_value_update::Player_State_Enum::Running;
+        } else {
+            return enums_value_update::Player_State_Enum::Idle;
+        }
     }
 
     void delete_pickup(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int pickup_id) {
