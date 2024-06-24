@@ -44,11 +44,11 @@ enemy:
   crawler: 
     count: 10  # int
     life: 50   # int
-    speed: 20  # float
+    speed: 0.1  # float
     damage: 10 # int
   
 
 player: 
   speed: 0.25       # float
-  jump: 3        # int
+  jump: 1        # int
   max_healh: 100 # int
