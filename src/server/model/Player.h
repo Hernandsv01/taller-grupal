@@ -41,7 +41,7 @@ class Player : public Dynamic_entity {
     bool is_falling;
     std::chrono::steady_clock::time_point last_shot_time;
 public:
-    Player(int id, float x_spawn, float y_spawn)
+    Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true, true),
           points(0), type(type), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
@@ -90,17 +90,10 @@ public:
             is_damageable = true;
         }
 
-        if (is_shooting &&
-            std::chrono::steady_clock::now() >=
-                (last_shot_time +
-                 std::chrono::milliseconds(
-                     MILLISECONDS_IN_A_MINUTE /
-                     ammo_config[current_ammo_type].get_rate_of_fire()))) {
-            std::vector<Update::Update_new> shoot_update =
-                shoot(entity_pool, next_id);
+        if (is_shooting && std::chrono::steady_clock::now() >= (last_shot_time + std::chrono::milliseconds( MILLISECONDS_IN_A_MINUTE / ammo_config[current_ammo_type].get_rate_of_fire()))) {
+            std::vector<Update::Update_new> shoot_update = shoot(entity_pool, next_id);
             last_shot_time = std::chrono::steady_clock::now();
-            updates.insert(updates.end(), shoot_update.begin(),
-                           shoot_update.end());
+            updates.insert(updates.end(), shoot_update.begin(), shoot_update.end());
         }
 
         float old_x = x_pos;
@@ -117,20 +110,22 @@ public:
             }
         }
 
-        // validar movimiento en Y
         if (vel_y != 0) {
-            if (vel_y > 0) {
-                is_falling = true;
-                is_jumping = false;
-            } else {
-                is_falling = false;
-                is_jumping = true;
-            }
             y_pos += vel_y;
 
             if (collides_with_map(map)) {
                 y_pos -= vel_y;
                 vel_y = 0;
+            }
+            if (vel_y > 0) {
+                is_falling = true;
+                is_jumping = false;
+            } else if (vel_y < 0) {
+                is_falling = false;
+                is_jumping = true;
+            } else {
+                is_falling = false;
+                is_jumping = false;
             }
         }
 
@@ -199,6 +194,16 @@ public:
                 delete_pickup(entity_pool, pickup->get_id());
             }
         }
+
+        enums_value_update::Player_State_Enum new_player_state = get_player_state();
+        if (new_player_state != current_state) {
+            current_state = new_player_state;
+            updates.push_back(Update::Update_new::create_value(
+                    id,
+                    Update::UpdateType::State,
+                    new_player_state
+            ));
+        }
         return updates;
     }
 
@@ -224,9 +229,10 @@ public:
                 break;
 
             case SHOOT:
-                action_updates = shoot(entity_pool, next_id);
-                total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
                 is_shooting = true;
+                action_updates = shoot(entity_pool, next_id);
+                last_shot_time = std::chrono::steady_clock::now();
+                total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
                 break;
 
             case STOP_SHOOT:
@@ -284,27 +290,11 @@ public:
             speed *= -1;
         }
 
-        std::cout << "-----------------------------------------" << std::endl;
-        std::cout << "Creando bullet en X=" << x_spawn << " Y=" << y_spawn
-                  << std::endl;
-        std::cout << "Player en (" << x_pos << "," << y_pos << ")" << std::endl;
-        entity_pool.push_back(
-            std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
-        updates.push_back(Update::Update_new::create_create_entity(
-            next_id, Update::EntityType::Bullet,
-            Update::EntitySubtype::No_subtype));
+        entity_pool.push_back(std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
+        updates.push_back(Update::Update_new::create_create_entity(next_id, Update::EntityType::Bullet,Update::EntitySubtype::No_subtype));
         next_id++;
         if (current_ammo_type != enums_value_update::Ammo_type::NORMAL) {
             ammo[current_ammo_type]--;
-        }
-
-        enums_value_update::Player_State_Enum new_player_state = get_player_state();
-        if (new_player_state != current_state) {
-            updates.push_back(Update::Update_new::create_value(
-                    id,
-                    Update::UpdateType::State,
-                    new_player_state
-                    ));
         }
 
         return updates;
