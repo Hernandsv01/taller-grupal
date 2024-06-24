@@ -8,11 +8,14 @@
 
 GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
     : Thread("GuiLoop cliente"),
-      currentTick(0),
+      clock(),
       windowForRender(window),
-      map(Map::fromYaml(map_name)),
+      render(nullptr),
+      gameState(),  
+    // updatableGameState(?),
       mainId(player_id),
-      gameState(){
+      currentTick(0),
+      map(Map::fromYaml(map_name)){
           // Harcodeo un player dummy. En la version final del juego, esto lo
           // recibiría del servidor.
       };
@@ -123,33 +126,34 @@ void GuiLoop::updateGameState() {
     // aplicar de a una las updates en orden (las ultimas son las más
     // recientes).
     // Si no hay ninguna update, no se updatea nada.
-    static bool paso = false;
 
-    if (!paso) {
-        std::vector<std::pair<Update::EntityType, Update::EntitySubtype>>
-            entities = {
-                {Update::EntityType::Player, Update::EntitySubtype::Jazz},
-                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
-                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy2},
-                {Update::EntityType::Enemy, Update::EntitySubtype::Enemy3},
-                {Update::EntityType::Bullet, Update::EntitySubtype::No_subtype},
-                {Update::EntityType::Item, Update::EntitySubtype::Coin},
-                {Update::EntityType::Item, Update::EntitySubtype::Carrot},
-                {Update::EntityType::Item, Update::EntitySubtype::Light},
-                {Update::EntityType::Item, Update::EntitySubtype::Power},
-                {Update::EntityType::Item, Update::EntitySubtype::Heavy}};
-        int id = 100;
-        int position = 10;
-        for (auto entity : entities) {
-            all_updates.emplace_back(Update::Update_new::create_create_entity(
-                id, entity.first, entity.second));
-            all_updates.emplace_back(
-                Update::Update_new::create_position(id, position, 0));
-            id++;
-            position += 10;
-        }
-        paso = true;
-    }
+    // static bool paso = false;
+    // if (!paso) {
+    //     std::vector<std::pair<Update::EntityType, Update::EntitySubtype>>
+    //         entities = {};
+    //         // {
+    //     //         {Update::EntityType::Player, Update::EntitySubtype::Jazz},
+    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy2},
+    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy3},
+    //     //         {Update::EntityType::Bullet, Update::EntitySubtype::No_subtype},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Coin},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Carrot},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Light},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Power},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Heavy}};
+    //     int id = 100;
+    //     int position = 10;
+    //     for (auto entity : entities) {
+    //         all_updates.emplace_back(Update::Update_new::create_create_entity(
+    //             id, entity.first, entity.second));
+    //         all_updates.emplace_back(
+    //             Update::Update_new::create_position(id, position, 0));
+    //         id++;
+    //         position += 10;
+    //     }
+    //     paso = true;
+    // }
 
     for (Update::Update_new update : all_updates) {
         gameState.handleUpdate(update, currentTick);

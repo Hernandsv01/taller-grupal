@@ -6,8 +6,8 @@
 
 #include "ui_mainwindow.h"
 
-#ifndef MAP_PATH
-#define MAP_PATH ""
+#ifndef MAP_PATH_LOBBY
+#define MAP_PATH_LOBBY ""
 #endif
 
 MainWindow::MainWindow(Lobby& lobby) : lobby(lobby), ui(new Ui::MainWindow) {
@@ -27,7 +27,7 @@ MainWindow::MainWindow(Lobby& lobby) : lobby(lobby), ui(new Ui::MainWindow) {
 MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::populateMapSelection() {
-    QDirIterator it(MAP_PATH, QDirIterator::IteratorFlag::Subdirectories);
+    QDirIterator it(MAP_PATH_LOBBY, QDirIterator::IteratorFlag::Subdirectories);
 
     while (it.hasNext()) {
         QString file_path = it.next();

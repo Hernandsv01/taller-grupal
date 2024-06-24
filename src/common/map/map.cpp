@@ -196,6 +196,7 @@ std::vector<Coordinate> Map::get_player_spawns() const {
         return block.collision == Collision::PlayerSpawn;
     });
 }
+
 std::vector<Coordinate> Map::get_enemy_spawns() const {
     return get_coord_of_blocks_with_condition([](const Block& block) {
         return block.collision == Collision::EnemySpawn;
