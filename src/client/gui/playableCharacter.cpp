@@ -54,10 +54,10 @@ void PlayableCharacter::updateState(const std::string &newState) {
 }
 
 void PlayableCharacter::renderize(SDL2pp::Renderer &renderer, const int &xRef,
-                                  const int &yRef, const int &xCenterWnd,
-                                  const int &yCenterWnd) {
-    int xPosInRender = positionX - xRef + xCenterWnd;
-    int yPosInRender = (positionY - yRef + yCenterWnd) * (-1) + yCenterWnd * 2;
+                                  const int &yRef) {
+                                    
+    int xPosInRender = positionX - xRef;
+    int yPosInRender = positionY - yRef;
     int turntoLeft = (isRight) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
     renderer.Copy(
@@ -68,12 +68,15 @@ void PlayableCharacter::renderize(SDL2pp::Renderer &renderer, const int &xRef,
                      spriteSize, spriteSize),
         0.0, SDL2pp::NullOpt, turntoLeft);
 
+    renderer.FillRect(
+        SDL2pp::Rect(xPosInRender-2, yPosInRender-2, 5, 5));
+
     actualSpriteNumber = (actualSpriteNumber + 1) % spriteLenght;
 }
 
 void PlayableCharacter::renderMainPj(SDL2pp::Renderer &renderer,
-                                     const int &xCenter, const int &yCenter) {
-    renderize(renderer, positionX, positionY, xCenter, yCenter);
+                                     const int &xRef, const int &yRef) {
+    renderize(renderer, xRef, yRef);
 }
 
 void PlayableCharacter::showHud(SDL2pp::Renderer &renderer,

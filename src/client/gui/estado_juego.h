@@ -56,8 +56,8 @@ class UpdatableGameState2 {
                           << std::to_string(update.getPositionX()) << ","
                           << std::to_string(update.getPositionY()) << std::endl;
 
-                int xPosition = update.getPositionX() * FACTOR_TAMANIO;
-                int yPosition = update.getPositionY() * FACTOR_TAMANIO;
+                int xPosition = update.getPositionX() * (float)FACTOR_TAMANIO;
+                int yPosition = update.getPositionY() * (float)FACTOR_TAMANIO;
                 updatePosition(update.get_id(), xPosition, yPosition);
                 break;
             }
@@ -117,16 +117,15 @@ class UpdatableGameState2 {
     }
 
     void copyAllEntities(SDL2pp::Renderer &renderer, const int &mainId,
-                         const int &xCenter, const int &yCenter) {
+                         const int &xCenter, const int &yCenter, const int& xReference, const int& yReference) {
         const auto &mainPlayer = gameState.at(mainId);
-        const int xRef = mainPlayer->getPosX();
-        const int yRef = mainPlayer->getPosY();
+
         for (auto &pair : gameState) {
             if (isNotMain(pair.first, mainId)) {
-                pair.second->renderize(renderer, xRef, yRef, xCenter, yCenter);
+                pair.second->renderize(renderer, xReference, yReference);
             }
         }
-        mainPlayer->renderMainPj(renderer, xCenter, yCenter);
+        mainPlayer->renderMainPj(renderer, xReference, yReference);
         mainPlayer->showHud(renderer, xCenter * 2, yCenter * 2);
     }
 

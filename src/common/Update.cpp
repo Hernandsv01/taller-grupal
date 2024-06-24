@@ -244,11 +244,11 @@ Update::EntitySubtype Update_new::getEntitySubType() {
     return entity_subtype_value;
 }
 
-int Update_new::getPositionX() {
+float Update_new::getPositionX() {
     return x;
 }
 
-int Update_new::getPositionY() {
+float Update_new::getPositionY() {
     return y;
 }
 

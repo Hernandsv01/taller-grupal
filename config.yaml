@@ -49,6 +49,6 @@ enemy:
   
 
 player: 
-  speed: 1       # float
+  speed: 0.25       # float
   jump: 3        # int
   max_healh: 100 # int

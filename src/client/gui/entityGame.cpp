@@ -17,10 +17,9 @@ int Entity2::getPosX() const { return positionX; }
 int Entity2::getPosY() const { return positionY; }
 
 void Entity2::renderize(SDL2pp::Renderer &renderer, const int &xRef,
-                        const int &yRef, const int &xCenter,
-                        const int &yCenter) {
-    int xPosInRender = positionX - xRef + xCenter;
-    int yPosInRender = (positionY - yRef + yCenter) * (-1) + yCenter * 2;
+                        const int &yRef) {
+    int xPosInRender = positionX - xRef;
+    int yPosInRender = positionY - yRef;
     int turntoLeft = (isRight) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
     auto current_texture = TextureManager::getEntityTexture(texture);
@@ -36,6 +35,9 @@ void Entity2::renderize(SDL2pp::Renderer &renderer, const int &xRef,
         SDL2pp::Rect(xPosInRender - texture_size / 2,
                      (yPosInRender - texture_size), texture_size, texture_size),
         0.0, SDL2pp::NullOpt, turntoLeft);
+
+    renderer.FillRect(
+        SDL2pp::Rect(xPosInRender-2, yPosInRender-2, 5, 5));
 
     actualSpriteNumber = (actualSpriteNumber + 1) % num_animation_frames;
 }

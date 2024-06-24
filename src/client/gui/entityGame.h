@@ -24,8 +24,7 @@ class Entity2 {
     virtual int getPosY() const;
 
     virtual void renderize(SDL2pp::Renderer &renderer, const int &xRef,
-                           const int &yRef, const int &xCenter,
-                           const int &yCenter);
+                           const int &yRef);
 
     virtual void renderMainPj(SDL2pp::Renderer &renderer, const int &xCenter,
                               const int &yCenter) {};
