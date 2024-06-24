@@ -6,8 +6,7 @@
 
 #define HUD "Hud"
 #define STAND "Stand"
-#define WEAPON "Weapon"
-#define DEFAULTWEAPON "Default"
+#define DEFAULTWEAPON "weaponNormal"
 #define INF "infinity"
 #define SPACETOBORDER 5
 #define MAXSCOREDIGIT 7
@@ -25,7 +24,7 @@ PlayableCharacter::PlayableCharacter(const std::string &type)
       ammoQuantity(-1),
 
       weaponTexture(
-          TextureManager::getTexture(std::string(WEAPON) + DEFAULTWEAPON)),
+          TextureManager::getEntityTexture(std::string(DEFAULTWEAPON))),
       weaponSpriteNumber(0),
 
       stateTexture(TextureManager::getTexture(characterType + state)),
@@ -45,13 +44,17 @@ void PlayableCharacter::updateHealth(const int &newHealthPoint) {
 void PlayableCharacter::updateScore(const int &newScore) { score = newScore; }
 
 void PlayableCharacter::updateState(const std::string &newState) {
-    std::string newTexture;
     if (newState != state) {
         actualSpriteNumber = 0;
         stateTexture = TextureManager::getTexture(characterType + newState);
         spriteSize = stateTexture->GetHeight();
         spriteLenght = stateTexture->GetWidth() / spriteSize;
     }
+}
+
+void PlayableCharacter::updateWeapon(const std::string &newWeapon) {
+    weaponTexture = TextureManager::getEntityTexture(newWeapon);
+    weaponSpriteNumber = 0;
 }
 
 void PlayableCharacter::renderize(SDL2pp::Renderer &renderer, const int &xRef,

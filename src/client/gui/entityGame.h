@@ -37,6 +37,8 @@ class Entity2 {
 
     virtual void updateHealth(const int &newHealth) {};
 
+    virtual void updateWeapon(const std::string &newWeapon) {};
+
     virtual void updateDirection(bool &isFacingRight) {
         isRight = isFacingRight;
     };

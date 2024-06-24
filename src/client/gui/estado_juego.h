@@ -99,7 +99,7 @@ class UpdatableGameState2 {
 
             case Update::ChangeAmmoType: {
                 int weaponType = update.get_value();
-                updateWeapon()
+                updateWeapon(update.get_id(), update.get_value());
                 break;
             }
 
@@ -177,6 +177,28 @@ class UpdatableGameState2 {
     void updateScore(const int &id, const int &score) {
         std::shared_ptr<Entity2> &entity = gameState.at(id);
         entity->updateHealth(score);
+    }
+
+    void updateWeapon(const int &id, const int &weaponCode) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        std::string weaponName;
+        switch (weaponCode) {
+            case (Update::Ammo_type::NORMAL):
+                weaponName = "weaponNormal";
+                break;
+            case (Update::Ammo_type::LIGHT):
+                weaponName = "weaponLight";
+                break;
+            case (Update::Ammo_type::HEAVY):
+                weaponName = "weaponHeavy";
+                break;
+            case (Update::Ammo_type::POWER):
+                weaponName = "weaponPower";
+                break;
+            default:
+                break;
+        }
+        entity->updateWeapon(weaponName);
     }
 
     int getEntityPositionX(int id) const {
