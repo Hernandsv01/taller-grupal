@@ -76,6 +76,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
     sudo apt-get install -y xubuntu-desktop
+    sudo usermod -a -G sudo vagrant
     sudo shutdown -r now
   SHELL
 
