@@ -36,6 +36,7 @@ const std::vector<std::string> posibleStates = {
 class UpdatableGameState2 {
    private:
     std::map<int, std::shared_ptr<Entity2>> gameState;
+    int remainingSeconds = 0;
 
    public:
     explicit UpdatableGameState2() {
@@ -92,14 +93,13 @@ class UpdatableGameState2 {
             }
 
             case Update::RemainingSeconds: {
-                // TODO
-                // No se que hacer con esto
+                remainingSeconds = update.get_value();
                 break;
             }
 
             case Update::ChangeAmmoType: {
-                // TODO
-                // No se que hacer con esto
+                int weaponType = update.get_value();
+                updateWeapon()
                 break;
             }
 
@@ -126,7 +126,7 @@ class UpdatableGameState2 {
             }
         }
         mainPlayer->renderMainPj(renderer, xCenter, yCenter);
-        mainPlayer->showHud(renderer, xCenter*2, yCenter*2);
+        mainPlayer->showHud(renderer, xCenter*2, yCenter*2, remainingSeconds);
     }
 
     /*
