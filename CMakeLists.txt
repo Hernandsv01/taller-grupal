@@ -16,6 +16,8 @@ add_subdirectory(src/editor_niveles)
 
 add_subdirectory(src/common/map)
 
+add_subdirectory(src/client/matchEndedGui)
+
 
 include_directories(src/client)
 include_directories(src/client/gui)
@@ -110,8 +112,8 @@ src/server/clients/server_client.cpp
         src/server/model/Bullet.h
         src/server/model/Pickup.h
         src/server/model/constants/pickup_type.h
-        src/server/game/game_manager.h
-        src/server/game/game_manager.cpp
+        src/server/game/lobby_manager.h
+        src/server/game/lobby_manager.cpp
         src/server/game/lobby_protocol.h
         src/server/game/lobby_protocol.cpp
         src/server/game_pool_monitor.h
@@ -128,8 +130,11 @@ find_package(Threads REQUIRED)
 target_link_libraries(server PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE Threads::Threads)
 target_link_libraries(client PRIVATE GuiLobby)
+target_link_libraries(client PRIVATE MatchEndedGui)
+
 #target_link_libraries(testsdl PRIVATE Threads::Threads)
 target_link_libraries(server PRIVATE map)
+target_link_libraries(client PRIVATE map)
 
 
 set(SDL2PP_WITH_IMAGE YES)

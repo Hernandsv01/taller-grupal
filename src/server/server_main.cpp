@@ -2,7 +2,7 @@
 
 #include "Game.h"
 #include "clients/client_listener.h"
-#include "game/game_manager.h"
+#include "game/lobby_manager.h"
 #include "game_pool_monitor.h"
 
 int main(int argc, char* argv[]) {
@@ -16,6 +16,8 @@ int main(int argc, char* argv[]) {
     //version con game manager
     //no deberia tener el puerto hardcodeado!
     Socket socket(puerto);
+
+    Config::load_config("./config.yaml");
     
     GamePoolMonitor game_pool_monitor;
 

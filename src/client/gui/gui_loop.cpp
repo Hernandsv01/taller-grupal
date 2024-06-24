@@ -8,11 +8,13 @@
 
 GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
     : Thread("GuiLoop cliente"),
-      currentTick(0),
+      clock(),
       windowForRender(window),
-      mapName(map_name),
+      render(nullptr),
+      gameState(),
       mainId(player_id),
-      gameState(){
+      currentTick(0),
+      map(Map::fromYaml(map_name)){
           // Harcodeo un player dummy. En la version final del juego, esto lo
           // recibiría del servidor.
       };
@@ -34,21 +36,21 @@ GuiLoop::~GuiLoop() {
 
 void GuiLoop::run() {
     ////////   Harcodeo un mapa   ////////
-    int groundPosY = 0;
-    std::vector<Position> positionGround;
-    for (int i = 0; i < 640; i += 32) {
-        positionGround.push_back(Position{i, groundPosY});
-    }
-    std::vector<Position> positionUnder;
-    for (int i = 0; i < 640; i += 32) {
-        positionUnder.push_back(Position{i, 64});
-    }
-    MapInfo mapInfo;
-    mapInfo.mapTexture = Diamond;
-    mapInfo.typeOfGround = RightSign;
-    mapInfo.groundPosition = positionGround;
-    mapInfo.typeOfUnder = RedDiamond;
-    mapInfo.underPosition = positionUnder;
+    // int groundPosY = 0;
+    // std::vector<Position> positionGround;
+    // for (int i = 0; i < 640; i += 32) {
+    //     positionGround.push_back(Position{i, groundPosY});
+    // }
+    // std::vector<Position> positionUnder;
+    // for (int i = 0; i < 640; i += 32) {
+    //     positionUnder.push_back(Position{i, 64});
+    // }
+    // MapInfo mapInfo;
+    // mapInfo.mapTexture = Diamond;
+    // mapInfo.typeOfGround = RightSign;
+    // mapInfo.groundPosition = positionGround;
+    // mapInfo.typeOfUnder = RedDiamond;
+    // mapInfo.underPosition = positionUnder;
     //////////////
 
     // Estoy obligado a construir el renderer acá, porque para que el renderer
@@ -58,7 +60,7 @@ void GuiLoop::run() {
 
     using namespace std::chrono;
     time_point tickInitialTime = clock.now();
-    while (this->keep_running()) {
+    while (this->keep_running() && !matchEnded) {
         /*
     tickInitialTime     tickEndTime
             ↓               ↓
@@ -70,6 +72,7 @@ void GuiLoop::run() {
         time_point tickEndTime = tickInitialTime + TICK_DURATION;
 
         updateGameState();
+        matchEnded = gameState.hasMatchEnded();
 
         time_point currentTime = clock.now();
         bool isTimeLeftInTick = currentTime <= tickEndTime;
@@ -80,7 +83,7 @@ void GuiLoop::run() {
             // En el caso de que ya haya consumido todo el tiempo del tick
             // actual, Decido ni siquiera ejecutar el renderer para , tal vez,
             // llegar al proximo tick a tiempo.
-            runRenderer(mapInfo);
+            runRenderer();
         } else {
 #ifndef NDEBUG
             std::cout << "Render cancelado. ";
@@ -123,13 +126,42 @@ void GuiLoop::updateGameState() {
     // aplicar de a una las updates en orden (las ultimas son las más
     // recientes).
     // Si no hay ninguna update, no se updatea nada.
+
+    // static bool paso = false;
+    // if (!paso) {
+    //     std::vector<std::pair<Update::EntityType, Update::EntitySubtype>>
+    //         entities = {};
+    //         // {
+    //     //         {Update::EntityType::Player, Update::EntitySubtype::Jazz},
+    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
+    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy2},
+    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy3},
+    //     //         {Update::EntityType::Bullet, Update::EntitySubtype::No_subtype},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Coin},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Carrot},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Light},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Power},
+    //     //         {Update::EntityType::Item, Update::EntitySubtype::Heavy}};
+    //     int id = 100;
+    //     int position = 10;
+    //     for (auto entity : entities) {
+    //         all_updates.emplace_back(Update::Update_new::create_create_entity(
+    //             id, entity.first, entity.second));
+    //         all_updates.emplace_back(
+    //             Update::Update_new::create_position(id, position, 0));
+    //         id++;
+    //         position += 10;
+    //     }
+    //     paso = true;
+    // }
+
     for (Update::Update_new update : all_updates) {
         gameState.handleUpdate(update, currentTick);
         // updatableGameState.handleUpdate(update, currentTick);
     }
 }
 
-void GuiLoop::runRenderer(MapInfo& mapInfo) {
+void GuiLoop::runRenderer() {
     // Genero un nuevo estado apto para que lo consuma el renderer
     // GameStateRenderer gameStateRenderer =
     //    updatableGameState.getStateRenderer(currentTick);
@@ -139,10 +171,16 @@ void GuiLoop::runRenderer(MapInfo& mapInfo) {
             "Se debe inicializar el render antes de usarlo");
 
     // render->presentGame(gameStateRenderer, mapInfo);
-    render->presentGame2(gameState, mapInfo);
+    render->presentGame2(gameState, map);
     // std::cout << "tick: " << tick_actual << "\n";
     // std::cout << "(" << gameStateRenderer.mainPlayer.position.x
     // << ", "
     //           << gameStateRenderer.mainPlayer.position.y << ")"
     //           << std::endl;
+}
+
+bool GuiLoop::hasMatchEnded() { return matchEnded; }
+
+std::vector<std::tuple<int, std::string, int>> GuiLoop::getPlayersScores() {
+    return gameState.getPlayersScores();
 }

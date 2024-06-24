@@ -116,6 +116,10 @@ public:
     // cuadrante apunta hacia arriba, abajo, izquiqeda o derecha.
     //  Determino el cuadrante en el que está el punto.
     Direccion esta_en_direccion(Point punto);
+
+    float getXPos() const { return x_pos; }
+    
+    float getYPos() const { return y_pos; }
 };
 
 class RigidTriangle {

@@ -65,7 +65,7 @@ endif()
 
 add_library(GuiLobby STATIC ${PROJECT_SOURCES})
 
-target_compile_definitions(GuiLobby PUBLIC MAP_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../maps/")
+target_compile_definitions(GuiLobby PUBLIC MAP_PATH_LOBBY="${CMAKE_CURRENT_SOURCE_DIR}/../maps/")
 
 
 target_link_libraries(GuiLobby PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)
@@ -83,7 +83,7 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(lobby_client)
 endif()
 
-
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 add_executable(moc_server moc_server.cpp ../common/library/liberror.cpp
 ../common/library/liberror.h
 ../common/library/resolver.cpp
@@ -93,3 +93,4 @@ add_executable(moc_server moc_server.cpp ../common/library/liberror.cpp
 ../common/library/closedconectionerror.h
 ../common/library/socket.cpp
 ../common/library/socket.h)
+endif()

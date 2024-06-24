@@ -11,6 +11,7 @@
 #include <chrono>
 
 #include "../../common/library/thread.h"
+#include "../../common/map/map.h"
 #include "estado_juego.h"
 #include "render.h"
 
@@ -21,18 +22,24 @@ class GuiLoop : public Thread {
     Render* render = nullptr;
 
     UpdatableGameState2 gameState;
-    UpdatableGameState updatableGameState;
+    //UpdatableGameState updatableGameState;
 
     int mainId;
 
     uint32_t currentTick;
 
-    std::string mapName;
+    Map map;
+
+    bool matchEnded = false;
 
    public:
     // GuiLoop();
     explicit GuiLoop(Window& window, uint16_t player_id, std::string map_name);
     ~GuiLoop();
+
+    bool hasMatchEnded();
+
+    std::vector<std::tuple<int, std::string, int>> getPlayersScores();
 
    private:
     void run() override;
@@ -41,7 +48,7 @@ class GuiLoop : public Thread {
 
     void stop_custom() override;
 
-    void runRenderer(MapInfo& mapInfo);
+    void runRenderer();
 
     void updateGameState();
 };
