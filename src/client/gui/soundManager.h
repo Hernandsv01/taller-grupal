@@ -16,10 +16,10 @@ private:
 public:
     static void Init();
     static void Cleanup();
-    static Mix_Music* LoadMusic(const std::string& soundFilePath);
-    static void PlayMusic(Mix_Music* music, int loops);
-    static void StopMusic();
-    static void SetMusicVolume(int volume); //0-128
+    static Mix_Chunk* LoadMusic(const std::string& soundFilePath);
+    static void PlayMusic(Mix_Chunk* music, int channel, int loops);
+    static void StopMusic(int channel);
+    static void SetMusicVolume(int channel, int volume); //0-128
 
 };
 

@@ -15,22 +15,32 @@
 /**/
 int main(int argc, char* argv[]) {
     SoundManager::Init();
-    Mix_Music* music = SoundManager::LoadMusic("/home/lara/Desktop/Taller/taller-grupal/src/client/gui/testfiles/prueba.mp3");
-    Mix_Music* music2 = SoundManager::LoadMusic("/home/lara/Desktop/Taller/taller-grupal/src/client/gui/testfiles/prueba.mp3");
-    if (!music || music2) {
+    Mix_Chunk* music = SoundManager::LoadMusic("/home/lara/Desktop/Taller/taller-grupal/src/client/gui/testfiles/prueba.mp3");
+    if (!music ) {
         SoundManager::Cleanup();
         return 1;
     }
 
-    SoundManager::SetMusicVolume(20); //20% 
+    SoundManager::SetMusicVolume(0, 20); //20% 
 
-    SoundManager::PlayMusic(music, -1); 
-    SoundManager::PlayMusic(music2, 1); 
+    SoundManager::PlayMusic(music, 0, -1); 
+    Mix_Chunk* music2 = SoundManager::LoadMusic("/home/lara/Desktop/Taller/taller-grupal/src/client/gui/data/pop.mp3");
+
+    if (!music2 ) {
+        SoundManager::Cleanup();
+        return 1;
+    }
+    SoundManager::PlayMusic(music2, 1, 0); 
+    SoundManager::SetMusicVolume(1, 50); //50% 
     std::cout << "Press Enter to stop the music..." << std::endl;
     std::cin.get();
-    SoundManager::StopMusic();
-    Mix_FreeMusic(music);
-    SoundManager::Cleanup();
+    SoundManager::StopMusic(0);
+    Mix_FreeChunk(music); 
+    
+    SoundManager::StopMusic(1);
+    Mix_FreeChunk(music2);
+    Mix_CloseAudio();
+    SDL_Quit();
 
     return 0;
 }

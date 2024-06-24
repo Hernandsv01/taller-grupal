@@ -21,32 +21,36 @@ void SoundManager::Init() {
 }
 
 void SoundManager::Cleanup() {
-    for (auto& pair : sounds) {
-        Mix_FreeMusic(pair.second);
-    }
-    sounds.clear();
+//     for (auto& pair : sounds) {
+//         Mix_FreeChunk(pair.second);
+//     }
+//     sounds.clear();
 
-    Mix_CloseAudio();
-    SDL_Quit();
+//     Mix_CloseAudio();
+//     SDL_Quit();
 }
 
-Mix_Music* SoundManager::LoadMusic(const std::string& soundFilePath) {
-    Mix_Music* music = Mix_LoadMUS(soundFilePath.c_str());
+Mix_Chunk* SoundManager::LoadMusic(const std::string& soundFilePath) {
+    Mix_Chunk* music = Mix_LoadWAV(soundFilePath.c_str());
     return music;
 }
 
-void SoundManager::PlayMusic(Mix_Music* music, int loops) {
-    if (Mix_PlayMusic(music, loops) == -1) {
-        std::cerr << "Failed to play music! SDL_mixer Error: " << Mix_GetError() << std::endl;
-    }
+// void SoundManager::PlayMusic(Mix_Music* music, int loops) {
+//     if (Mix_PlayMusic(music, loops) == -1) {
+//         std::cerr << "Failed to play music! SDL_mixer Error: " << Mix_GetError() << std::endl;
+//     }
+// }
+
+void SoundManager::PlayMusic(Mix_Chunk* sound, int channel, int loops) {
+    Mix_PlayChannel(channel, sound, loops);
 }
 
-void SoundManager::StopMusic() {
-    Mix_HaltMusic();
+void SoundManager::StopMusic(int channel) {
+    Mix_HaltChannel(channel);
 }
 
-void SoundManager::SetMusicVolume(int volume) {
-    Mix_VolumeMusic(volume); 
+void SoundManager::SetMusicVolume(int channel,int volume) {
+    Mix_Volume(channel, volume); 
 }
 
 
