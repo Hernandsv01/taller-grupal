@@ -59,20 +59,20 @@ class Server_Client {
     Socket skt;
     Client_receiver receiver;
     Client_sender sender;
-    int player_position;
+    int id;
 
    public:
-    explicit Server_Client(Socket&& socket)
+    explicit Server_Client(int id, Socket&& socket)
         : skt(std::move(socket)),
           receiver(skt),
           sender(skt),
-          player_position(0) {
+          id(id) {
         receiver.start();
         sender.start();
     }
     Client_sender& getSender() { return sender; }
     Client_receiver& getReceiver() { return receiver; }
-    int get_player_position() { return player_position; }
+    int get_id() { return id; }
     ~Server_Client() {
         skt.close_and_shutdown();
 

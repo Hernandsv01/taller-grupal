@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
         uint8_t match_to_connect;
 
         if (avaibleMatches.empty()) {
-            match_to_connect = lobby.createMatch("testmap", "Partida1");
+            match_to_connect = lobby.createMatch("map3", "Partida1");
         } else {
             match_to_connect = avaibleMatches[0].id;
         }

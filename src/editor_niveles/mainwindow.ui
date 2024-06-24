@@ -679,7 +679,7 @@
                             </layout>
                         </widget>
                         <widget class="QWidget" name="EditarMapa">
-                            <layout class="QHBoxLayout" name="horizontalLayout">
+                            <layout class="QHBoxLayout" name="horizontalLayout_5">
                                 <item>
                                     <widget class="QWidget" name="editorContainer" native="true">
                                         <property name="sizePolicy">

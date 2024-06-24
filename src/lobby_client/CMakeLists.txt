@@ -65,7 +65,7 @@ endif()
 
 add_library(GuiLobby STATIC ${PROJECT_SOURCES})
 
-target_compile_definitions(GuiLobby PUBLIC MAP_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../maps/")
+target_compile_definitions(GuiLobby PUBLIC MAP_PATH_LOBBY="${CMAKE_CURRENT_SOURCE_DIR}/../maps/")
 
 
 target_link_libraries(GuiLobby PUBLIC Qt${QT_VERSION_MAJOR}::Widgets)

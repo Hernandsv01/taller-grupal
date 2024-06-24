@@ -3,45 +3,43 @@
 
 #include <SDL2pp/SDL2pp.hh>
 
+#include "../../common/map/map.h"
 #include "estado_juego.h"
 
 using namespace SDL2pp;
 
 class Render {
    public:
-    explicit Render(Window& window);
+    explicit Render(Window& window, const int& id);
 
-    void presentGame(GameStateRenderer, MapInfo mapInfo);
-
-    void copyPlayer(PlayerState jugador);
-    void copyMap(MapInfo mapInfo);
+    void presentGame2(UpdatableGameState2 gameState, Map& map);
 
     void presentImage();
 
     void sleep(int millisecond);
 
+    // void presentGame(GameStateRenderer, MapInfo mapInfo);
+    // void copyPlayer(PlayerState jugador);
+
    private:
     Window& window;
     Renderer renderer;
-
     Texture mapsTexture;
-    Texture standSpritesJazz;
-    Texture runSpritesJazz;
-    Texture intoxJazz;
-    Texture intoxWalkJazz;
 
+    int sizeFactor = FACTOR_TAMANIO;
+
+    const int mainPlayerID;
     int xCenter;
     int yCenter;
     int xReference;
     int yReference;
-    int frame;
-
-    void copyMapPart(int typeOfPart, int part, std::vector<Position> positions);
-
-    void copyWall();
 
     void copyEntity(int posX, int posY, int spriteLong, int spriteHigh,
                     int animationLong, Texture& sprite);
+
+    void renderMap(Map& map);
+
+    void renderMapBackground(Map& map);
 };
 
 #endif

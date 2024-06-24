@@ -1,0 +1,54 @@
+game:
+  time: 200 # int, MAX: 255
+
+pickups:
+  coin: 50    # int
+  carrot: 25  # int
+  light_ammo: 100   # int
+  heavy_ammo: 25    # int
+  power_ammo: 10    # int
+
+bullets:
+  normal: 
+    max_ammo: -1
+    speed: 0.2
+    damage: 15
+    bpm: 500
+  light: 
+    max_ammo: 1000
+    speed: 1
+    damage: 10
+    bpm: 1000
+  heavy: 
+    max_ammo: 250
+    speed: 1
+    damage: 40
+    bpm: 250
+  power: 
+    max_ammo: 100
+    speed: 1
+    damage: 100
+    bpm: 100
+
+enemy: 
+  flyer:
+    count: 10  # int
+    life: 30   # int
+    speed: 20  # float
+    damage: 10 # int
+  shooter:
+    count: 10  # int
+    life: 40   # int
+    speed: 10  # float
+    damage: 10 # int
+  crawler: 
+    count: 10  # int
+    life: 50   # int
+    speed: 20  # float
+    damage: 10 # int
+  
+
+player: 
+  speed: 0.25       # float
+  jump: 3        # int
+  max_healh: 100 # int

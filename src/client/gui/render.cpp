@@ -1,24 +1,8 @@
 #include "render.h"
 
+#include "textureManager.h"
+
 #define BASESPRITE 0
-#define JAZZSTANDX 46
-#define JAZZSTANDY 49
-#define STANDSPRITELONG 27
-
-#define JAZZRUNX 67
-#define JAZZRUNY 35
-#define RUNSPRITELONG 8
-
-#define JAZZINTOXX 42
-#define JAZZINTOXY 48
-#define INTOXSPRITELONG 8
-
-#define JAZZINTOXWALKX 63
-#define JAZZINTOXWALKY 50
-#define INTOXWALKSPRITELONG 12
-
-#define JAZZX 90
-#define JAZZY 71
 
 #define GROUND 0
 #define UNDER 1
@@ -33,7 +17,7 @@
 #define WINDOW_TITLE "SDL2pp demo"
 
 #ifndef DATA_PATH
-#define DATA_PATH "src/client/gui/data"
+#define DATA_PATH "src/client/gui/data/"
 #endif
 
 // Render::Render(int width, int height)
@@ -46,88 +30,71 @@
 //       runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
 //       frame(0) {}
 
-Render::Render(Window& window)
+Render::Render(Window& window, const int& id)
     : window(window),
       renderer(window, -1, SDL_RENDERER_ACCELERATED),
-      mapsTexture(renderer, DATA_PATH "/map_diamond.png"),
-      standSpritesJazz(renderer, DATA_PATH "/Jazz_stand.png"),
-      runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
-      intoxJazz(renderer, DATA_PATH "/Jazz_intoxStand.png"),
-      intoxWalkJazz(renderer, DATA_PATH "/Jazz_intoxWalk.png"),
-
+      mapsTexture(renderer, DATA_PATH "map_diamond.png"),
+      mainPlayerID(id),
       xCenter(window.GetWidth() / 2),
       yCenter(window.GetHeight() / 2),
-      xReference(xCenter),
-      yReference(yCenter),
-      frame(0) {
-    window.SetTitle(WINDOW_TITLE);
-    window.SetSize(800, 600);
-    window.SetPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+      xReference(0),
+      yReference(0) {
+    TextureManager::Init(renderer);
 }
 
-void Render::presentGame(GameStateRenderer gameStatus, MapInfo mapInfo) {
-    xReference = gameStatus.mainPlayer.position.x;
-    yReference = gameStatus.mainPlayer.position.y;
-    copyMap(mapInfo);
-    copyPlayer(gameStatus.mainPlayer);
+void Render::presentGame2(UpdatableGameState2 gameState, Map& map) {
+
+    auto mainPlayerPosition = SDL2pp::Point(
+        gameState.getEntityPositionX(mainPlayerID),
+        gameState.getEntityPositionY(mainPlayerID));
+
+
+    xCenter = window.GetWidth() / 2;
+    yCenter = window.GetHeight() / 2;
+
+    xReference = mainPlayerPosition.x - xCenter;
+    yReference = mainPlayerPosition.y - yCenter;
+
+    // Renderizar mapa
+    renderMap(map);
+
+    // Renderiza ¿entidades? ¿solo jugadores?
+    gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter, xReference, yReference);
+
+    // Renderiza UI
+
     renderer.Present();
 }
 
-void Render::copyPlayer(PlayerState jugador) {
-    int xPos = jugador.position.x;
-    int yPos = jugador.position.y;
+void Render::renderMap(Map& map) {
+    renderMapBackground(map);
 
-    if (jugador.state == enums_value_update::Idle) {
-        copyEntity(xPos, yPos, JAZZSTANDX, JAZZSTANDY, STANDSPRITELONG,
-                   standSpritesJazz);
-    } else if (jugador.state == enums_value_update::Running) {
-        copyEntity(xPos, yPos, JAZZRUNX, JAZZRUNY, RUNSPRITELONG,
-                   runSpritesJazz);
-    } else if (jugador.state == enums_value_update::Intoxicated) {
-        copyEntity(xPos, yPos, JAZZINTOXX, JAZZINTOXY, INTOXSPRITELONG,
-                   intoxJazz);
-    } else {
-        copyEntity(xPos, yPos, JAZZINTOXWALKX, JAZZINTOXWALKY,
-                   INTOXWALKSPRITELONG, intoxWalkJazz);
-    }
-}
+    std::vector<BlockOnlyTexture> map_tiles = map.get_all_block_textures();
 
-void Render::copyEntity(int xPos, int yPos, int spriteLong, int spriteHigh,
-                        int animationLong, Texture& sprite) {
-    int srcX = frame * spriteLong;
-
-    renderer.Copy(
-        sprite, Rect(srcX, BASESPRITE, spriteLong, spriteHigh),
-        Rect(xCenter - spriteLong / 2, yCenter, spriteLong, spriteHigh));
-
-    frame = (frame + 1) % animationLong;
-}
-
-void Render::copyMap(MapInfo mapInfo) {
-    copyWall();
-    copyMapPart(GROUND, mapInfo.typeOfGround, mapInfo.groundPosition);
-    copyMapPart(UNDER, mapInfo.typeOfUnder, mapInfo.underPosition);
-}
-
-void Render::copyWall() {
-    for (int i = 0; i < window.GetWidth(); i += WALLDIMENSION) {
-        for (int j = 0; j < window.GetHeight(); j += WALLDIMENSION) {
-            renderer.Copy(
-                mapsTexture,
-                Rect(0, WALL * PARTDIMY, WALLDIMENSION, WALLDIMENSION),
-                Rect(i, j, WALLDIMENSION, WALLDIMENSION));
-        }
-    }
-}
-
-void Render::copyMapPart(int typeOfPart, int part,
-                         std::vector<Position> positions) {
-    for (auto position : positions) {
+    for (const BlockOnlyTexture& block : map_tiles) {
         renderer.Copy(
-            mapsTexture,
-            Rect(part * PARTDIMX, typeOfPart * PARTDIMY, PARTDIMX, PARTDIMY),
-            Rect(position.x - xReference + xCenter,
-                 position.y - yReference + yCenter, PARTDIMX, PARTDIMY));
+            TextureManager::getTile(block.texture), NullOpt,
+            Rect((block.coordinate.x) * sizeFactor - xReference,
+                 (block.coordinate.y) * sizeFactor - yReference,
+                 sizeFactor, sizeFactor));
+    }
+}
+
+void Render::renderMapBackground(Map& map) {
+    IdTexture background_id = map.get_background();
+
+    SDL2pp::Texture& background_texture =
+        TextureManager::getBackground(background_id);
+
+    auto texture_size = background_texture.GetSize();
+
+    for (int x = 0; x < window.GetWidth(); x += texture_size.x) {
+        for (int y = 0; y < window.GetHeight(); y += texture_size.y) {
+            auto start_point = Point(x, y);
+            auto rect = Rect(start_point, texture_size);
+
+            renderer.Copy(background_texture, NullOpt, rect);
+        }
     }
 }
 

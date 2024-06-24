@@ -11,6 +11,7 @@
 #include <chrono>
 
 #include "../../common/library/thread.h"
+#include "../../common/map/map.h"
 #include "estado_juego.h"
 #include "render.h"
 
@@ -20,11 +21,14 @@ class GuiLoop : public Thread {
     Window& windowForRender;
     Render* render = nullptr;
 
-    UpdatableGameState updatableGameState;
+    UpdatableGameState2 gameState;
+    //UpdatableGameState updatableGameState;
+
+    int mainId;
 
     uint32_t currentTick;
 
-    std::string mapName;
+    Map map;
 
     bool matchEnded = false;
 
@@ -42,7 +46,7 @@ class GuiLoop : public Thread {
 
     void stop_custom() override;
 
-    void runRenderer(MapInfo& mapInfo);
+    void runRenderer();
 
     void updateGameState();
 };

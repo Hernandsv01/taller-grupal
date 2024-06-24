@@ -40,6 +40,8 @@ lobby_client
 editor_niveles
 !editor_niveles/
 moc_server
+map
+!map/
 
 # Idea
 .idea/
@@ -49,9 +51,11 @@ moc_server
 
 # CMake generated files
 CMakeFiles/
+cmake-build-debug/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
 
 map/
+!src/common/map/
 

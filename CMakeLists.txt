@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(taller_grupal)
 
 set(CMAKE_BUILD_TYPE Debug)
-# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -g")
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -53,6 +53,14 @@ set(SOURCES_CLIENT
         src/client/gui/gui_loop.h
         src/client/gui/render.cpp
         src/client/gui/render.h
+        src/client/gui/entityGame.h
+        src/client/gui/entityGame.cpp
+        src/client/gui/entityFactory.h
+        src/client/gui/entityFactory.cpp
+        src/client/gui/textureManager.h
+        src/client/gui/textureManager.cpp
+        src/client/gui/playableCharacter.h
+        src/client/gui/playableCharacter.cpp
         src/client/eventlistener.cpp
         src/client/eventlistener.h
         src/client/mapper.cpp
@@ -67,7 +75,8 @@ set(SOURCES_CLIENT
         src/client/client.cpp
         
         src/client/client_main.cpp
-        )
+        src/server/model/constants/Ammo_data.h
+)
 
 set(SOURCES_COMMON
 src/common/library/liberror.cpp
@@ -89,27 +98,29 @@ src/server/clients/server_client.cpp
         src/server/clients/server_client.h
         src/server/clients/client_listener.cpp
         src/server/clients/client_listener.h
-        src/server/clients/client_monitor.cpp
-        src/server/clients/client_monitor.h
         src/server/clients/protocol.cpp
         src/server/clients/protocol.h
         src/server/model/constants/game_status.h
         src/server/model/Dynamic_entity.h
         src/server/model/Enemy.h
-        src/server/model/Entity.h
         src/server/model/Player.h
         src/server/Game.cpp
         src/server/Game.h      
         src/server/server_main.cpp
-        # src/server/physics/physics.h
-        # src/server/physics/physics.cpp
-
-        src/server/game/game_manager.h
-        src/server/game/game_manager.cpp
+        src/server/physics/physics.h
+        src/server/physics/physics.cpp
+        src/server/model/Bullet.h
+        src/server/model/Pickup.h
+        src/server/model/constants/pickup_type.h
+        src/server/game/lobby_manager.h
+        src/server/game/lobby_manager.cpp
         src/server/game/lobby_protocol.h
         src/server/game/lobby_protocol.cpp
         src/server/game_pool_monitor.h
-        )
+        src/server/loader/config.h
+        src/server/loader/config.cpp
+        src/server/model/constants/Ammo_data.h
+)
 
 add_executable(server ${SOURCES_SERVER} ${SOURCES_COMMON})
 add_executable(client ${SOURCES_CLIENT} ${SOURCES_COMMON})
@@ -123,6 +134,7 @@ target_link_libraries(client PRIVATE MatchEndedGui)
 
 #target_link_libraries(testsdl PRIVATE Threads::Threads)
 target_link_libraries(server PRIVATE map)
+target_link_libraries(client PRIVATE map)
 
 
 set(SDL2PP_WITH_IMAGE YES)
