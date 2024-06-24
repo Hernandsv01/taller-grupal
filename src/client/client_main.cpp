@@ -4,6 +4,7 @@
 #include "../../src/common/library/socket.h"
 #include "../lobby_client/gui_lobby.h"
 #include "client.h"
+#include "matchEndedGui/matchended.h"
 
 /*
  * Se harcodea un hostname y un servername para generar una conexion.
@@ -65,6 +66,28 @@ int main(int argc, char* argv[]) {
     // (o termine con un error), no es necesario esperar
     // a que el usuario envíe 'q' para cerrar el cliente.
     client.exec();
+
+    if (client.matchEnded()) {
+        std::vector<std::tuple<int, std::string, int>> scores_without_main =
+            client.getPlayersScores();
+
+        std::vector<PlayerScore> scores;
+
+        for (const auto& score : scores_without_main) {
+            int tuplePlayerId = std::get<0>(score);
+            std::string playerName = std::get<1>(score);
+            int playerScore = std::get<2>(score);
+
+            PlayerScore playerScoreStruct = {
+                playerName, static_cast<uint16_t>(tuplePlayerId),
+                static_cast<uint>(playerScore), player_id == tuplePlayerId};
+
+            scores.push_back(playerScoreStruct);
+        }
+
+        MatchEnded matchEnded(argc, argv);
+        matchEnded.showWithScores(scores);
+    }
 
     return 0;
     // Estructura del main

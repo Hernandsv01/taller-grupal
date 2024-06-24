@@ -28,10 +28,22 @@ void Client::exec() {
     gui.start();
 
     // Espero a que algun thread termine.
+    std::cout << "Empiezo a esperar" << std::endl;
     any_thread_ended.wait();
+    std::cout << "Algun thread ya paró" << std::endl;
+
+    stopThreads();
+
+    window.Hide();
 }
 
-Client::~Client() {
+bool Client::matchEnded() { return gui.hasMatchEnded(); }
+
+std::vector<std::tuple<int, std::string, int>> Client::getPlayersScores() {
+    return gui.getPlayersScores();
+}
+
+void Client::stopThreads() {
     eventListener.stop();
     updater.stop();
     gui.stop();
@@ -40,3 +52,5 @@ Client::~Client() {
     updater.join();
     gui.join();
 }
+
+Client::~Client() {}

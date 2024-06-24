@@ -33,6 +33,8 @@ class PlayableCharacter : public Entity2 {
     void showHealth(SDL2pp::Renderer &renderer, const int &windowHeight);
     void showScore(SDL2pp::Renderer &renderer);
     void showAmmoQuantity(SDL2pp::Renderer &renderer, const int &windowHeight);
+    void showRemainingTime(SDL2pp::Renderer &renderer, const int & windowWidth,
+                            const int &totalSeconds);
 
     void showNumber(SDL2pp::Renderer &renderer, const int &number,
                     const int &quantity, const int &initialPos,
@@ -45,7 +47,7 @@ class PlayableCharacter : public Entity2 {
                            const int &yRef) override;
 
     void showHud(SDL2pp::Renderer &renderer, const int &windowWidth,
-                 const int &windowHeight);
+                 const int &windowHeight, const int &seconds);
 
     void updateHealth(const int &newHealthPoint);
 
@@ -55,6 +57,16 @@ class PlayableCharacter : public Entity2 {
     void updateScore(const int &newScore);
 
     void updateState(const std::string &newState);
+
+    void updateWeapon(const std::string &newState);
+
+    virtual void updateAmmoQuantity(const int &ammoQuantity);
+
+    virtual bool isPlayer() override;
+
+    std::string getCharacterType() const;
+
+    int getScore() const;
 };
 
 #endif

@@ -123,13 +123,15 @@ class Update_new {
 
     Update::PositionFloat get_position() const;
 
-    Update::EntityType getEntityType();
+    Update::EntityType getEntityType() const;
 
-    Update::EntitySubtype getEntitySubType();
+    Update::EntitySubtype getEntitySubType() const;
 
-    float getPositionX();
+    float getPositionX() const;
 
-    float getPositionY();
+    float getPositionY() const;
+
+    bool updateTypeIsValue() const;
 };
 }  // namespace Update
 
