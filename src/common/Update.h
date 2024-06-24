@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-
 namespace Update {
 enum UpdateType : uint8_t {
     CreateEntity = 0,      // type, subtype
@@ -112,14 +111,14 @@ class Update_new {
 };
 }  // namespace Update
 
-
 namespace enums_value_update {
 enum Ammo_type {
     NORMAL = Update::EntitySubtype::Normal,  // Standard bullets
-    LIGHT = Update::EntitySubtype::Light,   // High rate of fire, low damage
-    HEAVY = Update::EntitySubtype::Heavy,   // Low rate of fire, high damage
-    POWER = Update::EntitySubtype::Power   // Lowest rate of fire, highest damage, high speed (almost like a
-             // sniper)
+    LIGHT = Update::EntitySubtype::Light,    // High rate of fire, low damage
+    HEAVY = Update::EntitySubtype::Heavy,    // Low rate of fire, high damage
+    POWER =
+        Update::EntitySubtype::Power  // Lowest rate of fire, highest damage,
+                                      // high speed (almost like a sniper)
 };
 
 enum Player_State_Enum : uint8_t {

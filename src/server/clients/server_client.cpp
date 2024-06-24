@@ -26,17 +26,25 @@ void Client_receiver::run() {
 
         try {
             protocol.receiveData(&action);
+            inputQueue.try_push(action);
         } catch (const ClosedConnectionError& e) {
             // si se cerró la conexion, paro el thread.
             is_running = false;
             break;
+        } catch (const ClosedQueue& e) {
+            is_running = false;
+            break;
         }
-        inputQueue.try_push(action);
     }
 }
 
 ActionType Client_receiver::get_next_action() {
     ActionType message = ActionType::NULL_ACTION;
-    inputQueue.try_pop(message);
+    try {
+        inputQueue.try_pop(message);
+    } catch (const ClosedQueue& e) {
+        is_running = false;
+        message = ActionType::NULL_ACTION;
+    }
     return message;
 }

@@ -26,27 +26,24 @@
 class Player : public Dynamic_entity {
    private:
     int points;
+    Update::EntitySubtype type;
     std::map<enums_value_update::Ammo_type, int> ammo;
     enums_value_update::Ammo_type current_ammo_type;
     std::map<enums_value_update::Ammo_type, enums_value_update::Ammo_type>
         next_ammo_type;
     std::map<enums_value_update::Ammo_type, Ammo> ammo_config;
 
+    enums_value_update::Player_State_Enum current_state;
     bool is_shooting;
+    bool is_doing_special;
+    bool is_running;
+    bool is_jumping;
+    bool is_falling;
     std::chrono::steady_clock::time_point last_shot_time;
-    Update::EntitySubtype type;
-
-   public:
+public:
     Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT,
-                         PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY,
-                         true, 0, false, Config::get_player_max_health(), true,
-                         true),
-          points(0),
-          current_ammo_type(enums_value_update::Ammo_type::NORMAL),
-          is_shooting(false),
-          last_shot_time(std::chrono::steady_clock::time_point()),
-          type(type) {
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true),
+          points(0), type(type), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
@@ -93,17 +90,10 @@ class Player : public Dynamic_entity {
             is_damageable = true;
         }
 
-        if (is_shooting &&
-            std::chrono::steady_clock::now() >=
-                (last_shot_time +
-                 std::chrono::milliseconds(
-                     MILLISECONDS_IN_A_MINUTE /
-                     ammo_config[current_ammo_type].get_rate_of_fire()))) {
-            std::vector<Update::Update_new> shoot_update =
-                shoot(entity_pool, next_id);
+        if (is_shooting && std::chrono::steady_clock::now() >= (last_shot_time + std::chrono::milliseconds( MILLISECONDS_IN_A_MINUTE / ammo_config[current_ammo_type].get_rate_of_fire()))) {
+            std::vector<Update::Update_new> shoot_update = shoot(entity_pool, next_id);
             last_shot_time = std::chrono::steady_clock::now();
-            updates.insert(updates.end(), shoot_update.begin(),
-                           shoot_update.end());
+            updates.insert(updates.end(), shoot_update.begin(), shoot_update.end());
         }
 
         float old_x = x_pos;
@@ -120,13 +110,22 @@ class Player : public Dynamic_entity {
             }
         }
 
-        // validar movimiento en Y
         if (vel_y != 0) {
             y_pos += vel_y;
 
             if (collides_with_map(map)) {
                 y_pos -= vel_y;
                 vel_y = 0;
+            }
+            if (vel_y > 0) {
+                is_falling = true;
+                is_jumping = false;
+            } else if (vel_y < 0) {
+                is_falling = false;
+                is_jumping = true;
+            } else {
+                is_falling = false;
+                is_jumping = false;
             }
         }
 
@@ -195,6 +194,16 @@ class Player : public Dynamic_entity {
                 delete_pickup(entity_pool, pickup->get_id());
             }
         }
+
+        enums_value_update::Player_State_Enum new_player_state = get_player_state();
+        if (new_player_state != current_state) {
+            current_state = new_player_state;
+            updates.push_back(Update::Update_new::create_value(
+                    id,
+                    Update::UpdateType::State,
+                    new_player_state
+            ));
+        }
         return updates;
     }
 
@@ -207,20 +216,35 @@ class Player : public Dynamic_entity {
         switch (action) {
             case JUMP:
                 setYSpeed(Config::get_player_jump() * (-1));
+                is_jumping = true;
                 break;
             case RUN_LEFT:
+                direction = enums_value_update::Direction::Left;
                 setXSpeed(Config::get_player_speed() * (-1));
+                action_updates.push_back(Update::Update_new::create_value(
+                        id,
+                        Update::UpdateType::Direction,
+                        direction
+                        ));
+                is_running = true;
                 break;
 
             case RUN_RIGHT:
+                direction = enums_value_update::Direction::Right;
                 setXSpeed(Config::get_player_speed());
+                action_updates.push_back(Update::Update_new::create_value(
+                        id,
+                        Update::UpdateType::Direction,
+                        direction
+                ));
+                is_running = true;
                 break;
 
             case SHOOT:
+                is_shooting = true;
                 action_updates = shoot(entity_pool, next_id);
-                total_updates.insert(total_updates.end(),
-                                     action_updates.begin(),
-                                     action_updates.end());
+                last_shot_time = std::chrono::steady_clock::now();
+                total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
                 break;
 
             case STOP_SHOOT:
@@ -240,12 +264,14 @@ class Player : public Dynamic_entity {
             case STOP_RUN_RIGHT:
                 if (vel_x > 0) {
                     vel_x = 0;
+                    is_running = false;
                 }
                 break;
 
             case STOP_RUN_LEFT:
                 if (vel_x < 0) {
                     vel_x = 0;
+                    is_running = false;
                 }
                 break;
 
@@ -270,21 +296,31 @@ class Player : public Dynamic_entity {
         float speed = ammo_config[current_ammo_type].get_speed();
         int damage = ammo_config[current_ammo_type].get_damage();
 
-        if (looking_right) {
+        if (direction == enums_value_update::Direction::Right) {
             x_spawn += x_size;
         } else {
             speed *= -1;
         }
 
-        std::cout << "-----------------------------------------" << std::endl;
-        std::cout << "Creando bullet en X=" << x_spawn << " Y=" << y_spawn
-                  << std::endl;
-        std::cout << "Player en (" << x_pos << "," << y_pos << ")" << std::endl;
-        entity_pool.push_back(
-            std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
-        updates.push_back(Update::Update_new::create_create_entity(
-            next_id, Update::EntityType::Bullet,
-            Update::EntitySubtype::No_subtype));
+        entity_pool.push_back(std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
+        updates.push_back(Update::Update_new::create_create_entity(next_id, Update::EntityType::Bullet,Update::EntitySubtype::No_subtype));
+
+        if (speed > 0) {
+            direction = enums_value_update::Direction::Right;
+            updates.push_back(Update::Update_new::create_value(
+                    next_id,
+                    Update::UpdateType::Direction,
+                    direction
+            ));
+        } else {
+            direction = enums_value_update::Direction::Left;
+            updates.push_back(Update::Update_new::create_value(
+                    next_id,
+                    Update::UpdateType::Direction,
+                    direction
+            ));
+        }
+
         next_id++;
         if (current_ammo_type != enums_value_update::Ammo_type::NORMAL) {
             ammo[current_ammo_type]--;
@@ -304,14 +340,36 @@ class Player : public Dynamic_entity {
     }
 
     void revive(std::vector<Coordinate> spawns) {
-        // TODO: send update...? Position for sure, but events?
         Coordinate spawn = spawns[rand() % spawns.size()];
         x_pos = spawn.x;
         y_pos = spawn.y;
 
         health = Config::get_player_max_health();
         is_active = true;
+        is_shooting = false;
+        is_doing_special = false;
+        is_running = false;
+        is_jumping = false;
+        is_falling = false;
         is_damageable = true;
+    }
+
+    enums_value_update::Player_State_Enum get_player_state() {
+        if (!is_damageable) {
+            return enums_value_update::Player_State_Enum::TakingDamage;
+        } else if (is_shooting) {
+            return enums_value_update::Player_State_Enum::Shooting;
+        } else if (is_doing_special) {
+            return enums_value_update::Player_State_Enum::SpecialAttack;
+        } else if (is_jumping) {
+            return enums_value_update::Player_State_Enum::Jumping;
+        } else if (is_falling) {
+            return enums_value_update::Player_State_Enum::Falling;
+        } else if (is_running) {
+            return enums_value_update::Player_State_Enum::Running;
+        } else {
+            return enums_value_update::Player_State_Enum::Idle;
+        }
     }
 
     void delete_pickup(

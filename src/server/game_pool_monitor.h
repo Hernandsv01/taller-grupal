@@ -27,6 +27,23 @@ class GamePoolMonitor {
         avaible_ids.insert(id);
     }
 
+    void remove_ended_games() {
+        std::vector<uint8_t> games_to_remove;
+
+        {
+            std::lock_guard<std::mutex> lock(mutex_vector);
+            for (auto& [id, game] : games) {
+                if (game->has_ended()) {
+                    games_to_remove.push_back(id);
+                }
+            }
+        }
+
+        for (uint8_t id : games_to_remove) {
+            remove_game(id);
+        }
+    }
+
    public:
     GamePoolMonitor() {
         for (uint8_t i = 0; i < 255; i++) {
@@ -39,6 +56,8 @@ class GamePoolMonitor {
 
     // Le asigna id al juego
     match_id emplace_game(std::string name, Map map) {
+        remove_ended_games();
+
         std::lock_guard<std::mutex> lock(mutex_vector);
         match_id id = extract_avaible_id();
 
@@ -73,6 +92,8 @@ class GamePoolMonitor {
     }
 
     std::vector<GameMatch> get_games() {
+        remove_ended_games();
+
         std::lock_guard<std::mutex> lock(mutex_vector);
         std::vector<GameMatch> games_info;
         for (auto& [_, game] : games) {

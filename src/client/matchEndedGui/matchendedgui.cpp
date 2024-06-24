@@ -34,64 +34,52 @@ void MatchEndedGui::addScoresToGui(std::vector<PlayerScore> scores) {
     QColor silver = QColor(125, 125, 125);
     QColor copper = QColor(133, 83, 32);
 
+    // QTableWidget
+    ui->tableWidget->setRowCount(scores.size());
+    ui->tableWidget->setColumnCount(4);
+
+    int position = 1;
     for (const auto& score : scores) {
-        // QTableWidget
-        ui->tableWidget->setRowCount(scores.size());
-        ui->tableWidget->setColumnCount(4);
+        QTableWidgetItem* rankItem =
+            new QTableWidgetItem(QString::number(position) + QString("°"));
+        QTableWidgetItem* nameItem =
+            new QTableWidgetItem(QString::fromStdString(score.name_bunny));
+        QTableWidgetItem* idItem =
+            new QTableWidgetItem(QString::number(score.id_player));
+        QTableWidgetItem* scoreItem =
+            new QTableWidgetItem(QString::number(score.score));
 
-        int position = 1;
-        for (const auto& score : scores) {
-            QTableWidgetItem* rankItem =
-                new QTableWidgetItem(QString::number(position) + QString("°"));
-            QTableWidgetItem* nameItem =
-                new QTableWidgetItem(QString::fromStdString(score.name_bunny));
-            QTableWidgetItem* idItem =
-                new QTableWidgetItem(QString::number(score.id_player));
-            QTableWidgetItem* scoreItem =
-                new QTableWidgetItem(QString::number(score.score));
+        QColor colourToUse = baseColour;
 
-            QColor colourToUse = baseColour;
+        if (position == 1) {
+            colourToUse = gold;
+        } else if (position == 2) {
+            colourToUse = silver;
+        } else if (position == 3) {
+            colourToUse = copper;
+        }
+        // colourToUse = player;
+        if (score.is_current_player) {
+            idItem->setText(idItem->text() + " (Tú)");
 
-            if (position == 1) {
-                colourToUse = gold;
-            } else if (position == 2) {
-                colourToUse = silver;
-            } else if (position == 3) {
-                colourToUse = copper;
-            }
-            // colourToUse = player;
-            if (score.is_current_player) {
-                idItem->setText(idItem->text() + " (Tú)");
+            QFont fontStyle = QFont("Arial", 15, QFont::Weight::Black, true);
 
-                // QColor text_color(180, 255, 180);
-
-                // rankItem->setForeground(text_color);
-                // nameItem->setForeground(text_color);
-                // idItem->setForeground(text_color);
-                // scoreItem->setForeground(text_color);
-
-                QFont fontStyle =
-                    QFont("Arial", 15, QFont::Weight::Black, true);
-
-                rankItem->setFont(fontStyle);
-                nameItem->setFont(fontStyle);
-                idItem->setFont(fontStyle);
-                scoreItem->setFont(fontStyle);
-            }
-
-            rankItem->setBackground(colourToUse);
-            nameItem->setBackground(colourToUse);
-            idItem->setBackground(colourToUse);
-            scoreItem->setBackground(colourToUse);
-
-            ui->tableWidget->setItem(position - 1, 0, rankItem);
-            ui->tableWidget->setItem(position - 1, 1, nameItem);
-            ui->tableWidget->setItem(position - 1, 2, idItem);
-            ui->tableWidget->setItem(position - 1, 3, scoreItem);
-
-            position++;
+            rankItem->setFont(fontStyle);
+            nameItem->setFont(fontStyle);
+            idItem->setFont(fontStyle);
+            scoreItem->setFont(fontStyle);
         }
 
-        count++;
+        rankItem->setBackground(colourToUse);
+        nameItem->setBackground(colourToUse);
+        idItem->setBackground(colourToUse);
+        scoreItem->setBackground(colourToUse);
+
+        ui->tableWidget->setItem(position - 1, 0, rankItem);
+        ui->tableWidget->setItem(position - 1, 1, nameItem);
+        ui->tableWidget->setItem(position - 1, 2, idItem);
+        ui->tableWidget->setItem(position - 1, 3, scoreItem);
+
+        position++;
     }
 }
