@@ -6,6 +6,9 @@ EventListener::EventListener(SDL2pp::Window& window, Socket& socket)
 // hay codigo comentado que utilizamos para debuggear
 void EventListener::run() {
     SDL_Event event;
+  
+    bool running = true;
+    std::this_thread::sleep_for(std::chrono::milliseconds (100));
 
     uint last_event_type = SDL_QUIT;
 

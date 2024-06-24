@@ -4,8 +4,8 @@
 #include "Dynamic_entity.h"
 #include "Player.h"
 
-#define ENEMY_WIDTH 1
-#define ENEMY_HEIGHT 2
+#define ENEMY_HEIGHT 0.5
+#define ENEMY_WIDTH 0.2
 #define ENEMY_MAX_MOVEMENT_RANGE 50
 #define SECONDS_UNTIL_RESPAWN 3
 
@@ -19,7 +19,7 @@ class Enemy : public Dynamic_entity {
         : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
                          Config::get_crawler_speed(), 0, GRAVITY, true,
                          Config::get_crawler_damage(), false,
-                         Config::get_crawler_life(), true, true),
+                         Config::get_crawler_life(), true),
           movement_range(ENEMY_MAX_MOVEMENT_RANGE),
           subtype(subtype) {}
     std::vector<Update::Update_new> tick(
@@ -38,6 +38,8 @@ class Enemy : public Dynamic_entity {
             return updates;
         }
 
+        is_damageable = true;
+
         float old_x = x_pos;
         float old_y = y_pos;
 
@@ -50,6 +52,22 @@ class Enemy : public Dynamic_entity {
             if (collides_with_map(map)) {
                 x_pos -= vel_x;
                 vel_x *= (-1);
+            }
+
+            if (direction == enums_value_update::Direction::Right && vel_x < 0) {
+                direction = enums_value_update::Direction::Left;
+                updates.push_back(Update::Update_new::create_value(
+                        id,
+                        Update::UpdateType::Direction,
+                        direction
+                ));
+            } else if (direction == enums_value_update::Direction::Left && vel_x > 0) {
+                direction = enums_value_update::Direction::Right;
+                updates.push_back(Update::Update_new::create_value(
+                        id,
+                        Update::UpdateType::Direction,
+                        direction
+                ));
             }
         }
 

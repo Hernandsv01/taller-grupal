@@ -50,8 +50,6 @@ void Game::run() {
                 static_cast<uint8_t>(time_left))});
         }
     }
-
-    // TODO: Send final stats
 }
 
 void Game::run_iteration() {
@@ -67,10 +65,10 @@ void Game::run_iteration() {
                              tick_updates.end());
     }
 
-    for (std::unique_ptr<Dynamic_entity>& entity_ptr : entity_pool) {
+    for (size_t i = 0; i < entity_pool.size(); ++i) {
+        std::unique_ptr<Dynamic_entity>& entity_ptr = entity_pool[i];
         tick_updates = entity_ptr->tick(map, entity_pool, next_id);
-        total_updates.insert(total_updates.end(), tick_updates.begin(),
-                             tick_updates.end());
+        total_updates.insert(total_updates.end(), tick_updates.begin(), tick_updates.end());
     }
     sendAll(total_updates);
 }
