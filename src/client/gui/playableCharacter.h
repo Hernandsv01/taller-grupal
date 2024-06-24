@@ -60,6 +60,8 @@ class PlayableCharacter : public Entity2 {
     void updateState(const std::string &newState);
 
     void updateWeapon(const std::string &newState);
+
+    void updateAmmoQuantity(const int &ammoQuantity);
 };
 
 #endif

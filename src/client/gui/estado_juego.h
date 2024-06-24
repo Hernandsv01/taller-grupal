@@ -102,13 +102,11 @@ class UpdatableGameState2 {
                 updateWeapon(update.get_id(), update.get_value());
                 break;
             }
-
             case Update::BulletsRemaining: {
-                // TODO
-                // No se que hacer con esto
+                int ammoQuantity = update.get_value();
+                updateAmmoQuantity(update.get_id(), ammoQuantity);
                 break;
             }
-
             default:
                 throw std::runtime_error("Faltan valores para los cases");
                 break;
@@ -199,6 +197,11 @@ class UpdatableGameState2 {
                 break;
         }
         entity->updateWeapon(weaponName);
+    }
+
+    void updateAmmoQuantity(const int &id, const int &ammoQuantity) {
+        std::shared_ptr<Entity2> &entity = gameState.at(id);
+        entity->updateAmmoQuantity(ammoQuantity);
     }
 
     int getEntityPositionX(int id) const {

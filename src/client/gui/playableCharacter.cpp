@@ -57,6 +57,10 @@ void PlayableCharacter::updateWeapon(const std::string &newWeapon) {
     weaponSpriteNumber = 0;
 }
 
+void PlayableCharacter::updateAmmoQuantity(const int &newAmmoQuantity) {
+    ammoQuantity = newAmmoQuantity;
+}
+
 void PlayableCharacter::renderize(SDL2pp::Renderer &renderer, const int &xRef,
                                   const int &yRef, const int &xCenterWnd,
                                   const int &yCenterWnd) {
