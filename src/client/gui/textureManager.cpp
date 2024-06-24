@@ -79,6 +79,11 @@ void TextureManager::Init(SDL2pp::Renderer& renderer) {
     textures[textureName] =
         std::make_shared<SDL2pp::Texture>(std::move(texture));
 
+    std::string textureName2 = "separator";
+    SDL2pp::Texture texture2(renderer, DATA_PATH + textureName2 + EXTENSION);
+    textures[textureName2] =
+        std::make_shared<SDL2pp::Texture>(std::move(texture2));
+
     load_textures_from_path_into_map(renderer, BACKGROUND_TEXTURES_PATH,
                                      backgrounds);
     load_textures_from_path_into_map(renderer, TILE_TEXTURES_PATH, tiles);
@@ -93,7 +98,8 @@ std::shared_ptr<SDL2pp::Texture> TextureManager::getTexture(
         // std::cout << "En el manager: " << textureName << "\n";
         return textures.at(textureName);
     } catch (const std::out_of_range& e) {
-        std::cerr << "ACA ESTAB EL ERROR: " << e.what() << std::endl;
+        std::cerr << "ACA ESTAB EL ERROR: " << e.what()
+                  << " Textura:" << textureName << std::endl;
         return nullptr;
     }
 }

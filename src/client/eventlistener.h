@@ -26,7 +26,7 @@ class EventListener : public Thread {
     // loop que escucha los eventos del teclado
     void run() override;
 
-    void custom_stop();
+    void virtual stop_custom() override;
 };
 
 #endif  // EVENTLISTENER_H

@@ -37,6 +37,7 @@ class UpdatableGameState2 {
    private:
     std::map<int, std::shared_ptr<Entity2>> gameState;
     int remainingSeconds = 0;
+    bool matchEnded = false;
 
    public:
     explicit UpdatableGameState2() {
@@ -53,11 +54,6 @@ class UpdatableGameState2 {
                 break;
             }
             case Update::Position: {
-                std::cout << "UPDATE POSICION\n";
-                std::cout << "actualizando posicion (server):"
-                          << std::to_string(update.getPositionX()) << ","
-                          << std::to_string(update.getPositionY()) << std::endl;
-
                 int xPosition = update.getPositionX() * (float)FACTOR_TAMANIO;
                 int yPosition = update.getPositionY() * (float)FACTOR_TAMANIO;
                 updatePosition(update.get_id(), xPosition, yPosition);
@@ -89,8 +85,7 @@ class UpdatableGameState2 {
             }
 
             case Update::MatchEnded: {
-                // TODO:
-                // No se que hacer con esto
+                matchEnded = true;
                 break;
             }
 
@@ -130,19 +125,22 @@ class UpdatableGameState2 {
 
     }
 
-    /*
-    std::vector<std::tuple<int , std::string, int>> getPlayersScores() {
-        std::vector<std::tuple<int , std::string, int>> scores;
-        for (auto& pair: gameState) {
+    std::vector<std::tuple<int, std::string, int>> getPlayersScores() {
+        std::vector<std::tuple<int, std::string, int>> scores;
+        for (auto &pair : gameState) {
             if (pair.second->isPlayer()) {
-                std::string playerType = pair.second->getType();
-                int score = pair.second->getScore();
-                scores.push_back(std::make_tuple(pair.first, playerType,
-    score));
+                PlayableCharacter *player =
+                    dynamic_cast<PlayableCharacter *>(pair.second.get());
+
+                std::string playerType = player->getCharacterType();
+                int score = player->getScore();
+                scores.push_back(
+                    std::make_tuple(pair.first, playerType, score));
             }
         }
-        return std::move(scores);
-    */
+        return scores;
+    }
+
     // Devuelve los puntajes de los jugadores.
     // El formato es (Id, tipo de jugador, puntaje)
 
@@ -184,16 +182,16 @@ class UpdatableGameState2 {
         std::shared_ptr<Entity2> &entity = gameState.at(id);
         std::string weaponName;
         switch (weaponCode) {
-            case (Update::Ammo_type::NORMAL):
+            case (enums_value_update::Ammo_type::NORMAL):
                 weaponName = "weaponNormal";
                 break;
-            case (Update::Ammo_type::LIGHT):
+            case (enums_value_update::Ammo_type::LIGHT):
                 weaponName = "weaponLight";
                 break;
-            case (Update::Ammo_type::HEAVY):
+            case (enums_value_update::Ammo_type::HEAVY):
                 weaponName = "weaponHeavy";
                 break;
-            case (Update::Ammo_type::POWER):
+            case (enums_value_update::Ammo_type::POWER):
                 weaponName = "weaponPower";
                 break;
             default:
@@ -217,12 +215,12 @@ class UpdatableGameState2 {
         return entity->getPosY();
     }
 
+    bool hasMatchEnded() { return this->matchEnded; }
+
    private:
     bool isNotMain(const int &playerId, const int &mainId) {
         return (playerId != mainId);
     }
-
-    bool hasMatchEnded() { return this->matchEnded; }
 };
 
 #endif  // ESTADO_JUEGO_H

@@ -83,7 +83,7 @@ if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(lobby_client)
 endif()
 
-
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 add_executable(moc_server moc_server.cpp ../common/library/liberror.cpp
 ../common/library/liberror.h
 ../common/library/resolver.cpp
@@ -93,3 +93,4 @@ add_executable(moc_server moc_server.cpp ../common/library/liberror.cpp
 ../common/library/closedconectionerror.h
 ../common/library/socket.cpp
 ../common/library/socket.h)
+endif()

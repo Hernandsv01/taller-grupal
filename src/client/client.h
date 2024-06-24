@@ -29,6 +29,8 @@ class Client {
     bool matchEnded();
 
     ~Client();
+
+    std::vector<std::tuple<int, std::string, int>> getPlayersScores();
 };
 
 #endif  // CLIENT_H

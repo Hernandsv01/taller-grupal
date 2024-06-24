@@ -39,6 +39,10 @@ void Client::exec() {
 
 bool Client::matchEnded() { return gui.hasMatchEnded(); }
 
+std::vector<std::tuple<int, std::string, int>> Client::getPlayersScores() {
+    return gui.getPlayersScores();
+}
+
 void Client::stopThreads() {
     eventListener.stop();
     updater.stop();

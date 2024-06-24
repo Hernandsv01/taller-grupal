@@ -39,6 +39,8 @@ class GuiLoop : public Thread {
 
     bool hasMatchEnded();
 
+    std::vector<std::tuple<int, std::string, int>> getPlayersScores();
+
    private:
     void run() override;
 

@@ -41,7 +41,7 @@ void EventListener::run() {
     }
 }
 
-void EventListener::custom_stop() {
+void EventListener::stop_custom() {
     _keep_running = false;
     SDL_Event quit_event;
     quit_event.type = SDL_QUIT;

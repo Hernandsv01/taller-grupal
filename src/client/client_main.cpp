@@ -68,9 +68,22 @@ int main(int argc, char* argv[]) {
     client.exec();
 
     if (client.matchEnded()) {
+        std::vector<std::tuple<int, std::string, int>> scores_without_main =
+            client.getPlayersScores();
+
         std::vector<PlayerScore> scores;
 
-        scores.push_back({"Bunny1", 1, 100, true});
+        for (const auto& score : scores_without_main) {
+            int tuplePlayerId = std::get<0>(score);
+            std::string playerName = std::get<1>(score);
+            int playerScore = std::get<2>(score);
+
+            PlayerScore playerScoreStruct = {
+                playerName, static_cast<uint16_t>(tuplePlayerId),
+                static_cast<uint>(playerScore), player_id == tuplePlayerId};
+
+            scores.push_back(playerScoreStruct);
+        }
 
         MatchEnded matchEnded(argc, argv);
         matchEnded.showWithScores(scores);

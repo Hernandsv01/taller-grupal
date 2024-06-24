@@ -60,7 +60,13 @@ class PlayableCharacter : public Entity2 {
 
     void updateWeapon(const std::string &newState);
 
-    void updateAmmoQuantity(const int &ammoQuantity);
+    virtual void updateAmmoQuantity(const int &ammoQuantity);
+
+    virtual bool isPlayer() override;
+
+    std::string getCharacterType() const;
+
+    int getScore() const;
 };
 
 #endif

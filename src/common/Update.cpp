@@ -30,6 +30,16 @@ float htonf(float f) {
 // USANDO OBJETO PRACTICAMENTE VACIO
 using namespace Update;
 
+bool Update_new::updateTypeIsValue() const {
+    return update_type_value == UpdateType::Direction ||
+           update_type_value == UpdateType::State ||
+           update_type_value == UpdateType::Health ||
+           update_type_value == UpdateType::Score ||
+           update_type_value == UpdateType::RemainingSeconds ||
+           update_type_value == UpdateType::ChangeAmmoType ||
+           update_type_value == UpdateType::BulletsRemaining;
+}
+
 std::vector<Update_new> Update_new::deserialize_all(std::vector<uint8_t> data) {
     std::vector<Update_new> updates;
 
@@ -213,10 +223,7 @@ uint16_t Update_new::get_id() const { return id; }
 UpdateType Update_new::get_update_type() const { return update_type_value; }
 
 uint8_t Update_new::get_value() const {
-    if (update_type_value != UpdateType::Score &&
-        update_type_value != UpdateType::Health &&
-        update_type_value != UpdateType::State &&
-        update_type_value != UpdateType::Direction) {
+    if (!updateTypeIsValue()) {
         throw std::runtime_error("Invalid update type");
     }
     return value;
@@ -236,19 +243,14 @@ PositionFloat Update_new::get_position() const {
     return PositionFloat{x, y};
 }
 
-Update::EntityType Update_new::getEntityType() {
+Update::EntityType Update_new::getEntityType() const {
     return entity_type_value;
 }
 
-Update::EntitySubtype Update_new::getEntitySubType() {
+Update::EntitySubtype Update_new::getEntitySubType() const {
     return entity_subtype_value;
 }
 
-float Update_new::getPositionX() {
-    return x;
-}
+float Update_new::getPositionX() const { return x; }
 
-float Update_new::getPositionY() {
-    return y;
-}
-
+float Update_new::getPositionY() const { return y; }

@@ -41,3 +41,5 @@ void Entity2::renderize(SDL2pp::Renderer &renderer, const int &xRef,
 
     actualSpriteNumber = (actualSpriteNumber + 1) % num_animation_frames;
 }
+
+bool Entity2::isPlayer() { return false; }

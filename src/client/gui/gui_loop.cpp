@@ -11,8 +11,7 @@ GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
       clock(),
       windowForRender(window),
       render(nullptr),
-      gameState(),  
-    // updatableGameState(?),
+      gameState(),
       mainId(player_id),
       currentTick(0),
       map(Map::fromYaml(map_name)){
@@ -73,7 +72,7 @@ void GuiLoop::run() {
         time_point tickEndTime = tickInitialTime + TICK_DURATION;
 
         updateGameState();
-        matchEnded = updatableGameState.hasMatchEnded();
+        matchEnded = gameState.hasMatchEnded();
 
         time_point currentTime = clock.now();
         bool isTimeLeftInTick = currentTime <= tickEndTime;
@@ -181,3 +180,7 @@ void GuiLoop::runRenderer() {
 }
 
 bool GuiLoop::hasMatchEnded() { return matchEnded; }
+
+std::vector<std::tuple<int, std::string, int>> GuiLoop::getPlayersScores() {
+    return gameState.getPlayersScores();
+}

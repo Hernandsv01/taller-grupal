@@ -53,7 +53,7 @@ void PlayableCharacter::updateState(const std::string &newState) {
 }
 
 void PlayableCharacter::updateWeapon(const std::string &newWeapon) {
-    weaponTexture = TextureManager::getEntityTexture(newWeapon);
+    weaponTexture = TextureManager::getTexture(newWeapon);
     weaponSpriteNumber = 0;
 }
 
@@ -113,13 +113,15 @@ void PlayableCharacter::showAmmoQuantity(SDL2pp::Renderer &renderer,
         SharedTexturePtr infinityTexture = TextureManager::getTexture(INF);
         int infinityWidth = infinityTexture->GetWidth();
         int infinityHeight = infinityTexture->GetHeight();
-        renderer.Copy(*infinityTexture, SDL2pp::NullOpt,
-                      SDL2pp::Rect(textureSize + 560, windowHeight-infinityTexture-SPACETOBORDER,
-                                    infinityWidth, infinityHeight));
+        renderer.Copy(
+            *infinityTexture, SDL2pp::NullOpt,
+            SDL2pp::Rect(textureSize + 560,
+                         windowHeight - infinityHeight - SPACETOBORDER,
+                         infinityWidth, infinityHeight));
     } else {
         showNumber(renderer, ammoQuantity,
                    std::to_string(ammoQuantity).length(), textureSize + 560,
-                   windowHeight-textureSize-SPACETOBORDER);
+                   windowHeight - textureSize - SPACETOBORDER);
     }
 }
 
@@ -161,7 +163,6 @@ void PlayableCharacter::showRemainingTime(SDL2pp::Renderer &renderer, const int 
     showNumber(renderer, seconds, 2, 600+separatorWidth, separatorHeight);
 }
 
-
 void PlayableCharacter::showNumber(SDL2pp::Renderer &renderer,
                                    const int &number, const int &quantity,
                                    const int &initialPosX,
@@ -184,3 +185,11 @@ void PlayableCharacter::showNumber(SDL2pp::Renderer &renderer,
         posInScreen += numberTexture->GetWidth();
     }
 }
+
+bool PlayableCharacter::isPlayer() { return true; }
+
+std::string PlayableCharacter::getCharacterType() const {
+    return characterType;
+}
+
+int PlayableCharacter::getScore() const { return score; }
