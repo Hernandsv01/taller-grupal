@@ -1,6 +1,3 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -12,7 +9,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/focal64"
+  config.vm.box = "ubuntu/bionic64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -61,7 +58,7 @@ Vagrant.configure("2") do |config|
     vb.gui = true
   #
   #   # Customize the amount of memory on the VM:
-    vb.memory = "1024"
+    vb.memory = "2048"
   end
   #
   # View the documentation for the provider you are using for more
@@ -74,35 +71,12 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
 
-  #installer_script = "install.sh" 
-
-  #config.vm.provision "shell", path:installer_script
-
-  # SHELL
   config.vm.provision "shell", inline: <<-SHELL
-     sudo apt-get update
-
+    sudo apt-get update
     sudo apt-get install -y xubuntu-desktop
-    sudo apt-get install -y git g++ make
-    
-    sudo snap install cmake --classic
-    sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libsdl2-gfx-dev
-    sudo apt-get install -y qtbase5-dev qt5-qmake
-    sudo apt-get install libyaml-cpp-dev
+    sudo shutdown -r now
+  SHELL
 
-  echo "Clonando el repo" 
-  #   # Clono el repositorio
-    git clone https://github.com/Hernandsv01/taller-grupal.git /home/ubuntu/taller-grupal
+  config.vm.provision "shell", path: "install.sh", privileged: false
 
-    # Instalo herramientas y librerias
-
-  #   # Compilo el proyecto 
-     cd /home/ubuntu/taller-grupal
-     cmake .
-     make
-
-  #   ## Instalacion del juego 
-
-    
-   SHELL
 end
