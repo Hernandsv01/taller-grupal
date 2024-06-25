@@ -212,6 +212,13 @@ class Player : public Dynamic_entity {
                                 ammo_config[enums_value_update::LIGHT]
                                     .get_max_ammo();
                         }
+                        if (current_ammo_type == enums_value_update::LIGHT) {
+                            updates.push_back(Update::Update_new::create_value(
+                                    id,
+                                    Update::UpdateType::BulletsRemaining,
+                                    ammo[current_ammo_type]
+                                    ));
+                        }
                         break;
                     case HEAVY_AMMO:
                         ammo[enums_value_update::HEAVY] += pickup->getValue();
@@ -222,15 +229,29 @@ class Player : public Dynamic_entity {
                                 ammo_config[enums_value_update::HEAVY]
                                     .get_max_ammo();
                         }
+                        if (current_ammo_type == enums_value_update::HEAVY) {
+                            updates.push_back(Update::Update_new::create_value(
+                                    id,
+                                    Update::UpdateType::BulletsRemaining,
+                                    ammo[current_ammo_type]
+                            ));
+                        }
                         break;
                     case POWER_AMMO:
                         ammo[enums_value_update::POWER] += pickup->getValue();
-                        if (ammo[enums_value_update::HEAVY] >
-                            ammo_config[enums_value_update::HEAVY]
+                        if (ammo[enums_value_update::POWER] >
+                            ammo_config[enums_value_update::POWER]
                                 .get_max_ammo()) {
-                            ammo[enums_value_update::HEAVY] =
-                                ammo_config[enums_value_update::HEAVY]
+                            ammo[enums_value_update::POWER] =
+                                ammo_config[enums_value_update::POWER]
                                     .get_max_ammo();
+                        }
+                        if (current_ammo_type == enums_value_update::POWER) {
+                            updates.push_back(Update::Update_new::create_value(
+                                    id,
+                                    Update::UpdateType::BulletsRemaining,
+                                    ammo[current_ammo_type]
+                            ));
                         }
                         break;
                 }
