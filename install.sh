@@ -15,10 +15,10 @@ sudo apt-get install -y libyaml-cpp-dev
 
 echo "Clono repositorio ..."
 #Clono el respositorio
-git clone https://github.com/Hernandsv01/taller-grupal.git /home/vagrant/taller-grupal
+git clone https://github.com/Hernandsv01/taller-grupal.git 
 
 #Compilacion 
-cd /home/vagrant/taller-grupal
+cd /taller-grupal
 cmake .
 make
 
