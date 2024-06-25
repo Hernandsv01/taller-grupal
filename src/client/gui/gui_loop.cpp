@@ -66,8 +66,7 @@ void GuiLoop::run() {
     initializeRender();
 
     SoundManager::Init();
-    SoundManager::SetMusicVolume(0, 20);  // 20%
-    SoundManager::PlayMusic("music", 0, -1);
+    SoundManager::PlayMusic("music", MUSIC_CHANNEL, -1);
 
     using namespace std::chrono;
     time_point tickInitialTime = clock.now();

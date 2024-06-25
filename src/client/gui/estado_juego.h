@@ -50,6 +50,11 @@ class UpdatableGameState2 {
         switch (update.get_update_type()) {
             case Update::CreateEntity: {
                 Update::EntityType entityType = update.getEntityType();
+
+                if (entityType == Update::EntityType::Bullet) {
+                    SoundManager::PlayMusic("shoot", SHOOT_CHANNEL, 0);
+                }
+
                 Update::EntitySubtype entitySubtype = update.getEntitySubType();
                 addEntity(update.get_id(), entityType, entitySubtype);
                 break;
@@ -173,7 +178,7 @@ class UpdatableGameState2 {
     }
 
     void updateHealthPoints(const int &id, const int &healthPoint) {
-        SoundManager::PlayMusic("coin", 0, 0);
+        SoundManager::PlayMusic("coin", SCORE_CHANNEL, 0);
 
         std::shared_ptr<Entity2> &entity = gameState.at(id);
         entity->updateHealth(healthPoint);

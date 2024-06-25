@@ -1,6 +1,10 @@
 #ifndef SOUND_MANAGER_H
 #define SOUND_MANAGER_H
 
+#define MUSIC_CHANNEL 0
+#define SCORE_CHANNEL 1
+#define SHOOT_CHANNEL 2
+
 #include <SDL2pp/Mixer.hh>
 #include <SDL2pp/Music.hh>
 #include <SDL2pp/SDL2pp.hh>
