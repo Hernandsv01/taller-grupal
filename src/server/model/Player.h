@@ -498,6 +498,21 @@ class Player : public Dynamic_entity {
         }
     }
 
+    virtual std::vector<Update::Update_new> handle_death(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
+        std::vector<Update::Update_new> updates;
+        updates.push_back(Update::Update_new::create_value(
+                static_cast<uint16_t>(id),
+                Update::UpdateType::State,
+                enums_value_update::Player_State_Enum::Dead));
+        updates.push_back(Update::Update_new::create_value(
+                static_cast<uint16_t>(id),
+                Update::UpdateType::Health,
+                static_cast<uint8_t>(health)));
+        is_active = false;
+        inactive_time = std::chrono::steady_clock::now();
+        return updates;
+    }
+
     Update::EntitySubtype get_player_subtype() { return type; }
 };
 

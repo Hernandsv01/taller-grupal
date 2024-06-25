@@ -129,6 +129,13 @@ class Enemy : public Dynamic_entity {
     }
 
     Update::EntitySubtype get_subtype() { return subtype; }
+
+    virtual std::vector<Update::Update_new> handle_death(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
+        std::vector<Update::Update_new> updates;
+        updates.push_back(Update::Update_new::create_delete_entity(id));
+        set_pending_deletion(true);
+        return updates;
+    }
 };
 
 #endif  // ENEMY_H

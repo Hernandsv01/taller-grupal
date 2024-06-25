@@ -78,8 +78,6 @@ class Dynamic_entity : public RigidBox {
     bool deal_damage(int damage) {
         health -= damage;
         if (health <= 0) {
-            is_active = false;
-            inactive_time = std::chrono::steady_clock::now();
             return true;
         } else {
             // cooldown of being hit
@@ -111,7 +109,11 @@ class Dynamic_entity : public RigidBox {
 
     bool isPendingDeletion() { return pending_deletion; }
 
+    void set_pending_deletion (bool is_pending_deletion) { pending_deletion = is_pending_deletion; }
+
     int get_health() { return health; }
+
+    virtual std::vector<Update::Update_new> handle_death(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) = 0;
 
     std::pair<float, float> get_position_for_client() {
         // Obtengo la base en los pies.

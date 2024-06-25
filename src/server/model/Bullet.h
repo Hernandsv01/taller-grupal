@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #include "Dynamic_entity.h"
-#include "Player.h"
+#include "Enemy.h"
 
 #define BULLET_HEIGHT 0.35
 #define BULLET_WIDTH 0.25
@@ -20,6 +20,7 @@ class Bullet : public Dynamic_entity {
         std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool,
         int& next_id) override {
         std::vector<Update::Update_new> updates;
+        std::vector<Update::Update_new> death_updates;
 
         // validar movimiento contra mapa
         if (vel_x != 0 || vel_y != 0) {
@@ -45,15 +46,14 @@ class Bullet : public Dynamic_entity {
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
+                    death_updates = other->handle_death(entity_pool, next_id);
+                    updates.insert(updates.end(), death_updates.begin(), death_updates.end());
+                } else {
                     updates.push_back(Update::Update_new::create_value(
-                        static_cast<uint16_t>(other->get_id()),
-                        Update::UpdateType::State,
-                        enums_value_update::Player_State_Enum::Dead));
+                            static_cast<uint16_t>(other->get_id()),
+                            Update::UpdateType::Health,
+                            static_cast<uint8_t>(other->get_health())));
                 }
-                updates.push_back(Update::Update_new::create_value(
-                    static_cast<uint16_t>(other->get_id()),
-                    Update::UpdateType::Health,
-                    static_cast<uint8_t>(other->get_health())));
 
 
                 updates.push_back(Update::Update_new::create_delete_entity(id));
@@ -67,6 +67,13 @@ class Bullet : public Dynamic_entity {
         updates.push_back(Update::Update_new::create_position(
             static_cast<uint16_t>(id), x_client, y_client));
 
+        return updates;
+    }
+
+    virtual std::vector<Update::Update_new> handle_death(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
+        std::vector<Update::Update_new> updates;
+        updates.push_back(Update::Update_new::create_delete_entity(id));
+        set_pending_deletion(true);
         return updates;
     }
 };
