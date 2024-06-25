@@ -6,7 +6,7 @@
 #include "./ui_matchendedgui.h"
 
 MatchEndedGui::MatchEndedGui(std::vector<PlayerScore> scores, QWidget* parent)
-    : scores(scores), QMainWindow(parent), ui(new Ui::MatchEndedGui) {
+    : QMainWindow(parent), ui(new Ui::MatchEndedGui), scores(scores) {
     ui->setupUi(this);
 
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(
@@ -26,8 +26,6 @@ void MatchEndedGui::orderScores(std::vector<PlayerScore>& scores) {
 }
 
 void MatchEndedGui::addScoresToGui(std::vector<PlayerScore> scores) {
-    int count = 1;
-
     QColor baseColour = QMainWindow::palette().color(QPalette::Base);
 
     QColor gold = QColor(166, 140, 0);

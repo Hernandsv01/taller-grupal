@@ -5,8 +5,6 @@ void Client_listener::run() {
         try {
             Socket skt = skt_listener.accept();
 
-            // TODO: En algun momento debería recorrer todos los lobbys para
-            // verificar si hay que eliminar alguno que haya terminado
             clientes_en_lobby.push_back(std::make_unique<LobbyManager>(
                 std::move(skt), gamePoolMonitor));
 
