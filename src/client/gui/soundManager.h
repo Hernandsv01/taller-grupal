@@ -4,6 +4,7 @@
 #define MUSIC_CHANNEL 0
 #define SCORE_CHANNEL 1
 #define SHOOT_CHANNEL 2
+#define HURT_CHANNEL 3
 
 #include <SDL2pp/Mixer.hh>
 #include <SDL2pp/Music.hh>

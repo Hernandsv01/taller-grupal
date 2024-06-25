@@ -60,6 +60,8 @@ class PlayableCharacter : public Entity2 {
 
     virtual void updateAmmoQuantity(const int &ammoQuantity) override;
 
+    int getHealth() const;
+
     virtual bool isPlayer() override;
 
     std::string getCharacterType() const;

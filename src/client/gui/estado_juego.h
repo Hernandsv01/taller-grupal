@@ -37,12 +37,13 @@ const std::vector<std::string> posibleStates = {
 class UpdatableGameState2 {
    private:
     std::map<int, std::shared_ptr<Entity2>> gameState;
+    uint16_t mainId;
     int remainingSeconds = 0;
     bool matchEnded = false;
     uint32_t tick = 0;
 
    public:
-    explicit UpdatableGameState2() {
+    explicit UpdatableGameState2(uint16_t mainId) : mainId(mainId) {
         // std::shared_ptr<Entity2> ptr = std::make_unique<Entity2>();
         // gameState.emplace(1, std::move(ptr));
     }
@@ -178,15 +179,28 @@ class UpdatableGameState2 {
     }
 
     void updateHealthPoints(const int &id, const int &healthPoint) {
-        SoundManager::PlayMusic("coin", SCORE_CHANNEL, 0);
-
         std::shared_ptr<Entity2> &entity = gameState.at(id);
-        entity->updateHealth(healthPoint);
+
+        if (!entity->isPlayer()) return;
+        auto player = std::dynamic_pointer_cast<PlayableCharacter>(entity);
+
+        if (id == mainId && player->getHealth() > healthPoint) {
+            SoundManager::PlayMusic("hurt", HURT_CHANNEL, 0);
+        }
+
+        player->updateHealth(healthPoint);
     }
 
     void updateScore(const int &id, const int &score) {
         std::shared_ptr<Entity2> &entity = gameState.at(id);
-        entity->updateHealth(score);
+        if (!entity->isPlayer()) return;
+        auto player = std::dynamic_pointer_cast<PlayableCharacter>(entity);
+
+        if (id == mainId) {
+            SoundManager::PlayMusic("coin", SCORE_CHANNEL, 0);
+        }
+
+        player->updateScore(score);
     }
 
     void updateWeapon(const int &id, const int &weaponCode) {
@@ -229,11 +243,6 @@ class UpdatableGameState2 {
     bool hasMatchEnded() { return this->matchEnded; }
 
     void updateTick(uint32_t tick) { this->tick = tick; }
-
-   private:
-    bool isNotMain(const int &playerId, const int &mainId) {
-        return (playerId != mainId);
-    }
 };
 
 #endif  // ESTADO_JUEGO_H

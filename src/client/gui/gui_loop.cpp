@@ -16,7 +16,7 @@ GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
       clock(),
       windowForRender(window),
       render(nullptr),
-      gameState(),
+      gameState(player_id),
       mainId(player_id),
       currentTick(0),
       map(Map::fromYaml(map_name)){

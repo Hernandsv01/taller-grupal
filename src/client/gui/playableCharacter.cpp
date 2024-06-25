@@ -174,3 +174,5 @@ std::string PlayableCharacter::getCharacterType() const {
 }
 
 int PlayableCharacter::getScore() const { return score; }
+
+int PlayableCharacter::getHealth() const { return health; }

@@ -17,8 +17,9 @@ void SoundManager::Init() {
         return;
     }
 
-    SetMusicVolume(MUSIC_CHANNEL, 20);
+    SetMusicVolume(MUSIC_CHANNEL, 10);
     SetMusicVolume(SHOOT_CHANNEL, 20);
+    SetMusicVolume(HURT_CHANNEL, 10);
 
     LoadMusic();
 }
