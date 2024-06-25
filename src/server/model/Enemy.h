@@ -28,6 +28,7 @@ class Enemy : public Dynamic_entity {
         std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool,
         int& next_id) override {
         std::vector<Update::Update_new> updates;
+        std::vector<Update::Update_new> death_updates;
 
         if (!is_active) {
             if (std::chrono::steady_clock::now() >=
@@ -100,7 +101,8 @@ class Enemy : public Dynamic_entity {
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
-                    other->handle_death(entity_pool, next_id);
+                    death_updates = other->handle_death(entity_pool, next_id);
+                    updates.insert(updates.end(), death_updates.begin(), death_updates.end());
                 } else {
                     updates.push_back(Update::Update_new::create_value(
                         static_cast<uint16_t>(other->get_id()),

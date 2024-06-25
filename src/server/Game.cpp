@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <utility>
 
-#define WAVE_INTERVAL_IN_SECONDS 10
+#define WAVE_INTERVAL_IN_SECONDS 60
 
 Game::Game(std::string name, Map map)
     : Thread("Game server"),

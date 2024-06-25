@@ -78,8 +78,12 @@ class Dynamic_entity : public RigidBox {
     int get_id() const { return id; };
     bool get_is_item() const { return is_item; };
     bool deal_damage(int damage) {
+        if (!is_active) {
+            return false;
+        }
         health -= damage;
         if (health <= 0) {
+            health = 0;
             return true;
         } else {
             immune_time = std::chrono::steady_clock::now();

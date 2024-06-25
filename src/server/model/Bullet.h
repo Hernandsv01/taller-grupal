@@ -31,7 +31,6 @@ public:
             y_pos += vel_y;
 
             if (collides_with_map(map)) {
-                std::cout << "Se la dió contra el mapa" << std::endl;
                 updates.push_back(Update::Update_new::create_delete_entity(id));
                 pending_deletion = true;
                 return updates;
@@ -48,14 +47,12 @@ public:
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
-                    std::cout << "Entidad muerta!" << std::endl;
                     death_updates = other->handle_death(entity_pool, next_id);
                     updates.insert(updates.end(), death_updates.begin(), death_updates.end());
 
                     int shooter_position = findEntityPositionById(entity_pool, shooter_id);
                     entity_pool[shooter_position]->increase_points(KILLING_POINTS);
                     if (entity_pool[shooter_position]->get_points() != -1) {
-                        std::cout << "Pusheando update de points: " << entity_pool[shooter_position]->get_points() << std::endl;
                         updates.push_back(Update::Update_new::create_value(
                                 static_cast<uint16_t>(shooter_id),
                                 Update::UpdateType::Score,
