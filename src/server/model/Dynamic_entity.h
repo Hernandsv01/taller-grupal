@@ -43,7 +43,7 @@ class Dynamic_entity : public RigidBox {
                    float vel_x, float vel_y, float acc_y, bool is_damageable,
                    int damage_on_contact, bool is_item, int health,
                    bool is_active)
-        : RigidBox(pos_x, pos_y, width, height),
+        : RigidBox(pos_x, pos_y - height - 0.01, width, height),
           id(id),
           vel_x(vel_x),
           vel_y(vel_y),
@@ -116,6 +116,14 @@ class Dynamic_entity : public RigidBox {
     bool isPendingDeletion() { return pending_deletion; }
 
     int get_health() { return health; }
+
+    std::pair<float, float> get_position_for_client() {
+        // Obtengo la base en los pies.
+        float x_for_client = x_pos + (x_size / 2);
+        float y_for_client = y_pos + y_size;
+
+        return std::make_pair(x_for_client, y_for_client);
+    }
 };
 
 #endif  // DYNAMIC_ENTITY_H

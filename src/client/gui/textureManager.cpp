@@ -19,8 +19,8 @@
 
 const std::vector<std::string> typeOfCharacter = {"Jazz"};
 const std::vector<std::string> typeOfState = {
-    "Stand", "Run",  "Dash",     "Intox",  "Intoxwalk", "Fall",
-    "Jump",  "Shot", "Shotfall", "Gethit", "Hud"};
+    "Stand", "Run",      "Dash",   "Intox", "Intoxwalk", "Fall",   "Jump",
+    "Shot",  "Shotfall", "Gethit", "Hud",   "Dead",      "Special"};
 
 const std::vector<std::string> typeOfWeapons = {"Default", "Rapid"};
 // "Gethit", "Roasted",

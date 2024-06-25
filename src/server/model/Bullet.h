@@ -62,8 +62,10 @@ class Bullet : public Dynamic_entity {
             }
         }
 
+        auto [x_client, y_client] = get_position_for_client();
+
         updates.push_back(Update::Update_new::create_position(
-            static_cast<uint16_t>(id), x_pos, y_pos));
+            static_cast<uint16_t>(id), x_client, y_client));
 
         return updates;
     }

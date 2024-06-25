@@ -4,8 +4,8 @@
 #include "Dynamic_entity.h"
 #include "Player.h"
 
-#define ENEMY_HEIGHT 0.5
-#define ENEMY_WIDTH 0.2
+#define ENEMY_HEIGHT 2
+#define ENEMY_WIDTH 1.5
 #define ENEMY_MAX_MOVEMENT_RANGE 50
 #define SECONDS_UNTIL_RESPAWN 3
 
@@ -32,8 +32,11 @@ class Enemy : public Dynamic_entity {
             if (std::chrono::steady_clock::now() >=
                 inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
                 revive(map.get_enemy_spawns());
+
+                auto [x_client, y_client] = get_position_for_client();
+
                 updates.push_back(Update::Update_new::create_position(
-                    static_cast<uint16_t>(id), x_pos, y_pos));
+                    static_cast<uint16_t>(id), x_client, y_client));
             }
             return updates;
         }
@@ -78,8 +81,10 @@ class Enemy : public Dynamic_entity {
         }
 
         if (x_pos != old_x || y_pos != old_y) {
+            auto [x_client, y_client] = get_position_for_client();
+
             Update::Update_new update = Update::Update_new::create_position(
-                static_cast<uint16_t>(id), x_pos, y_pos);
+                static_cast<uint16_t>(id), x_client, y_client);
             updates.push_back(update);
         }
 

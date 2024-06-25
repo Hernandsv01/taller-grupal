@@ -68,7 +68,8 @@ void Game::run_iteration() {
     for (size_t i = 0; i < entity_pool.size(); ++i) {
         std::unique_ptr<Dynamic_entity>& entity_ptr = entity_pool[i];
         tick_updates = entity_ptr->tick(map, entity_pool, next_id);
-        total_updates.insert(total_updates.end(), tick_updates.begin(), tick_updates.end());
+        total_updates.insert(total_updates.end(), tick_updates.begin(),
+                             tick_updates.end());
     }
     sendAll(total_updates);
 }
@@ -209,8 +210,10 @@ std::vector<Update::Update_new> Game::get_full_game_updates() {
         updates.push_back(Update::Update_new::create_create_entity(
             entity_id, entity_type, entity_subtype));
 
-        updates.push_back(Update::Update_new::create_position(
-            entity_id, position_x, position_y));
+        auto [x_client, y_client] = entity->get_position_for_client();
+
+        updates.push_back(
+            Update::Update_new::create_position(entity_id, x_client, y_client));
     }
     return updates;
 }

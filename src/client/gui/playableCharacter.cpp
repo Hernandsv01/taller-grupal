@@ -155,7 +155,7 @@ void PlayableCharacter::showRemainingTime(SDL2pp::Renderer &renderer,
         SDL2pp::Rect(595, SPACETOBORDER, separatorWidth, separatorHeight));
 
     // Show seconds
-    showNumber(renderer, seconds, 2, 600 + separatorWidth, separatorHeight);
+    showNumber(renderer, seconds, 2, 600 + separatorWidth, SPACETOBORDER);
 }
 
 void PlayableCharacter::showNumber(SDL2pp::Renderer &renderer,

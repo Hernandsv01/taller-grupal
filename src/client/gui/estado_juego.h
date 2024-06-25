@@ -26,8 +26,8 @@ struct Position {
 // la textura)
 
 const std::vector<std::string> posibleStates = {
-    "Stand",     "Shot",  "Jump",   "Fall", "Run",      "Intox",
-    "Intoxwalk", "Intox", "Gethit", "Dash", "Shotfall", "Special"};
+    "Stand",     "Shot", "Jump",   "Fall", "Run",      "Intox",
+    "Intoxwalk", "Dead", "Gethit", "Dash", "Shotfall", "Special"};
 // Posibles estados de ¿solo jugador?
 
 // Clase que se encarga de mantener el estado del juego actualizado.
