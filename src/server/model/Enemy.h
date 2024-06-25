@@ -100,10 +100,7 @@ class Enemy : public Dynamic_entity {
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
-                    updates.push_back(Update::Update_new::create_value(
-                        static_cast<uint16_t>(other->get_id()),
-                        Update::UpdateType::State,
-                        enums_value_update::Player_State_Enum::Dead));
+                    other->handle_death(entity_pool, next_id);
                 } else {
                     updates.push_back(Update::Update_new::create_value(
                         static_cast<uint16_t>(other->get_id()),

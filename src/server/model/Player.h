@@ -88,6 +88,10 @@ class Player : public Dynamic_entity {
                 current_state = enums_value_update::Player_State_Enum::Idle;
                 updates.push_back(Update::Update_new::create_value(
                         id, Update::UpdateType::State, current_state));
+                updates.push_back(Update::Update_new::create_value(
+                        static_cast<uint16_t>(id),
+                        Update::UpdateType::Health,
+                        static_cast<uint8_t>(health)));
             }
             return updates;
         }
