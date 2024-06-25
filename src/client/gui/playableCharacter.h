@@ -17,7 +17,7 @@ class PlayableCharacter : public Entity2 {
     int health;
     int ammoQuantity;
 
-    SharedTexturePtr weaponTexture;
+    SDL2pp::Texture *weaponTexture;
     int weaponSpriteNumber;
 
     SharedTexturePtr stateTexture;

@@ -22,7 +22,7 @@ void Entity2::renderize(SDL2pp::Renderer &renderer, const int &xRef,
     int yPosInRender = positionY - yRef;
     int turntoLeft = (isRight) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-    auto current_texture = TextureManager::getEntityTexture(texture);
+    auto *current_texture = TextureManager::getEntityTexture(texture);
 
     int texture_size = current_texture->GetHeight();
 

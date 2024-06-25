@@ -58,10 +58,9 @@ void Render::presentGame2(UpdatableGameState2 gameState, Map& map) {
     // Renderizar mapa
     renderMap(map);
 
-    // Renderiza ¿entidades? ¿solo jugadores?
+    // Renderiza entidades y UI
     gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter, xReference, yReference);
 
-    // Renderiza UI
 
     renderer.Present();
 }

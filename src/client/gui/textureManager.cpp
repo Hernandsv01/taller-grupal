@@ -126,7 +126,7 @@ TextureManager::~TextureManager() {
 SDL2pp::Texture* TextureManager::getEntityTexture(
     const std::string& textureName) {
     try {
-        return entity_textures[textureName];
+        return entity_textures.at(textureName);
     } catch (const std::out_of_range& e) {
         return entity_textures["placeholder"];
     }

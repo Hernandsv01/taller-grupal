@@ -60,7 +60,10 @@ class UpdatableGameState2 {
                 break;
             }
             case Update::Direction: {
-                bool isRight = (update.get_value() == 0) ? true : false;
+                bool isRight =
+                    (update.get_value() == enums_value_update::Direction::Right)
+                        ? true
+                        : false;
                 updateDirection(update.get_id(), isRight);
                 break;
             }
@@ -96,7 +99,7 @@ class UpdatableGameState2 {
 
             case Update::ChangeAmmoType: {
                 int weaponType = update.get_value();
-                updateWeapon(update.get_id(), update.get_value());
+                updateWeapon(update.get_id(), weaponType);
                 break;
             }
             case Update::BulletsRemaining: {
@@ -119,8 +122,7 @@ class UpdatableGameState2 {
                 pair.second->renderize(renderer, xReference, yReference);
             }
         }
-      
-        mainPlayer->renderMainPj(renderer, xCenter, yCenter);
+        mainPlayer->renderMainPj(renderer, xReference, yReference);
         mainPlayer->showHud(renderer, xCenter*2, yCenter*2, remainingSeconds);
 
     }

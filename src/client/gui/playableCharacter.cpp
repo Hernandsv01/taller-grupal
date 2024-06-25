@@ -53,7 +53,7 @@ void PlayableCharacter::updateState(const std::string &newState) {
 }
 
 void PlayableCharacter::updateWeapon(const std::string &newWeapon) {
-    weaponTexture = TextureManager::getTexture(newWeapon);
+    weaponTexture = TextureManager::getEntityTexture(newWeapon);
     weaponSpriteNumber = 0;
 }
 
@@ -157,7 +157,7 @@ void PlayableCharacter::showRemainingTime(SDL2pp::Renderer &renderer, const int 
     renderer.Copy(
         *separatorTexture,
         SDL2pp::NullOpt,
-        SDL2pp::Rect(590, SPACETOBORDER, separatorWidth, separatorHeight));
+        SDL2pp::Rect(595, SPACETOBORDER, separatorWidth, separatorHeight));
     
     //Show seconds
     showNumber(renderer, seconds, 2, 600+separatorWidth, separatorHeight);

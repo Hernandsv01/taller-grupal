@@ -15,10 +15,10 @@ void EventListener::run() {
     while (_keep_running) {
         bool success = SDL_WaitEvent(&event);
 
-        if (event.type != last_event_type) {
-            std::cout << "Evento: " << event.type << std::endl;
-            last_event_type = event.type;
-        }
+        // if (event.type != last_event_type) {
+        //     std::cout << "Evento: " << event.type << std::endl;
+        //     last_event_type = event.type;
+        // }
 
         if (!success || event.type == SDL_QUIT) {
             _keep_running = false;
