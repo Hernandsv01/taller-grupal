@@ -50,6 +50,7 @@ class Player : public Dynamic_entity {
     Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
         : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, 0, GRAVITY, true, 0, false, Config::get_player_max_health(), true),
           points(0), type(type), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), is_x_move_blocked(false), is_y_move_blocked(false), last_shot_time(std::chrono::steady_clock::time_point()) {
+        ammo[enums_value_update::Ammo_type::NORMAL] = 255;
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
@@ -249,12 +250,9 @@ class Player : public Dynamic_entity {
         switch (action) {
             case JUMP:
                 if (!is_y_move_blocked) {
-                    std::cout << "Jumping!" << std::endl;
                     setYSpeed(Config::get_player_jump() * (-1));
                     is_jumping = true;
                     is_y_move_blocked = true;
-                }else{
-                    std::cout << "Blocked!" << std::endl;
                 }
                 break;
             case RUN_LEFT:
@@ -300,6 +298,11 @@ class Player : public Dynamic_entity {
                 current_ammo_type = get_next_ammo_type(current_ammo_type);
                 total_updates.push_back(Update::Update_new::create_value(
                     id, Update::UpdateType::ChangeAmmoType, current_ammo_type));
+                total_updates.push_back(Update::Update_new::create_value(
+                        id,
+                        Update::BulletsRemaining,
+                        static_cast<uint8_t>(ammo[current_ammo_type])
+                ));
                 break;
 
             case SPECIAL:
@@ -367,6 +370,11 @@ class Player : public Dynamic_entity {
         next_id++;
         if (current_ammo_type != enums_value_update::Ammo_type::NORMAL) {
             ammo[current_ammo_type]--;
+            updates.push_back(Update::Update_new::create_value(
+                    id,
+                    Update::BulletsRemaining,
+                    static_cast<uint8_t>(ammo[current_ammo_type])
+                    ));
         }
 
         return updates;

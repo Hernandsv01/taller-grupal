@@ -28,10 +28,10 @@ struct BulletsConfig{
         Attributes(int max_ammo, float speed, int damage, int bpm) : max_ammo(max_ammo), speed(speed), damage(damage), bpm(bpm){};
     };
     
-    Attributes normal = Attributes(-1, 5, 20, 500);
-    Attributes light = Attributes(1000, 5, 10, 1000);
+    Attributes normal = Attributes(255, 5, 20, 500);
+    Attributes light = Attributes(250, 5, 10, 1000);
     Attributes heavy = Attributes(250, 5, 40, 250);
-    Attributes power = Attributes(100, 15, 100, 100);
+    Attributes power = Attributes(250, 15, 100, 100);
 };
 
 struct EnemyConfig{
