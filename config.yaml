@@ -10,7 +10,7 @@ pickups:
 
 bullets:
   normal: 
-    max_ammo: 255
+    max_ammo: 255 #cantidad maxima 255 
     speed: 1.0
     damage: 15
     bpm: 500
