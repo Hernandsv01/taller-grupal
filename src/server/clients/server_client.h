@@ -83,6 +83,10 @@ class Server_Client {
         sender.stop();
         sender.join();
     }
+
+    bool has_desconnected() {
+        return (receiver.has_ended() || sender.has_ended());
+    }
 };
 
 #endif  // SERVER_CLIENT_H

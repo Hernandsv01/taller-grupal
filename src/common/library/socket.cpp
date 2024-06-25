@@ -429,7 +429,13 @@ void Socket::close_and_shutdown() {
     shutdown_manual = true;
 
     if (::shutdown(this->skt, 2) == -1) {
-        throw LibError(errno, "socket shutdown failed");
+        int error_number = errno;
+        if (error_number == 107) {
+            // No hubo error realmente. Solo esta diciendo que el otro lado de
+            // la conexion ya cerro antes.
+        } else {
+            throw LibError(error_number, "socket shutdown failed");
+        }
     }
     this->closed = true;
 

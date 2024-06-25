@@ -18,6 +18,8 @@ class Client_listener : public Thread {
     GamePoolMonitor& gamePoolMonitor;
     std::vector<std::unique_ptr<LobbyManager>> clientes_en_lobby;
 
+    void joinEndedLobbyManagers();
+
    public:
     Client_listener(Socket& socket, GamePoolMonitor& gamePoolMonitor)
         : Thread("Client_listener server"),

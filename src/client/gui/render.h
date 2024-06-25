@@ -14,10 +14,6 @@ class Render {
 
     void presentGame2(UpdatableGameState2 gameState, Map& map);
 
-    void presentImage();
-
-    void sleep(int millisecond);
-
     // void presentGame(GameStateRenderer, MapInfo mapInfo);
     // void copyPlayer(PlayerState jugador);
 

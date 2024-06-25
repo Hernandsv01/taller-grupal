@@ -9,6 +9,7 @@ class Entity2 {
     int positionY = 0;
     bool isRight = true;
     int actualSpriteNumber = 0;
+    bool loopAnimation = true;
 
     std::string texture = "";
 
@@ -24,13 +25,11 @@ class Entity2 {
     virtual int getPosY() const;
 
     virtual void renderize(SDL2pp::Renderer &renderer, const int &xRef,
-                           const int &yRef);
+                           const int &yRef, uint32_t tick);
 
-    virtual void renderMainPj(SDL2pp::Renderer &renderer, const int &xCenter,
-                              const int &yCenter) {};
-
-    virtual void showHud(SDL2pp::Renderer &renderer, const int &windowWidth,
-                         const int &windowHeight, const int &seconds) {};
+    void renderizeWithTexture(SDL2pp::Renderer &renderer,
+                              SDL2pp::Texture &texture, const int &xRef,
+                              const int &yRef, uint32_t tick);
 
     virtual void updateState(const std::string &newState) {};
 

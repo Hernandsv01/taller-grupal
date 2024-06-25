@@ -7,15 +7,18 @@ EventListener::EventListener(SDL2pp::Window& window, Socket& socket)
 void EventListener::run() {
     SDL_Event event;
 
+    bool running = true;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     uint last_event_type = SDL_QUIT;
 
     while (_keep_running) {
         bool success = SDL_WaitEvent(&event);
 
-        if (event.type != last_event_type) {
-            std::cout << "Evento: " << event.type << std::endl;
-            last_event_type = event.type;
-        }
+        // if (event.type != last_event_type) {
+        //     std::cout << "Evento: " << event.type << std::endl;
+        //     last_event_type = event.type;
+        // }
 
         if (!success || event.type == SDL_QUIT) {
             _keep_running = false;

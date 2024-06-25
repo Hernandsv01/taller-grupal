@@ -20,16 +20,6 @@
 #define DATA_PATH "src/client/gui/data/"
 #endif
 
-// Render::Render(int width, int height)
-//     : sdl(SDL_INIT_VIDEO),
-//       window(Window(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED,
-//                     SDL_WINDOWPOS_UNDEFINED, width, height,
-//                     SDL_WINDOW_RESIZABLE)),
-//       renderer(window, -1, SDL_RENDERER_ACCELERATED),
-//       standSpritesJazz(renderer, DATA_PATH "/Jazz_stand.png"),
-//       runSpritesJazz(renderer, DATA_PATH "/Jazz_run.png"),
-//       frame(0) {}
-
 Render::Render(Window& window, const int& id)
     : window(window),
       renderer(window, -1, SDL_RENDERER_ACCELERATED),
@@ -43,11 +33,9 @@ Render::Render(Window& window, const int& id)
 }
 
 void Render::presentGame2(UpdatableGameState2 gameState, Map& map) {
-
-    auto mainPlayerPosition = SDL2pp::Point(
-        gameState.getEntityPositionX(mainPlayerID),
-        gameState.getEntityPositionY(mainPlayerID));
-
+    auto mainPlayerPosition =
+        SDL2pp::Point(gameState.getEntityPositionX(mainPlayerID),
+                      gameState.getEntityPositionY(mainPlayerID));
 
     xCenter = window.GetWidth() / 2;
     yCenter = window.GetHeight() / 2;
@@ -58,10 +46,9 @@ void Render::presentGame2(UpdatableGameState2 gameState, Map& map) {
     // Renderizar mapa
     renderMap(map);
 
-    // Renderiza ¿entidades? ¿solo jugadores?
-    gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter, xReference, yReference);
-
-    // Renderiza UI
+    // Renderiza entidades y UI
+    gameState.copyAllEntities(this->renderer, mainPlayerID, xCenter, yCenter,
+                              xReference, yReference);
 
     renderer.Present();
 }
@@ -72,11 +59,10 @@ void Render::renderMap(Map& map) {
     std::vector<BlockOnlyTexture> map_tiles = map.get_all_block_textures();
 
     for (const BlockOnlyTexture& block : map_tiles) {
-        renderer.Copy(
-            TextureManager::getTile(block.texture), NullOpt,
-            Rect((block.coordinate.x) * sizeFactor - xReference,
-                 (block.coordinate.y) * sizeFactor - yReference,
-                 sizeFactor, sizeFactor));
+        renderer.Copy(TextureManager::getTile(block.texture), NullOpt,
+                      Rect((block.coordinate.x) * sizeFactor - xReference,
+                           (block.coordinate.y) * sizeFactor - yReference,
+                           sizeFactor, sizeFactor));
     }
 }
 
@@ -97,7 +83,3 @@ void Render::renderMapBackground(Map& map) {
         }
     }
 }
-
-void Render::presentImage() { renderer.Present(); }
-
-void Render::sleep(int millisecond) { SDL_Delay(millisecond); }
