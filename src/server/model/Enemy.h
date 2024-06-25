@@ -4,8 +4,8 @@
 #include "Dynamic_entity.h"
 #include "Player.h"
 
-#define ENEMY_HEIGHT 2
-#define ENEMY_WIDTH 1.5
+#define ENEMY_HEIGHT 1.33
+#define ENEMY_WIDTH 1.1
 #define ENEMY_MAX_MOVEMENT_RANGE 50
 #define SECONDS_UNTIL_RESPAWN 3
 

@@ -13,8 +13,8 @@
 #include "Pickup.h"
 #include "constants/pickup_type.h"
 
-#define PLAYER_HEIGHT 0.5
-#define PLAYER_WIDTH 0.2
+#define PLAYER_HEIGHT 1.33
+#define PLAYER_WIDTH 0.8
 #define PLAYER_INITIAL_X_VEL 0
 #define PLAYER_INITIAL_Y_VEL 0
 #define GRAVITY 0.05
@@ -341,7 +341,7 @@ class Player : public Dynamic_entity {
             return updates;
         }
         float x_spawn = x_pos;
-        float y_spawn = y_pos - (y_size / 2);
+        float y_spawn = y_pos + (y_size / 2);
         float speed = ammo_config[current_ammo_type].get_speed();
         int damage = ammo_config[current_ammo_type].get_damage();
 
