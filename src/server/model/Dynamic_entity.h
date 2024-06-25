@@ -111,6 +111,8 @@ class Dynamic_entity : public RigidBox {
 
     bool isPendingDeletion() { return pending_deletion; }
 
+    void set_pending_deletion(){ pending_deletion = true; }
+
     int get_health() { return health; }
 
     std::pair<float, float> get_position_for_client() {
@@ -120,6 +122,8 @@ class Dynamic_entity : public RigidBox {
 
         return std::make_pair(x_for_client, y_for_client);
     }
+
+
 };
 
 #endif  // DYNAMIC_ENTITY_H
