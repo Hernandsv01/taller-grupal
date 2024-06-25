@@ -17,14 +17,9 @@ class Dynamic_entity : public RigidBox {
     float vel_x;
     float vel_y;
 
-    // esto probablemente sea agregado cuando implementemos física
-    // (para la gravedad seguro y estamos evaluando hacerlo para movimiento en
-    // X) int acc_x;
+    float acc_x;
     float acc_y;
 
-    // esto lo usamos para diferenciar una bala de un jugador, si no hace daño
-    // se setea en 0 (para evitar tener 2 atributos, uno boolean y otro con el
-    // valor)
     bool is_damageable;
     std::chrono::steady_clock::time_point last_damaged;
     int damage_on_contact;
@@ -40,13 +35,14 @@ class Dynamic_entity : public RigidBox {
 
    public:
     Dynamic_entity(int id, float pos_x, float pos_y, float width, float height,
-                   float vel_x, float vel_y, float acc_y, bool is_damageable,
+                   float vel_x, float vel_y, float acc_x, float acc_y, bool is_damageable,
                    int damage_on_contact, bool is_item, int health,
                    bool is_active)
         : RigidBox(pos_x, pos_y - height - 0.01, width, height),
           id(id),
           vel_x(vel_x),
           vel_y(vel_y),
+          acc_x(acc_x),
           acc_y(acc_y),
           is_damageable(is_damageable),
           last_damaged(std::chrono::steady_clock::time_point()),

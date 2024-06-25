@@ -225,7 +225,10 @@ class UpdatableGameState2 {
         entity->updateWeapon(weaponName);
     }
 
-    void updateAmmoQuantity(const int &id, const int &ammoQuantity) {
+    void updateAmmoQuantity(const int &id, int ammoQuantity) {
+        if (ammoQuantity == 255) {
+            ammoQuantity = -1;
+        }
         std::shared_ptr<Entity2> &entity = gameState.at(id);
         entity->updateAmmoQuantity(ammoQuantity);
     }

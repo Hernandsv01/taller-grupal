@@ -13,7 +13,7 @@ class Bullet : public Dynamic_entity {
    public:
     Bullet(int id, float x_spawn, float y_spawn, float vel_x, int damage)
         : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT,
-                         vel_x, 0, 0, false, damage, false, 0, true){};
+                         vel_x, 0, 0, 0, false, damage, false, 0, true){};
 
     std::vector<Update::Update_new> tick(
         const Map& map,
@@ -49,12 +49,12 @@ class Bullet : public Dynamic_entity {
                         static_cast<uint16_t>(other->get_id()),
                         Update::UpdateType::State,
                         enums_value_update::Player_State_Enum::Dead));
-                } else {
-                    updates.push_back(Update::Update_new::create_value(
-                        static_cast<uint16_t>(other->get_id()),
-                        Update::UpdateType::Health,
-                        static_cast<uint8_t>(other->get_health())));
                 }
+                updates.push_back(Update::Update_new::create_value(
+                    static_cast<uint16_t>(other->get_id()),
+                    Update::UpdateType::Health,
+                    static_cast<uint8_t>(other->get_health())));
+
 
                 updates.push_back(Update::Update_new::create_delete_entity(id));
                 pending_deletion = true;
