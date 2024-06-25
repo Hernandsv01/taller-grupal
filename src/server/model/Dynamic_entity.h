@@ -30,14 +30,15 @@ class Dynamic_entity : public RigidBox {
     bool is_active;
     bool pending_deletion;
     std::chrono::steady_clock::time_point inactive_time;
+    std::chrono::steady_clock::time_point immune_time;
 
     enums_value_update::Direction direction;
 
    public:
     Dynamic_entity(int id, float pos_x, float pos_y, float width, float height,
-                   float vel_x, float vel_y, float acc_x, float acc_y, bool is_damageable,
-                   int damage_on_contact, bool is_item, int health,
-                   bool is_active)
+                   float vel_x, float vel_y, float acc_x, float acc_y,
+                   bool is_damageable, int damage_on_contact, bool is_item,
+                   int health, bool is_active)
         : RigidBox(pos_x, pos_y - height - 0.01, width, height),
           id(id),
           vel_x(vel_x),
@@ -52,6 +53,7 @@ class Dynamic_entity : public RigidBox {
           is_active(is_active),
           pending_deletion(false),
           inactive_time(std::chrono::steady_clock::time_point()),
+          immune_time(std::chrono::steady_clock::time_point()),
           direction(enums_value_update::Direction::Right){};
 
     ~Dynamic_entity() = default;
@@ -80,6 +82,7 @@ class Dynamic_entity : public RigidBox {
         if (health <= 0) {
             return true;
         } else {
+            immune_time = std::chrono::steady_clock::now();
             // cooldown of being hit
             is_damageable = false;
         }

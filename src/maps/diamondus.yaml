@@ -5854,9 +5854,6 @@ blocks:
       - 1
       - diamondushang
     -
-      - 1
-      - diamondushang
-    -
       - 0
       - ""
     -
@@ -5932,8 +5929,11 @@ blocks:
       - 0
       - ""
     -
-      - 1
-      - diamondusstone
+      - 0
+      - ""
+    -
+      - 0
+      - ""
     -
       - 1
       - diamondusstone
