@@ -13,7 +13,7 @@ class Bullet : public Dynamic_entity {
    public:
     Bullet(int id, float x_spawn, float y_spawn, float vel_x, int damage)
         : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT,
-                         vel_x, 0, 0, false, damage, false, 0, true, true){};
+                         vel_x, 0, 0, false, damage, false, 0, true){};
 
     std::vector<Update::Update_new> tick(
         const Map& map,
@@ -41,7 +41,7 @@ class Bullet : public Dynamic_entity {
             }
 
             if (other->is_entity_damageable()) {
-                std::cout << "Se la dió contra un player" << std::endl;
+                std::cout << "Se la dió contra alguien" << std::endl;
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
