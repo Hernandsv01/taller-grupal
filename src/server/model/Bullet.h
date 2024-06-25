@@ -45,6 +45,7 @@ class Bullet : public Dynamic_entity {
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
+                    // TODO: si es player, mandar state::dead, si es enemy eliminar
                     updates.push_back(Update::Update_new::create_value(
                         static_cast<uint16_t>(other->get_id()),
                         Update::UpdateType::State,

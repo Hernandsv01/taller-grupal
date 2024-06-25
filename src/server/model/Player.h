@@ -146,7 +146,7 @@ class Player : public Dynamic_entity {
                 vel_y = 0;
             }
             if (vel_y > 0) {
-                if (is_doing_special || is_jumping) {
+                if (((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && is_doing_special) || is_jumping) {
                     reset_special_state();
                 }
                 is_falling = true;
@@ -155,7 +155,7 @@ class Player : public Dynamic_entity {
                 is_falling = false;
                 is_jumping = true;
             } else {
-                if (is_doing_special || is_jumping) {
+                if (((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && is_doing_special) || is_jumping) {
                     reset_special_state();
                 }
                 is_falling = false;
@@ -311,14 +311,14 @@ class Player : public Dynamic_entity {
                 break;
 
             case STOP_RUN_RIGHT:
-                if (vel_x > 0 && !is_x_move_blocked) {
+                if (vel_x > 0 && ((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && !is_x_move_blocked)) {
                     vel_x = 0;
                     is_running = false;
                 }
                 break;
 
             case STOP_RUN_LEFT:
-                if (vel_x < 0 && !is_x_move_blocked) {
+                if (vel_x < 0 && ((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && !is_x_move_blocked)) {
                     vel_x = 0;
                     is_running = false;
                 }
@@ -433,7 +433,7 @@ class Player : public Dynamic_entity {
                     is_damageable = false;
                     is_x_move_blocked = true;
                     is_y_move_blocked = true;
-                    setXSpeed(Config::get_player_speed() * (direction == enums_value_update::Direction::Left ? -1.0f : 1.0f));
+                    setXSpeed(Config::get_player_speed() * (direction == enums_value_update::Direction::Left ? -3.0f : 3.0f));
                     acc_x = GRAVITY * (direction == enums_value_update::Direction::Right ? -1.0f : 1.0f);
                 }
                 break;
