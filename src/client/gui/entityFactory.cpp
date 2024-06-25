@@ -12,8 +12,12 @@ std::shared_ptr<Entity2> EntityFactory::createEntity(const int& type,
                                                      const int& subtype) {
     switch (type) {
         case Update::EntityType::Player:
-            // return std::make_shared<PlayableCharacter>(subtype_chart[subtype]);
-            return std::make_shared<PlayableCharacter>(subtype_chart[1]);
+            switch (subtype) {
+            case Update::EntitySubtype::Jazz:
+                return std::make_shared<PlayableCharacter>(subtype_chart[1]);
+            case Update::EntitySubtype::Lori:
+                return std::make_shared<PlayableCharacter>(subtype_chart[3]);
+            }
         
         case Update::EntityType::Bullet:
             switch (subtype) {
