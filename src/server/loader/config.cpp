@@ -49,7 +49,7 @@ void Config::load_config(const std::string& file_path){
 
         //player
         if(config["player"]["speed"]) Config::player.speed = config["player"]["speed"].as<float>();
-        if(config["player"]["jump"]) Config::player.jump = config["player"]["jump"].as<int>();
+        if(config["player"]["jump"]) Config::player.jump = config["player"]["jump"].as<float>();
         if(config["player"]["max_health"]) Config::player.max_health = config["player"]["max_health"].as<int>();
 
     } catch(const YAML::BadFile &e){
@@ -211,7 +211,7 @@ float Config::get_player_speed(){
     return player.speed;
 }
 
-int Config::get_player_jump(){
+float Config::get_player_jump(){
     return player.jump;
 }
 
