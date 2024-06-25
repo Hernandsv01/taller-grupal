@@ -52,6 +52,9 @@ public:
         return updates;
     }
 
+    void increase_points(int more_points) { };
+    virtual int get_points() { return -1; };
+
 };
 
 #endif //PICKUP_H

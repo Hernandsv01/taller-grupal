@@ -122,6 +122,10 @@ class Dynamic_entity : public RigidBox {
 
         return std::make_pair(x_for_client, y_for_client);
     }
+
+    virtual void increase_points(int more_points) = 0;
+    virtual int get_points() = 0;
+
 };
 
 #endif  // DYNAMIC_ENTITY_H

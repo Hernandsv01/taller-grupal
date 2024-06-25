@@ -42,7 +42,7 @@ class Game : public Thread {
     uint16_t add_player();
     void add_socket_for_player(uint16_t player_id, Socket socket);
     void sendAll(std::vector<Update::Update_new> updates);
-    int findEntityPositionById(int id);
+    static int findEntityPositionById(std::vector<std::unique_ptr<Dynamic_entity>>& entities, int id);
     uint8_t get_id();
     void set_id(uint8_t id);
     std::string get_match_name();

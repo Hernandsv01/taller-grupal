@@ -64,7 +64,7 @@ void Game::run_iteration() {
     for (auto& client : clients) {
         uint8_t action = client->getReceiver().get_next_action();
         auto* player = dynamic_cast<Player*>(
-            entity_pool[findEntityPositionById(client->get_id())].get());
+            entity_pool[findEntityPositionById(entity_pool, client->get_id())].get());
         tick_updates = player->process_action(action, entity_pool, next_id);
         total_updates.insert(total_updates.end(), tick_updates.begin(),
                              tick_updates.end());
@@ -237,7 +237,7 @@ void Game::delete_disconnected_players(
         updates.push_back(Update::Update_new::create_delete_entity(
             static_cast<uint16_t>(id)));
 
-        int entity_position = findEntityPositionById(id);
+        int entity_position = findEntityPositionById(entity_pool, id);
         if (entity_position != -1) {
             entity_pool.erase(entity_pool.begin() + entity_position);
         }
@@ -252,14 +252,14 @@ void Game::sendAll(std::vector<Update::Update_new> updates) {
     }
 }
 
-int Game::findEntityPositionById(int entity_id) {
+int Game::findEntityPositionById(std::vector<std::unique_ptr<Dynamic_entity>>& entities, int entity_id) {
     auto it = std::find_if(
-        entity_pool.begin(), entity_pool.end(),
+            entities.begin(), entities.end(),
         [entity_id](const std::unique_ptr<Dynamic_entity>& entity) {
             return entity->get_id() == entity_id;
         });
-    if (it != entity_pool.end()) {
-        return std::distance(entity_pool.begin(), it);
+    if (it != entities.end()) {
+        return std::distance(entities.begin(), it);
     }
     return -1;
 }

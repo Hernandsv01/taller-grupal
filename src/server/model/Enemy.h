@@ -136,6 +136,9 @@ class Enemy : public Dynamic_entity {
         set_pending_deletion(true);
         return updates;
     }
+
+    void increase_points(int more_points) { };
+    virtual int get_points() { return -1; };
 };
 
 #endif  // ENEMY_H

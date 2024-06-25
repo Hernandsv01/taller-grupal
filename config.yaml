@@ -2,7 +2,7 @@ game:
   time: 200 # int, MAX: 255
 
 pickups:
-  coin: 50    # int
+  coin: 2    # int
   carrot: 25  # int
   light_ammo: 100   # int
   heavy_ammo: 25    # int

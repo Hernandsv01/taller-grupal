@@ -355,7 +355,7 @@ class Player : public Dynamic_entity {
         }
 
         entity_pool.push_back(
-            std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
+            std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage, id));
         updates.push_back(Update::Update_new::create_create_entity(
             next_id, Update::EntityType::Bullet,
             Update::EntitySubtype::No_subtype));
@@ -514,6 +514,9 @@ class Player : public Dynamic_entity {
     }
 
     Update::EntitySubtype get_player_subtype() { return type; }
+
+    void increase_points(int more_points) { points += more_points; }
+    virtual int get_points() { return points; };
 };
 
 #endif  // PLAYER_H
