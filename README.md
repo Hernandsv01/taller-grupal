@@ -1,6 +1,15 @@
-# taller-grupal
+# Taller-grupal - Jazz Jack Rabbit 2 Remake
 
-## Como instalar
+## Equipo 
+Hernán de San Vicente - 108800 - hdesanvicente@fi.uba.ar
+
+Lara Converso - 107632 - lconverso@fi.uba.ar
+
+Mariano Lazzarini - 106352 - mlazzarini@fi.uba.ar
+
+Matias Rea - 99770 - mrea@fi.uba.ar
+
+## Cómo instalar
 
 ### Instalar Librerias
 ```bash
@@ -11,7 +20,10 @@ sudo apt install git cmake g++ make
 sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev libsdl2-gfx-dev
 
 # Librerias de QT
-sudo apt install qtbase5-dev qt5-qmake
+sudo apt install qtbase5-dev qt5-qmake qtwayland5
+
+#Libreria de YAML 
+sudo apt-get install -y libyaml-cpp-dev
 ```
 
 ### Clonar repositorio
@@ -25,7 +37,14 @@ cd taller-grupal/
 cmake .
 make
 ```
+# Documentación
+En la carpeta `docs` se encuentran los siguientes archivos: 
+- Manual de Usuario
+- Manual del Proyecto 
+- Documentacion técnica 
 
+
+# Primera Entrega  
 ## Ejecutables
 La compilacion del tp dejará 4 ejecutables:
 - `client`: Que es el programa grafico donde se puede jugar la partida.
