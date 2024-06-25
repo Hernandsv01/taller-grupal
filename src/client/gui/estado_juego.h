@@ -86,7 +86,7 @@ class UpdatableGameState2 {
                 break;
             }
             case Update::Score: {
-                int score = update.get_value();
+                int score = update.get_value() * 109;
                 updateScore(update.get_id(), score);
                 break;
             }

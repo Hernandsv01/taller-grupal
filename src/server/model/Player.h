@@ -19,7 +19,7 @@
 #define PLAYER_INITIAL_Y_VEL 0
 #define GRAVITY 0.05
 #define SECONDS_UNTIL_RESPAWN 3
-#define SECONDS_IMMUNE_AFTER_DAMAGE 2
+#define SECONDS_IMMUNE_AFTER_DAMAGE 1
 #define SPECIAL_ATTACK_DAMAGE 30
 #define SPECIAL_ATTACK_SPEED 2
 
@@ -94,7 +94,7 @@ class Player : public Dynamic_entity {
 
         if (!is_damageable && !is_doing_special &&
             std::chrono::steady_clock::now() >=
-                (inactive_time +
+                (immune_time +
                  std::chrono::seconds(SECONDS_IMMUNE_AFTER_DAMAGE))) {
             is_damageable = true;
         }
@@ -252,6 +252,9 @@ class Player : public Dynamic_entity {
         int& next_id) {
         std::vector<Update::Update_new> total_updates;
         std::vector<Update::Update_new> action_updates;
+        if (!is_active) {
+            return total_updates;
+        }
         switch (action) {
             case JUMP:
                 if (!is_y_move_blocked) {
@@ -398,7 +401,7 @@ class Player : public Dynamic_entity {
     void revive(std::vector<Coordinate> spawns) {
         Coordinate spawn = spawns[rand() % spawns.size()];
         x_pos = spawn.x;
-        y_pos = spawn.y;
+        y_pos = spawn.y - (y_size / 2);
 
         health = Config::get_player_max_health();
         is_active = true;
