@@ -37,7 +37,7 @@ class Game : public Thread {
     explicit Game(std::string name, Map map);
     void run() override;
     void run_iteration();
-    void initialize_values();
+    void initialize_wave();
     void stop_custom() override;
     uint16_t add_player();
     void add_socket_for_player(uint16_t player_id, Socket socket);
