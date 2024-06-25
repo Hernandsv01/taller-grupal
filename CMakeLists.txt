@@ -61,6 +61,8 @@ set(SOURCES_CLIENT
         src/client/gui/textureManager.cpp
         src/client/gui/playableCharacter.h
         src/client/gui/playableCharacter.cpp
+        src/client/gui/soundManager.h
+        src/client/gui/soundManager.cpp
         src/client/eventlistener.cpp
         src/client/eventlistener.h
         src/client/mapper.cpp
@@ -138,6 +140,7 @@ target_link_libraries(client PRIVATE map)
 
 
 set(SDL2PP_WITH_IMAGE YES)
+set(SDL2PP_WITH_MIXER YES)
 set(SDL2PP_WITH_TTF YES)
 add_subdirectory(src/client/gui/SDL2pp)
 
