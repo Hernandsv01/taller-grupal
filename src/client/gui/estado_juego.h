@@ -39,6 +39,7 @@ class UpdatableGameState2 {
     std::map<int, std::shared_ptr<Entity2>> gameState;
     int remainingSeconds = 0;
     bool matchEnded = false;
+    uint32_t tick = 0;
 
    public:
     explicit UpdatableGameState2() {
@@ -125,13 +126,12 @@ class UpdatableGameState2 {
         const auto &mainPlayer = gameState.at(mainId);
 
         for (auto &pair : gameState) {
-            if (isNotMain(pair.first, mainId)) {
-                pair.second->renderize(renderer, xReference, yReference);
-            }
+            pair.second->renderize(renderer, xReference, yReference, tick);
         }
-        mainPlayer->renderMainPj(renderer, xReference, yReference);
-        mainPlayer->showHud(renderer, xCenter * 2, yCenter * 2,
-                            remainingSeconds);
+
+        dynamic_cast<PlayableCharacter *>(mainPlayer.get())
+            ->showHud(renderer, xCenter * 2, yCenter * 2, remainingSeconds,
+                      tick);
     }
 
     std::vector<std::tuple<int, std::string, int>> getPlayersScores() {
@@ -227,6 +227,8 @@ class UpdatableGameState2 {
     }
 
     bool hasMatchEnded() { return this->matchEnded; }
+
+    void updateTick(uint32_t tick) { this->tick = tick; }
 
    private:
     bool isNotMain(const int &playerId, const int &mainId) {

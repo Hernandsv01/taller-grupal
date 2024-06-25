@@ -173,6 +173,8 @@ void GuiLoop::updateGameState() {
         gameState.handleUpdate(update, currentTick);
         // updatableGameState.handleUpdate(update, currentTick);
     }
+
+    gameState.updateTick(currentTick);
 }
 
 void GuiLoop::runRenderer() {
