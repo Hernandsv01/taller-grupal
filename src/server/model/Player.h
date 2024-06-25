@@ -151,6 +151,8 @@ class Player : public Dynamic_entity {
                     is_y_move_blocked = false;
                 }
                 vel_y = 0;
+            }else{
+                is_y_move_blocked = true;
             }
             if (vel_y > 0) {
                 if (((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && is_doing_special) || is_jumping) {
@@ -234,7 +236,7 @@ class Player : public Dynamic_entity {
                 }
                 updates.push_back(
                     Update::Update_new::create_delete_entity(other->get_id()));
-                delete_pickup(entity_pool, pickup->get_id());
+                    pickup->set_pending_deletion();
             }
         }
 

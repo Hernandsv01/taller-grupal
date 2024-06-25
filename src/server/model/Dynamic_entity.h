@@ -109,7 +109,7 @@ class Dynamic_entity : public RigidBox {
 
     bool isPendingDeletion() { return pending_deletion; }
 
-    void set_pending_deletion (bool is_pending_deletion) { pending_deletion = is_pending_deletion; }
+    void set_pending_deletion(){ pending_deletion = true; }
 
     int get_health() { return health; }
 

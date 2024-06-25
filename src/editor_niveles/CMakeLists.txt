@@ -23,10 +23,7 @@ set(PROJECT_SOURCES
         mainwindow.cpp mainwindow.h
         mainwindow.ui
         renderizadomapa.h renderizadomapa.cpp
-        tiles.qrc
         editormapa.h editormapa.cpp
-        ../common/map/map.cpp
-        ../common/map/map.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -54,6 +51,9 @@ endif()
 
 target_link_libraries(editor_niveles PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(editor_niveles PRIVATE map)
+
+target_compile_definitions(editor_niveles PUBLIC TEXTURE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/../textures/")
+
 
 set_target_properties(editor_niveles PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
