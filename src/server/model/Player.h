@@ -48,17 +48,34 @@ class Player : public Dynamic_entity {
 
    public:
     Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, 0, GRAVITY, true, 0, false, Config::get_player_max_health(), true),
-          points(0), type(type), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), is_x_move_blocked(false), is_y_move_blocked(false), last_shot_time(std::chrono::steady_clock::time_point()) {
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT,
+                         PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, 0, GRAVITY,
+                         true, 0, false, Config::get_player_max_health(), true),
+          points(0),
+          type(type),
+          current_ammo_type(enums_value_update::Ammo_type::NORMAL),
+          current_state(enums_value_update::Player_State_Enum::Idle),
+          is_shooting(false),
+          is_doing_special(false),
+          is_running(false),
+          is_jumping(false),
+          is_falling(false),
+          is_x_move_blocked(false),
+          is_y_move_blocked(false),
+          last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::NORMAL] = 255;
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
 
-        next_ammo_type[enums_value_update::Ammo_type::NORMAL] = enums_value_update::Ammo_type::LIGHT;
-        next_ammo_type[enums_value_update::Ammo_type::LIGHT] = enums_value_update::Ammo_type::HEAVY;
-        next_ammo_type[enums_value_update::Ammo_type::HEAVY] = enums_value_update::Ammo_type::POWER;
-        next_ammo_type[enums_value_update::Ammo_type::POWER] = enums_value_update::Ammo_type::NORMAL;
+        next_ammo_type[enums_value_update::Ammo_type::NORMAL] =
+            enums_value_update::Ammo_type::LIGHT;
+        next_ammo_type[enums_value_update::Ammo_type::LIGHT] =
+            enums_value_update::Ammo_type::HEAVY;
+        next_ammo_type[enums_value_update::Ammo_type::HEAVY] =
+            enums_value_update::Ammo_type::POWER;
+        next_ammo_type[enums_value_update::Ammo_type::POWER] =
+            enums_value_update::Ammo_type::NORMAL;
 
         ammo_config[enums_value_update::Ammo_type::NORMAL] =
             Ammo::create_normal();
@@ -87,11 +104,10 @@ class Player : public Dynamic_entity {
                     static_cast<uint16_t>(id), x_client, y_client));
                 current_state = enums_value_update::Player_State_Enum::Idle;
                 updates.push_back(Update::Update_new::create_value(
-                        id, Update::UpdateType::State, current_state));
+                    id, Update::UpdateType::State, current_state));
                 updates.push_back(Update::Update_new::create_value(
-                        static_cast<uint16_t>(id),
-                        Update::UpdateType::Health,
-                        static_cast<uint8_t>(health)));
+                    static_cast<uint16_t>(id), Update::UpdateType::Health,
+                    static_cast<uint8_t>(health)));
             }
             return updates;
         }
@@ -126,8 +142,11 @@ class Player : public Dynamic_entity {
         if (vel_x != 0) {
             x_pos += vel_x;
 
-            if (is_doing_special && ((direction == enums_value_update::Direction::Right && vel_x < 0)
-            || (direction == enums_value_update::Direction::Left && vel_x > 0))) {
+            if (is_doing_special &&
+                ((direction == enums_value_update::Direction::Right &&
+                  vel_x < 0) ||
+                 (direction == enums_value_update::Direction::Left &&
+                  vel_x > 0))) {
                 is_doing_special = false;
                 damage_on_contact = 0;
                 is_damageable = true;
@@ -151,11 +170,14 @@ class Player : public Dynamic_entity {
                     is_y_move_blocked = false;
                 }
                 vel_y = 0;
-            }else{
+            } else {
                 is_y_move_blocked = true;
             }
             if (vel_y > 0) {
-                if (((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && is_doing_special) || is_jumping) {
+                if (((type == Update::EntitySubtype::Jazz ||
+                      type == Update::EntitySubtype::Lori) &&
+                     is_doing_special) ||
+                    is_jumping) {
                     reset_special_state();
                 }
                 is_falling = true;
@@ -164,7 +186,10 @@ class Player : public Dynamic_entity {
                 is_falling = false;
                 is_jumping = true;
             } else {
-                if (((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && is_doing_special) || is_jumping) {
+                if (((type == Update::EntitySubtype::Jazz ||
+                      type == Update::EntitySubtype::Lori) &&
+                     is_doing_special) ||
+                    is_jumping) {
                     reset_special_state();
                 }
                 is_falling = false;
@@ -214,10 +239,8 @@ class Player : public Dynamic_entity {
                         }
                         if (current_ammo_type == enums_value_update::LIGHT) {
                             updates.push_back(Update::Update_new::create_value(
-                                    id,
-                                    Update::UpdateType::BulletsRemaining,
-                                    ammo[current_ammo_type]
-                                    ));
+                                id, Update::UpdateType::BulletsRemaining,
+                                ammo[current_ammo_type]));
                         }
                         break;
                     case HEAVY_AMMO:
@@ -231,10 +254,8 @@ class Player : public Dynamic_entity {
                         }
                         if (current_ammo_type == enums_value_update::HEAVY) {
                             updates.push_back(Update::Update_new::create_value(
-                                    id,
-                                    Update::UpdateType::BulletsRemaining,
-                                    ammo[current_ammo_type]
-                            ));
+                                id, Update::UpdateType::BulletsRemaining,
+                                ammo[current_ammo_type]));
                         }
                         break;
                     case POWER_AMMO:
@@ -248,16 +269,14 @@ class Player : public Dynamic_entity {
                         }
                         if (current_ammo_type == enums_value_update::POWER) {
                             updates.push_back(Update::Update_new::create_value(
-                                    id,
-                                    Update::UpdateType::BulletsRemaining,
-                                    ammo[current_ammo_type]
-                            ));
+                                id, Update::UpdateType::BulletsRemaining,
+                                ammo[current_ammo_type]));
                         }
                         break;
                 }
                 updates.push_back(
                     Update::Update_new::create_delete_entity(other->get_id()));
-                    pickup->set_pending_deletion();
+                pickup->set_pending_deletion();
             }
         }
 
@@ -293,10 +312,7 @@ class Player : public Dynamic_entity {
                     direction = enums_value_update::Direction::Left;
                     setXSpeed(Config::get_player_speed() * (-1));
                     total_updates.push_back(Update::Update_new::create_value(
-                            id,
-                            Update::UpdateType::Direction,
-                            direction
-                    ));
+                        id, Update::UpdateType::Direction, direction));
                     is_running = true;
                 }
                 break;
@@ -306,10 +322,7 @@ class Player : public Dynamic_entity {
                     direction = enums_value_update::Direction::Right;
                     setXSpeed(Config::get_player_speed());
                     total_updates.push_back(Update::Update_new::create_value(
-                            id,
-                            Update::UpdateType::Direction,
-                            direction
-                    ));
+                        id, Update::UpdateType::Direction, direction));
                     is_running = true;
                 }
                 break;
@@ -332,26 +345,28 @@ class Player : public Dynamic_entity {
                 total_updates.push_back(Update::Update_new::create_value(
                     id, Update::UpdateType::ChangeAmmoType, current_ammo_type));
                 total_updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::BulletsRemaining,
-                        static_cast<uint8_t>(ammo[current_ammo_type])
-                ));
+                    id, Update::BulletsRemaining,
+                    static_cast<uint8_t>(ammo[current_ammo_type])));
                 break;
 
             case SPECIAL:
                 action_updates = special_action();
-                total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
+                total_updates.insert(total_updates.end(),
+                                     action_updates.begin(),
+                                     action_updates.end());
                 break;
 
             case STOP_RUN_RIGHT:
-                if (vel_x > 0 && !(type == Update::EntitySubtype::Spaz && is_doing_special)) {
+                if (vel_x > 0 && !(type == Update::EntitySubtype::Spaz &&
+                                   is_doing_special)) {
                     vel_x = 0;
                     is_running = false;
                 }
                 break;
 
             case STOP_RUN_LEFT:
-                if (vel_x < 0 && !(type == Update::EntitySubtype::Spaz && is_doing_special)) {
+                if (vel_x < 0 && !(type == Update::EntitySubtype::Spaz &&
+                                   is_doing_special)) {
                     vel_x = 0;
                     is_running = false;
                 }
@@ -384,8 +399,8 @@ class Player : public Dynamic_entity {
             speed *= -1;
         }
 
-        entity_pool.push_back(
-            std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage, id));
+        entity_pool.push_back(std::make_unique<Bullet>(
+            next_id, x_spawn, y_spawn, speed, damage, id));
         updates.push_back(Update::Update_new::create_create_entity(
             next_id, Update::EntityType::Bullet,
             Update::EntitySubtype::No_subtype));
@@ -404,10 +419,8 @@ class Player : public Dynamic_entity {
         if (current_ammo_type != enums_value_update::Ammo_type::NORMAL) {
             ammo[current_ammo_type]--;
             updates.push_back(Update::Update_new::create_value(
-                    id,
-                    Update::BulletsRemaining,
-                    static_cast<uint8_t>(ammo[current_ammo_type])
-                    ));
+                id, Update::BulletsRemaining,
+                static_cast<uint8_t>(ammo[current_ammo_type])));
         }
 
         return updates;
@@ -427,6 +440,9 @@ class Player : public Dynamic_entity {
         Coordinate spawn = spawns[rand() % spawns.size()];
         x_pos = spawn.x;
         y_pos = spawn.y - (y_size / 2);
+
+        vel_x = 0;
+        vel_y = 0;
 
         health = Config::get_player_max_health();
         is_active = true;
@@ -466,8 +482,14 @@ class Player : public Dynamic_entity {
                     is_damageable = false;
                     is_x_move_blocked = true;
                     is_y_move_blocked = true;
-                    setXSpeed(Config::get_player_speed() * (direction == enums_value_update::Direction::Left ? -3.0f : 3.0f));
-                    acc_x = GRAVITY * (direction == enums_value_update::Direction::Right ? -1.0f : 1.0f);
+                    setXSpeed(Config::get_player_speed() *
+                              (direction == enums_value_update::Direction::Left
+                                   ? -3.0f
+                                   : 3.0f));
+                    acc_x = GRAVITY *
+                            (direction == enums_value_update::Direction::Right
+                                 ? -1.0f
+                                 : 1.0f);
                 }
                 break;
             case Update::EntitySubtype::Lori:
@@ -483,9 +505,6 @@ class Player : public Dynamic_entity {
             default:
                 break;
         }
-
-
-
 
         return updates;
     }
@@ -515,16 +534,16 @@ class Player : public Dynamic_entity {
         is_x_move_blocked = false;
     }
 
-    virtual std::vector<Update::Update_new> handle_death(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
+    virtual std::vector<Update::Update_new> handle_death(
+        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool,
+        int& next_id) {
         std::vector<Update::Update_new> updates;
         updates.push_back(Update::Update_new::create_value(
-                static_cast<uint16_t>(id),
-                Update::UpdateType::Health,
-                static_cast<uint8_t>(health)));
+            static_cast<uint16_t>(id), Update::UpdateType::Health,
+            static_cast<uint8_t>(health)));
         updates.push_back(Update::Update_new::create_value(
-                static_cast<uint16_t>(id),
-                Update::UpdateType::State,
-                enums_value_update::Player_State_Enum::Dead));
+            static_cast<uint16_t>(id), Update::UpdateType::State,
+            enums_value_update::Player_State_Enum::Dead));
         is_active = false;
         inactive_time = std::chrono::steady_clock::now();
         return updates;
