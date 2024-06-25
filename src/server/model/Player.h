@@ -85,6 +85,9 @@ class Player : public Dynamic_entity {
 
                 updates.push_back(Update::Update_new::create_position(
                     static_cast<uint16_t>(id), x_client, y_client));
+                current_state = enums_value_update::Player_State_Enum::Idle;
+                updates.push_back(Update::Update_new::create_value(
+                        id, Update::UpdateType::State, current_state));
             }
             return updates;
         }
@@ -311,14 +314,14 @@ class Player : public Dynamic_entity {
                 break;
 
             case STOP_RUN_RIGHT:
-                if (vel_x > 0 && ((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && !is_x_move_blocked)) {
+                if (vel_x > 0 || !(type == Update::EntitySubtype::Spaz && is_doing_special)) {
                     vel_x = 0;
                     is_running = false;
                 }
                 break;
 
             case STOP_RUN_LEFT:
-                if (vel_x < 0 && ((type == Update::EntitySubtype::Jazz || type == Update::EntitySubtype::Lori) && !is_x_move_blocked)) {
+                if (vel_x < 0 || !(type == Update::EntitySubtype::Spaz && is_doing_special)) {
                     vel_x = 0;
                     is_running = false;
                 }
