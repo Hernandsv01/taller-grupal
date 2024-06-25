@@ -3,6 +3,7 @@
 
 #include "Dynamic_entity.h"
 #include "Player.h"
+#include "Enemy_data.h"
 
 #define ENEMY_HEIGHT 1.33
 #define ENEMY_WIDTH 1.1
@@ -17,9 +18,9 @@ class Enemy : public Dynamic_entity {
    public:
     Enemy(int id, float x_spawn, float y_spawn, Update::EntitySubtype subtype)
         : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
-                         Config::get_crawler_speed(), 0, 0, GRAVITY, true,
-                         Config::get_crawler_damage(), false,
-                         Config::get_crawler_life(), true),
+                         Enemy_data::get_config(subtype).get_speed(), 0, 0, GRAVITY, true,
+                         Enemy_data::get_config(subtype).get_damage(), false,
+                         Enemy_data::get_config(subtype).get_health(), true),
           movement_range(ENEMY_MAX_MOVEMENT_RANGE),
           subtype(subtype) {}
     std::vector<Update::Update_new> tick(
@@ -27,6 +28,7 @@ class Enemy : public Dynamic_entity {
         std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool,
         int& next_id) override {
         std::vector<Update::Update_new> updates;
+        std::vector<Update::Update_new> death_updates;
 
         if (!is_active) {
             if (std::chrono::steady_clock::now() >=
@@ -99,10 +101,8 @@ class Enemy : public Dynamic_entity {
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
-                    updates.push_back(Update::Update_new::create_value(
-                        static_cast<uint16_t>(other->get_id()),
-                        Update::UpdateType::State,
-                        enums_value_update::Player_State_Enum::Dead));
+                    death_updates = other->handle_death(entity_pool, next_id);
+                    updates.insert(updates.end(), death_updates.begin(), death_updates.end());
                 } else {
                     updates.push_back(Update::Update_new::create_value(
                         static_cast<uint16_t>(other->get_id()),
@@ -128,6 +128,16 @@ class Enemy : public Dynamic_entity {
     }
 
     Update::EntitySubtype get_subtype() { return subtype; }
+
+    virtual std::vector<Update::Update_new> handle_death(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
+        std::vector<Update::Update_new> updates;
+        updates.push_back(Update::Update_new::create_delete_entity(id));
+        set_pending_deletion();
+        return updates;
+    }
+
+    void increase_points(int more_points) { };
+    virtual int get_points() { return -1; };
 };
 
 #endif  // ENEMY_H

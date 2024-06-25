@@ -78,10 +78,12 @@ class Dynamic_entity : public RigidBox {
     int get_id() const { return id; };
     bool get_is_item() const { return is_item; };
     bool deal_damage(int damage) {
+        if (!is_active) {
+            return false;
+        }
         health -= damage;
         if (health <= 0) {
-            is_active = false;
-            inactive_time = std::chrono::steady_clock::now();
+            health = 0;
             return true;
         } else {
             immune_time = std::chrono::steady_clock::now();
@@ -118,6 +120,8 @@ class Dynamic_entity : public RigidBox {
 
     int get_health() { return health; }
 
+    virtual std::vector<Update::Update_new> handle_death(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) = 0;
+
     std::pair<float, float> get_position_for_client() {
         // Obtengo la base en los pies.
         float x_for_client = x_pos + (x_size / 2);
@@ -126,6 +130,8 @@ class Dynamic_entity : public RigidBox {
         return std::make_pair(x_for_client, y_for_client);
     }
 
+    virtual void increase_points(int more_points) = 0;
+    virtual int get_points() = 0;
 
 };
 

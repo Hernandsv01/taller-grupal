@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "./loader/config.h"
+#define WAVE_INTERVAL_IN_SECONDS 60
 
 Game::Game(std::string name, Map map)
     : Thread("Game server"),
@@ -22,8 +22,9 @@ void Game::run() {
     int time_left = Config::get_game_time();
     std::chrono::steady_clock::time_point next_second_update =
         current_tick_start + std::chrono::seconds(1);
+    std::chrono::steady_clock::time_point next_wave = std::chrono::steady_clock::now() + std::chrono::seconds(WAVE_INTERVAL_IN_SECONDS);
 
-    initialize_values();
+    initialize_wave();
 
     while (status == Game_status::RUNNING) {
         std::chrono::steady_clock::time_point current_tick_end =
@@ -40,14 +41,18 @@ void Game::run() {
 
         if (time_left < 0) {
             status = Game_status::FINISHED;
-            sendAll(
-                {Update::Update_new::create_value(0, Update::MatchEnded, 0)});
+            sendAll({Update::Update_new::create_value(0, Update::MatchEnded, 0)});
         } else if (std::chrono::steady_clock::now() >= next_second_update) {
             time_left--;
             next_second_update += std::chrono::seconds(1);
             sendAll({Update::Update_new::create_value(
                 static_cast<uint16_t>(0), Update::RemainingSeconds,
                 static_cast<uint8_t>(time_left))});
+
+            if (std::chrono::steady_clock::now() >= next_wave) {
+                initialize_wave();
+                next_wave = std::chrono::steady_clock::now() + std::chrono::seconds(WAVE_INTERVAL_IN_SECONDS);
+            }
         }
     }
 }
@@ -59,7 +64,7 @@ void Game::run_iteration() {
     for (auto& client : clients) {
         uint8_t action = client->getReceiver().get_next_action();
         auto* player = dynamic_cast<Player*>(
-            entity_pool[findEntityPositionById(client->get_id())].get());
+            entity_pool[findEntityPositionById(entity_pool, client->get_id())].get());
         tick_updates = player->process_action(action, entity_pool, next_id);
         total_updates.insert(total_updates.end(), tick_updates.begin(),
                              tick_updates.end());
@@ -84,13 +89,9 @@ void Game::delete_inactive_entities() {
     }
 }
 
-void Game::initialize_values() {
+void Game::initialize_wave() {
     std::vector<Update::Update_new> creation_updates;
     std::vector<Update::Update_new> general_updates;
-
-    std::array<Update::EntitySubtype, 3> player_subtypes = {
-        Update::EntitySubtype::Jazz, Update::EntitySubtype::Spaz,
-        Update::EntitySubtype::Lori};
 
     std::array<Update::EntitySubtype, 3> enemy_subtypes = {
         Update::EntitySubtype::Enemy1, Update::EntitySubtype::Enemy2,
@@ -101,83 +102,46 @@ void Game::initialize_values() {
         Update::EntitySubtype::Light, Update::EntitySubtype::Heavy,
         Update::EntitySubtype::Power};
 
-    // player
-    // Coordinate rand_spawn =
-    //     map.get_player_spawns()[rand() % map.get_player_spawns().size()];
-    // std::cout << std::to_string(rand_spawn.x) << std::endl;
-    // std::cout << std::to_string(rand_spawn.y) << std::endl;
-    // std::cout << "-------" << std::endl;
-    // Player player(next_id++, rand_spawn.x, rand_spawn.y,
-    //               player_subtypes[rand() % player_subtypes.size()]);
-    // entity_pool.push_back(std::make_unique<Player>(player));
-
-    // creation_updates.push_back(Update::Update_new::create_create_entity(
-    //     player.get_id(),
-    //     Update::EntityType::Player,
-    //     player.get_player_subtype()
-    // ));
-    // std::cout << "Update de creación de player agregada" << std::endl;
-
-    // general_updates.push_back(Update::Update_new::create_position(
-    //     player.get_id(),
-    //     rand_spawn.x,
-    //     rand_spawn.y
-    // ));
-    // std::cout << "Update de posición de player agregada" << std::endl;
-
     // enemies
-    std::cout << std::to_string(map.get_enemy_spawns().size()) << std::endl;
-    std::cout << "<------->" << std::endl;
-    if (map.get_enemy_spawns().size() != 0) {
-        std::vector<Coordinate> enemy_spawns = map.get_enemy_spawns();
-        int enemy_spawn_size = enemy_spawns.size();
-        int rand_value = rand();
-        int spawn_pos_selected = rand_value % enemy_spawn_size;
-        Coordinate rand_enemy_spawn =
-            map.get_enemy_spawns()[spawn_pos_selected];
-        // se deberia chequear al cantidad de enemigos.
-        // Config::get_enemy_count...
-        Update::EntitySubtype enemy_subtype =
-            enemy_subtypes[rand() % enemy_subtypes.size()];
-        Enemy enemy(next_id++, rand_enemy_spawn.x, rand_enemy_spawn.y,
-                    enemy_subtype);
+    std::vector<Coordinate> enemy_spawns = map.get_enemy_spawns();
+    for (auto& enemy_spawn : enemy_spawns) {
+        Update::EntitySubtype enemy_subtype = enemy_subtypes[rand() % enemy_subtypes.size()];
+        Enemy enemy(next_id++, enemy_spawn.x, enemy_spawn.y, enemy_subtype);
         entity_pool.push_back(std::make_unique<Enemy>(enemy));
-        // creation_updates.push_back(Update::Update_new::create_create_entity(
-        //     enemy.get_id(),
-        //     Update::EntityType::Enemy,
-        //     enemy_subtype
-        // ));
-        // general_updates.push_back(Update::Update_new::create_position(
-        //     enemy.get_id(),
-        //     rand_spawn.x,
-        //     rand_spawn.y
-        // ));
+
+        creation_updates.push_back(Update::Update_new::create_create_entity(
+            enemy.get_id(),
+            Update::EntityType::Enemy,
+            enemy_subtype
+        ));
+        general_updates.push_back(Update::Update_new::create_position(
+            enemy.get_id(),
+            enemy_spawn.x,
+            enemy_spawn.y
+        ));
     }
 
     // pickups
-    for (const auto& pickup_spawn : map.get_items_spawns()) {
-        Update::EntitySubtype pickup_subtype =
-            pickup_subtypes[rand() % pickup_subtypes.size()];
-        Pickup_type type = static_cast<Pickup_type>(pickup_subtype);
-        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, type,
-                      pickup_subtype);
+    std::vector<Coordinate> pickup_spawns = map.get_items_spawns();
+    for (const auto& pickup_spawn : pickup_spawns) {
+        Update::EntitySubtype pickup_subtype = pickup_subtypes[rand() % pickup_subtypes.size()];
+        Pickup pickup(next_id++, pickup_spawn.x, pickup_spawn.y, static_cast<Pickup_type>(pickup_subtype), pickup_subtype);
         entity_pool.push_back(std::make_unique<Pickup>(pickup));
 
-        // creation_updates.push_back(Update::Update_new::create_create_entity(
-        //     pickup.get_id(),
-        //     Update::EntityType::Item,
-        //     pickup_subtype
-        // ));
-
-        // general_updates.push_back(Update::Update_new::create_position(
-        //     pickup.get_id(),
-        //     pickup_spawn.x,
-        //     pickup_spawn.y
-        // ));
+         creation_updates.push_back(Update::Update_new::create_create_entity(
+             pickup.get_id(),
+             Update::EntityType::Item,
+             pickup_subtype
+         ));
+         general_updates.push_back(Update::Update_new::create_position(
+             pickup.get_id(),
+             pickup_spawn.x,
+             pickup_spawn.y
+         ));
     }
 
-    // sendAll(creation_updates);
-    // sendAll(general_updates);
+    sendAll(creation_updates);
+    sendAll(general_updates);
 }
 
 std::vector<Update::Update_new> Game::get_full_game_updates() {
@@ -273,7 +237,7 @@ void Game::delete_disconnected_players(
         updates.push_back(Update::Update_new::create_delete_entity(
             static_cast<uint16_t>(id)));
 
-        int entity_position = findEntityPositionById(id);
+        int entity_position = findEntityPositionById(entity_pool, id);
         if (entity_position != -1) {
             entity_pool.erase(entity_pool.begin() + entity_position);
         }
@@ -288,14 +252,14 @@ void Game::sendAll(std::vector<Update::Update_new> updates) {
     }
 }
 
-int Game::findEntityPositionById(int entity_id) {
+int Game::findEntityPositionById(std::vector<std::unique_ptr<Dynamic_entity>>& entities, int entity_id) {
     auto it = std::find_if(
-        entity_pool.begin(), entity_pool.end(),
+            entities.begin(), entities.end(),
         [entity_id](const std::unique_ptr<Dynamic_entity>& entity) {
             return entity->get_id() == entity_id;
         });
-    if (it != entity_pool.end()) {
-        return std::distance(entity_pool.begin(), it);
+    if (it != entities.end()) {
+        return std::distance(entities.begin(), it);
     }
     return -1;
 }

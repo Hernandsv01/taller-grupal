@@ -2,7 +2,7 @@ game:
   time: 200 # int, MAX: 255
 
 pickups:
-  coin: 50    # int
+  coin: 2    # int
   carrot: 25  # int
   light_ammo: 100   # int
   heavy_ammo: 25    # int
@@ -31,21 +31,21 @@ bullets:
     bpm: 100
 
 enemy: 
-  flyer:
+  flyer:                                        # el rápido
     count: 10  # int
-    life: 30   # int
-    speed: 20  # float
-    damage: 10 # int
-  shooter:
+    life: 10   # int
+    speed: 0.4  # float
+    damage: 40 # int
+  shooter:                                      # el normal
     count: 10  # int
-    life: 40   # int
-    speed: 10  # float
-    damage: 10 # int
-  crawler: 
+    life: 100   # int
+    speed: 0.25  # float
+    damage: 20 # int
+  crawler:                                      # el tanque
     count: 10  # int
-    life: 50   # int
-    speed: 0.1  # float
-    damage: 10 # int
+    life: 200   # int
+    speed: 0.07  # float
+    damage: 40 # int
   
 
 player: 

@@ -88,6 +88,10 @@ class Player : public Dynamic_entity {
                 current_state = enums_value_update::Player_State_Enum::Idle;
                 updates.push_back(Update::Update_new::create_value(
                         id, Update::UpdateType::State, current_state));
+                updates.push_back(Update::Update_new::create_value(
+                        static_cast<uint16_t>(id),
+                        Update::UpdateType::Health,
+                        static_cast<uint8_t>(health)));
             }
             return updates;
         }
@@ -360,7 +364,7 @@ class Player : public Dynamic_entity {
         }
 
         entity_pool.push_back(
-            std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
+            std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage, id));
         updates.push_back(Update::Update_new::create_create_entity(
             next_id, Update::EntityType::Bullet,
             Update::EntitySubtype::No_subtype));
@@ -490,20 +494,25 @@ class Player : public Dynamic_entity {
         is_x_move_blocked = false;
     }
 
-    void delete_pickup(
-        std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool,
-        int pickup_id) {
-        auto it = std::find_if(
-            entity_pool.begin(), entity_pool.end(),
-            [pickup_id](const std::unique_ptr<Dynamic_entity>& entity) {
-                return entity->get_id() == pickup_id;
-            });
-        if (it != entity_pool.end()) {
-            entity_pool.erase(it);
-        }
+    virtual std::vector<Update::Update_new> handle_death(std::vector<std::unique_ptr<Dynamic_entity>>& entity_pool, int& next_id) {
+        std::vector<Update::Update_new> updates;
+        updates.push_back(Update::Update_new::create_value(
+                static_cast<uint16_t>(id),
+                Update::UpdateType::Health,
+                static_cast<uint8_t>(health)));
+        updates.push_back(Update::Update_new::create_value(
+                static_cast<uint16_t>(id),
+                Update::UpdateType::State,
+                enums_value_update::Player_State_Enum::Dead));
+        is_active = false;
+        inactive_time = std::chrono::steady_clock::now();
+        return updates;
     }
 
     Update::EntitySubtype get_player_subtype() { return type; }
+
+    void increase_points(int more_points) { points += more_points; }
+    virtual int get_points() { return points; };
 };
 
 #endif  // PLAYER_H
