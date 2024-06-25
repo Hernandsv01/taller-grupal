@@ -3,6 +3,7 @@
 
 #include "Dynamic_entity.h"
 #include "Player.h"
+#include "Enemy_data.h"
 
 #define ENEMY_HEIGHT 1.33
 #define ENEMY_WIDTH 1.1
@@ -17,9 +18,9 @@ class Enemy : public Dynamic_entity {
    public:
     Enemy(int id, float x_spawn, float y_spawn, Update::EntitySubtype subtype)
         : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
-                         Config::get_crawler_speed(), 0, 0, GRAVITY, true,
-                         Config::get_crawler_damage(), false,
-                         Config::get_crawler_life(), true),
+                         Enemy_data::get_config(subtype).get_speed(), 0, 0, GRAVITY, true,
+                         Enemy_data::get_config(subtype).get_damage(), false,
+                         Enemy_data::get_config(subtype).get_health(), true),
           movement_range(ENEMY_MAX_MOVEMENT_RANGE),
           subtype(subtype) {}
     std::vector<Update::Update_new> tick(
