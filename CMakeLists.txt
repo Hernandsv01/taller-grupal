@@ -138,7 +138,7 @@ target_link_libraries(client PRIVATE MatchEndedGui)
 target_link_libraries(server PRIVATE map)
 target_link_libraries(client PRIVATE map)
 
-target_compile_definitions(map PUBLIC SOUND_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src/textures/sounds/")
+target_compile_definitions(client PUBLIC SOUND_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src/textures/sounds/")
 
 
 
