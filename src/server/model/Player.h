@@ -340,13 +340,13 @@ class Player : public Dynamic_entity {
             ammo[current_ammo_type] <= 0) {
             return updates;
         }
-        float x_spawn = x_pos;
+        float x_spawn = x_pos - 0.01f;
         float y_spawn = y_pos + (y_size / 2);
         float speed = ammo_config[current_ammo_type].get_speed();
         int damage = ammo_config[current_ammo_type].get_damage();
 
         if (direction == enums_value_update::Direction::Right) {
-            x_spawn += x_size;
+            x_spawn += x_size + 0.01f;
         } else {
             speed *= -1;
         }
