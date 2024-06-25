@@ -6,8 +6,8 @@
 #include "Dynamic_entity.h"
 #include "Player.h"
 
-#define BULLET_HEIGHT 0.01
-#define BULLET_WIDTH 0.01
+#define BULLET_HEIGHT 0.35
+#define BULLET_WIDTH 0.25
 
 class Bullet : public Dynamic_entity {
    public:
