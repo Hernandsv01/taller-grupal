@@ -48,20 +48,16 @@ class Player : public Dynamic_entity {
 
    public:
     Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, 0, true, 0, false, Config::get_player_max_health(), true),
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, 0, GRAVITY, true, 0, false, Config::get_player_max_health(), true),
           points(0), type(type), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), is_x_move_blocked(false), is_y_move_blocked(false), last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
 
-        next_ammo_type[enums_value_update::Ammo_type::NORMAL] =
-            enums_value_update::Ammo_type::LIGHT;
-        next_ammo_type[enums_value_update::Ammo_type::LIGHT] =
-            enums_value_update::Ammo_type::HEAVY;
-        next_ammo_type[enums_value_update::Ammo_type::HEAVY] =
-            enums_value_update::Ammo_type::POWER;
-        next_ammo_type[enums_value_update::Ammo_type::POWER] =
-            enums_value_update::Ammo_type::NORMAL;
+        next_ammo_type[enums_value_update::Ammo_type::NORMAL] = enums_value_update::Ammo_type::LIGHT;
+        next_ammo_type[enums_value_update::Ammo_type::LIGHT] = enums_value_update::Ammo_type::HEAVY;
+        next_ammo_type[enums_value_update::Ammo_type::HEAVY] = enums_value_update::Ammo_type::POWER;
+        next_ammo_type[enums_value_update::Ammo_type::POWER] = enums_value_update::Ammo_type::NORMAL;
 
         ammo_config[enums_value_update::Ammo_type::NORMAL] =
             Ammo::create_normal();
@@ -143,22 +139,24 @@ class Player : public Dynamic_entity {
 
             if (collides_with_map(map)) {
                 y_pos -= vel_y;
+                if (vel_y > 0) {
+                    is_y_move_blocked = false;
+                }
                 vel_y = 0;
             }
             if (vel_y > 0) {
+                if (is_doing_special || is_jumping) {
+                    reset_special_state();
+                }
                 is_falling = true;
                 is_jumping = false;
-                if (is_doing_special) {
-                    is_doing_special = false;
-                    damage_on_contact = 0;
-                    is_damageable = true;
-                    is_x_move_blocked = false;
-                    is_y_move_blocked = false;
-                }
             } else if (vel_y < 0) {
                 is_falling = false;
                 is_jumping = true;
             } else {
+                if (is_doing_special || is_jumping) {
+                    reset_special_state();
+                }
                 is_falling = false;
                 is_jumping = false;
             }
@@ -251,9 +249,12 @@ class Player : public Dynamic_entity {
         switch (action) {
             case JUMP:
                 if (!is_y_move_blocked) {
+                    std::cout << "Jumping!" << std::endl;
                     setYSpeed(Config::get_player_jump() * (-1));
                     is_jumping = true;
                     is_y_move_blocked = true;
+                }else{
+                    std::cout << "Blocked!" << std::endl;
                 }
                 break;
             case RUN_LEFT:
@@ -374,7 +375,7 @@ class Player : public Dynamic_entity {
     enums_value_update::Ammo_type get_next_ammo_type(
         enums_value_update::Ammo_type ammo_type) {
         enums_value_update::Ammo_type result = next_ammo_type[ammo_type];
-        if (ammo[result] == enums_value_update::Ammo_type::NORMAL ||
+        if (result == enums_value_update::Ammo_type::NORMAL ||
             ammo[result] > 0) {
             return result;
         }
@@ -464,6 +465,13 @@ class Player : public Dynamic_entity {
         } else {
             return enums_value_update::Player_State_Enum::Idle;
         }
+    }
+
+    void reset_special_state() {
+        is_doing_special = false;
+        damage_on_contact = 0;
+        is_damageable = true;
+        is_x_move_blocked = false;
     }
 
     void delete_pickup(
