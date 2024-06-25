@@ -17,6 +17,9 @@ std::shared_ptr<Entity2> EntityFactory::createEntity(const int& type,
                 case Update::EntitySubtype::Jazz:
                     return std::make_shared<PlayableCharacter>(
                         subtype_chart[1]);
+                case Update::EntitySubtype::Spaz:
+                    return std::make_shared<PlayableCharacter>(
+                        subtype_chart[2]);
                 case Update::EntitySubtype::Lori:
                 default:
                     return std::make_shared<PlayableCharacter>(

@@ -17,7 +17,7 @@
 #define EXTENSION ".png"
 #define INFTEXTURE "infinity"
 
-const std::vector<std::string> typeOfCharacter = {"Jazz", "Lori"};
+const std::vector<std::string> typeOfCharacter = {"Jazz", "Lori", "Spaz"};
 const std::vector<std::string> typeOfState = {
     "Stand", "Run",      "Dash",   "Intox", "Intoxwalk", "Fall",   "Jump",
     "Shot",  "Shotfall", "Gethit", "Hud",   "Dead",      "Special"};
