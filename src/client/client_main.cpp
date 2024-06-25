@@ -17,16 +17,17 @@ int main(int argc, char* argv[]) {
 
     std::optional<Socket> socket_a_usar;
     auto playerIdAndMap = std::make_pair(0, std::string(""));
+    {
+        GuiLobby gui_lobby(argc, argv);
+        gui_lobby.execute();
 
-    GuiLobby gui_lobby(argc, argv);
-    gui_lobby.execute();
+        if (!gui_lobby.isConnectedToMatch()) {
+            return 0;
+        }
 
-    if (!gui_lobby.isConnectedToMatch()) {
-        return 0;
+        playerIdAndMap = gui_lobby.getPlayerIdAndMapName();
+        socket_a_usar = gui_lobby.extractMatchConnection();
     }
-
-    playerIdAndMap = gui_lobby.getPlayerIdAndMapName();
-    socket_a_usar = gui_lobby.extractMatchConnection();
 
     SDL2pp::SDL sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     SDL2pp::Window window("TEST", SDL_WINDOWPOS_CENTERED,
