@@ -54,20 +54,16 @@ class Enemy : public Dynamic_entity {
                 vel_x *= (-1);
             }
 
-            if (direction == enums_value_update::Direction::Right && vel_x < 0) {
+            if (direction == enums_value_update::Direction::Right &&
+                vel_x < 0) {
                 direction = enums_value_update::Direction::Left;
                 updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                ));
-            } else if (direction == enums_value_update::Direction::Left && vel_x > 0) {
+                    id, Update::UpdateType::Direction, direction));
+            } else if (direction == enums_value_update::Direction::Left &&
+                       vel_x > 0) {
                 direction = enums_value_update::Direction::Right;
                 updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                ));
+                    id, Update::UpdateType::Direction, direction));
             }
         }
 
@@ -106,7 +102,7 @@ class Enemy : public Dynamic_entity {
                     updates.push_back(Update::Update_new::create_value(
                         static_cast<uint16_t>(other->get_id()),
                         Update::UpdateType::Health,
-                        static_cast<uint8_t>(health)));
+                        static_cast<uint8_t>(other->get_health())));
                 }
 
                 return updates;

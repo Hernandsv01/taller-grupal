@@ -114,6 +114,8 @@ class Dynamic_entity : public RigidBox {
     }
 
     bool isPendingDeletion() { return pending_deletion; }
+
+    int get_health() { return health; }
 };
 
 #endif  // DYNAMIC_ENTITY_H

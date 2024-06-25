@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
         uint8_t match_to_connect;
 
         if (avaibleMatches.empty()) {
-            match_to_connect = lobby.createMatch("map3", "Partida1");
+            match_to_connect = lobby.createMatch("MapaEnemigo", "Partida1");
         } else {
             match_to_connect = avaibleMatches[0].id;
         }
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
         socket_a_usar = lobby.extractMatchConnection();
     }
 
-    SDL2pp::SDL sdl(SDL_INIT_VIDEO);
+    SDL2pp::SDL sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     SDL2pp::Window window("TEST", SDL_WINDOWPOS_CENTERED,
                           SDL_WINDOWPOS_CENTERED, 800, 600,
                           SDL_WindowFlags::SDL_WINDOW_RESIZABLE);
