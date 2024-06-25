@@ -4,15 +4,19 @@
 #include <thread>
 
 #include "../update_queue.h"
-#include "textureManager.h"
 #include "soundManager.h"
+#include "textureManager.h"
+
+#ifndef SOUND_PATH
+#define SOUND_PATH ""
+#endif
 
 GuiLoop::GuiLoop(Window& window, uint16_t player_id, std::string map_name)
     : Thread("GuiLoop cliente"),
       clock(),
       windowForRender(window),
       render(nullptr),
-      gameState(),
+      gameState(player_id),
       mainId(player_id),
       currentTick(0),
       map(Map::fromYaml(map_name)){
@@ -30,9 +34,9 @@ void GuiLoop::initializeRender() {
     render = new Render(windowForRender, mainId);
 }
 
+// void GuiLoop::initializeSound() {}
+
 GuiLoop::~GuiLoop() {
-    SoundManager::StopMusic(0);
-    SoundManager::Cleanup();
     delete render;
     render = nullptr;
 }
@@ -56,17 +60,13 @@ void GuiLoop::run() {
     // mapInfo.underPosition = positionUnder;
     //////////////
 
-    SoundManager::Init();
-    Mix_Chunk* music = SoundManager::LoadMusic("/home/lara/Desktop/Taller/taller-grupal/src/client/gui/testfiles/prueba.mp3");
-    if (!music ) {
-        SoundManager::Cleanup();
-    }
-    SoundManager::SetMusicVolume(0, 20); //20% 
-    SoundManager::PlayMusic(music, 0, -1); 
     // Estoy obligado a construir el renderer acá, porque para que el renderer
     // pueda dibujar en pantalla, necesita ejecutarse en el mismo thread donde
     // fue construido.
     initializeRender();
+
+    SoundManager::Init();
+    SoundManager::PlayMusic("music", MUSIC_CHANNEL, -1);
 
     using namespace std::chrono;
     time_point tickInitialTime = clock.now();
@@ -143,10 +143,14 @@ void GuiLoop::updateGameState() {
     //         entities = {};
     //         // {
     //     //         {Update::EntityType::Player, Update::EntitySubtype::Jazz},
-    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy1},
-    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy2},
-    //     //         {Update::EntityType::Enemy, Update::EntitySubtype::Enemy3},
-    //     //         {Update::EntityType::Bullet, Update::EntitySubtype::No_subtype},
+    //     //         {Update::EntityType::Enemy,
+    //     Update::EntitySubtype::Enemy1},
+    //     //         {Update::EntityType::Enemy,
+    //     Update::EntitySubtype::Enemy2},
+    //     //         {Update::EntityType::Enemy,
+    //     Update::EntitySubtype::Enemy3},
+    //     //         {Update::EntityType::Bullet,
+    //     Update::EntitySubtype::No_subtype},
     //     //         {Update::EntityType::Item, Update::EntitySubtype::Coin},
     //     //         {Update::EntityType::Item, Update::EntitySubtype::Carrot},
     //     //         {Update::EntityType::Item, Update::EntitySubtype::Light},
@@ -169,6 +173,8 @@ void GuiLoop::updateGameState() {
         gameState.handleUpdate(update, currentTick);
         // updatableGameState.handleUpdate(update, currentTick);
     }
+
+    gameState.updateTick(currentTick);
 }
 
 void GuiLoop::runRenderer() {

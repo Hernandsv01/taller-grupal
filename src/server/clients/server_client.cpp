@@ -12,12 +12,19 @@ void Client_sender::run() {
         } catch (const ClosedConnectionError& e) {
             is_running = false;
             break;
+        } catch (const LibError& e) {
+            is_running = false;
+            break;
         }
     }
 }
 
-void Client_sender::addToQueue(std::vector<Update::Update_new> const &result) {
-    outputQueue.try_push(result);
+void Client_sender::addToQueue(std::vector<Update::Update_new> const& result) {
+    try {
+        outputQueue.try_push(result);
+    } catch (const ClosedQueue& e) {
+        is_running = false;
+    }
 }
 
 void Client_receiver::run() {
@@ -32,6 +39,9 @@ void Client_receiver::run() {
             is_running = false;
             break;
         } catch (const ClosedQueue& e) {
+            is_running = false;
+            break;
+        } catch (const LibError& e) {
             is_running = false;
             break;
         }

@@ -13,8 +13,8 @@
 #include "Pickup.h"
 #include "constants/pickup_type.h"
 
-#define PLAYER_HEIGHT 0.5
-#define PLAYER_WIDTH 0.2
+#define PLAYER_HEIGHT 1.33
+#define PLAYER_WIDTH 0.8
 #define PLAYER_INITIAL_X_VEL 0
 #define PLAYER_INITIAL_Y_VEL 0
 #define GRAVITY 0.05
@@ -40,10 +40,22 @@ class Player : public Dynamic_entity {
     bool is_jumping;
     bool is_falling;
     std::chrono::steady_clock::time_point last_shot_time;
-public:
+
+   public:
     Player(int id, float x_spawn, float y_spawn, Update::EntitySubtype type)
-        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY, true, 0, false, Config::get_player_max_health(), true),
-          points(0), type(type), current_ammo_type(enums_value_update::Ammo_type::NORMAL), current_state(enums_value_update::Player_State_Enum::Idle), is_shooting(false), is_doing_special(false), is_running(false), is_jumping(false), is_falling(false), last_shot_time(std::chrono::steady_clock::time_point()) {
+        : Dynamic_entity(id, x_spawn, y_spawn, PLAYER_WIDTH, PLAYER_HEIGHT,
+                         PLAYER_INITIAL_X_VEL, PLAYER_INITIAL_Y_VEL, GRAVITY,
+                         true, 0, false, Config::get_player_max_health(), true),
+          points(0),
+          type(type),
+          current_ammo_type(enums_value_update::Ammo_type::NORMAL),
+          current_state(enums_value_update::Player_State_Enum::Idle),
+          is_shooting(false),
+          is_doing_special(false),
+          is_running(false),
+          is_jumping(false),
+          is_falling(false),
+          last_shot_time(std::chrono::steady_clock::time_point()) {
         ammo[enums_value_update::Ammo_type::LIGHT] = 0;
         ammo[enums_value_update::Ammo_type::HEAVY] = 0;
         ammo[enums_value_update::Ammo_type::POWER] = 0;
@@ -77,8 +89,11 @@ public:
             if (std::chrono::steady_clock::now() >=
                 inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
                 revive(map.get_player_spawns());
+
+                auto [x_client, y_client] = get_position_for_client();
+
                 updates.push_back(Update::Update_new::create_position(
-                    static_cast<uint16_t>(id), x_pos, y_pos));
+                    static_cast<uint16_t>(id), x_client, y_client));
             }
             return updates;
         }
@@ -90,10 +105,17 @@ public:
             is_damageable = true;
         }
 
-        if (is_shooting && std::chrono::steady_clock::now() >= (last_shot_time + std::chrono::milliseconds( MILLISECONDS_IN_A_MINUTE / ammo_config[current_ammo_type].get_rate_of_fire()))) {
-            std::vector<Update::Update_new> shoot_update = shoot(entity_pool, next_id);
+        if (is_shooting &&
+            std::chrono::steady_clock::now() >=
+                (last_shot_time +
+                 std::chrono::milliseconds(
+                     MILLISECONDS_IN_A_MINUTE /
+                     ammo_config[current_ammo_type].get_rate_of_fire()))) {
+            std::vector<Update::Update_new> shoot_update =
+                shoot(entity_pool, next_id);
             last_shot_time = std::chrono::steady_clock::now();
-            updates.insert(updates.end(), shoot_update.begin(), shoot_update.end());
+            updates.insert(updates.end(), shoot_update.begin(),
+                           shoot_update.end());
         }
 
         float old_x = x_pos;
@@ -130,8 +152,10 @@ public:
         }
 
         if (x_pos != old_x || y_pos != old_y) {
+            auto [x_client, y_client] = get_position_for_client();
+
             Update::Update_new update = Update::Update_new::create_position(
-                static_cast<uint16_t>(id), x_pos, y_pos);
+                static_cast<uint16_t>(id), x_client, y_client);
             updates.push_back(update);
         }
 
@@ -195,14 +219,12 @@ public:
             }
         }
 
-        enums_value_update::Player_State_Enum new_player_state = get_player_state();
+        enums_value_update::Player_State_Enum new_player_state =
+            get_player_state();
         if (new_player_state != current_state) {
             current_state = new_player_state;
             updates.push_back(Update::Update_new::create_value(
-                    id,
-                    Update::UpdateType::State,
-                    new_player_state
-            ));
+                id, Update::UpdateType::State, new_player_state));
         }
         return updates;
     }
@@ -221,22 +243,16 @@ public:
             case RUN_LEFT:
                 direction = enums_value_update::Direction::Left;
                 setXSpeed(Config::get_player_speed() * (-1));
-                action_updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                        ));
+                total_updates.push_back(Update::Update_new::create_value(
+                    id, Update::UpdateType::Direction, direction));
                 is_running = true;
                 break;
 
             case RUN_RIGHT:
                 direction = enums_value_update::Direction::Right;
                 setXSpeed(Config::get_player_speed());
-                action_updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                ));
+                total_updates.push_back(Update::Update_new::create_value(
+                    id, Update::UpdateType::Direction, direction));
                 is_running = true;
                 break;
 
@@ -244,7 +260,9 @@ public:
                 is_shooting = true;
                 action_updates = shoot(entity_pool, next_id);
                 last_shot_time = std::chrono::steady_clock::now();
-                total_updates.insert(total_updates.end(), action_updates.begin(),action_updates.end());
+                total_updates.insert(total_updates.end(),
+                                     action_updates.begin(),
+                                     action_updates.end());
                 break;
 
             case STOP_SHOOT:
@@ -292,7 +310,7 @@ public:
             return updates;
         }
         float x_spawn = x_pos;
-        float y_spawn = y_pos - (y_size / 2);
+        float y_spawn = y_pos + (y_size / 2);
         float speed = ammo_config[current_ammo_type].get_speed();
         int damage = ammo_config[current_ammo_type].get_damage();
 
@@ -302,23 +320,20 @@ public:
             speed *= -1;
         }
 
-        entity_pool.push_back(std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
-        updates.push_back(Update::Update_new::create_create_entity(next_id, Update::EntityType::Bullet,Update::EntitySubtype::No_subtype));
+        entity_pool.push_back(
+            std::make_unique<Bullet>(next_id, x_spawn, y_spawn, speed, damage));
+        updates.push_back(Update::Update_new::create_create_entity(
+            next_id, Update::EntityType::Bullet,
+            Update::EntitySubtype::No_subtype));
 
         if (speed > 0) {
             direction = enums_value_update::Direction::Right;
             updates.push_back(Update::Update_new::create_value(
-                    next_id,
-                    Update::UpdateType::Direction,
-                    direction
-            ));
+                next_id, Update::UpdateType::Direction, direction));
         } else {
             direction = enums_value_update::Direction::Left;
             updates.push_back(Update::Update_new::create_value(
-                    next_id,
-                    Update::UpdateType::Direction,
-                    direction
-            ));
+                next_id, Update::UpdateType::Direction, direction));
         }
 
         next_id++;

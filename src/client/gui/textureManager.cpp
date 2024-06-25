@@ -19,8 +19,8 @@
 
 const std::vector<std::string> typeOfCharacter = {"Jazz"};
 const std::vector<std::string> typeOfState = {
-    "Stand", "Run",  "Dash",     "Intox",  "Intoxwalk", "Fall",
-    "Jump",  "Shot", "Shotfall", "Gethit", "Hud"};
+    "Stand", "Run",      "Dash",   "Intox", "Intoxwalk", "Fall",   "Jump",
+    "Shot",  "Shotfall", "Gethit", "Hud",   "Dead",      "Special"};
 
 const std::vector<std::string> typeOfWeapons = {"Default", "Rapid"};
 // "Gethit", "Roasted",
@@ -126,7 +126,7 @@ TextureManager::~TextureManager() {
 SDL2pp::Texture* TextureManager::getEntityTexture(
     const std::string& textureName) {
     try {
-        return entity_textures[textureName];
+        return entity_textures.at(textureName);
     } catch (const std::out_of_range& e) {
         return entity_textures["placeholder"];
     }

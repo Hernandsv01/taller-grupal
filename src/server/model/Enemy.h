@@ -4,8 +4,8 @@
 #include "Dynamic_entity.h"
 #include "Player.h"
 
-#define ENEMY_HEIGHT 0.5
-#define ENEMY_WIDTH 0.2
+#define ENEMY_HEIGHT 1.33
+#define ENEMY_WIDTH 1.1
 #define ENEMY_MAX_MOVEMENT_RANGE 50
 #define SECONDS_UNTIL_RESPAWN 3
 
@@ -32,8 +32,11 @@ class Enemy : public Dynamic_entity {
             if (std::chrono::steady_clock::now() >=
                 inactive_time + std::chrono::seconds(SECONDS_UNTIL_RESPAWN)) {
                 revive(map.get_enemy_spawns());
+
+                auto [x_client, y_client] = get_position_for_client();
+
                 updates.push_back(Update::Update_new::create_position(
-                    static_cast<uint16_t>(id), x_pos, y_pos));
+                    static_cast<uint16_t>(id), x_client, y_client));
             }
             return updates;
         }
@@ -54,20 +57,16 @@ class Enemy : public Dynamic_entity {
                 vel_x *= (-1);
             }
 
-            if (direction == enums_value_update::Direction::Right && vel_x < 0) {
+            if (direction == enums_value_update::Direction::Right &&
+                vel_x < 0) {
                 direction = enums_value_update::Direction::Left;
                 updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                ));
-            } else if (direction == enums_value_update::Direction::Left && vel_x > 0) {
+                    id, Update::UpdateType::Direction, direction));
+            } else if (direction == enums_value_update::Direction::Left &&
+                       vel_x > 0) {
                 direction = enums_value_update::Direction::Right;
                 updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                ));
+                    id, Update::UpdateType::Direction, direction));
             }
         }
 
@@ -82,8 +81,10 @@ class Enemy : public Dynamic_entity {
         }
 
         if (x_pos != old_x || y_pos != old_y) {
+            auto [x_client, y_client] = get_position_for_client();
+
             Update::Update_new update = Update::Update_new::create_position(
-                static_cast<uint16_t>(id), x_pos, y_pos);
+                static_cast<uint16_t>(id), x_client, y_client);
             updates.push_back(update);
         }
 
@@ -106,7 +107,7 @@ class Enemy : public Dynamic_entity {
                     updates.push_back(Update::Update_new::create_value(
                         static_cast<uint16_t>(other->get_id()),
                         Update::UpdateType::Health,
-                        static_cast<uint8_t>(health)));
+                        static_cast<uint8_t>(other->get_health())));
                 }
 
                 return updates;

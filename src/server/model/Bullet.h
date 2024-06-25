@@ -3,11 +3,11 @@
 
 #include <algorithm>
 
-#include "Player.h"
 #include "Dynamic_entity.h"
+#include "Player.h"
 
-#define BULLET_HEIGHT 0.01
-#define BULLET_WIDTH 0.01
+#define BULLET_HEIGHT 0.35
+#define BULLET_WIDTH 0.25
 
 class Bullet : public Dynamic_entity {
    public:
@@ -53,7 +53,7 @@ class Bullet : public Dynamic_entity {
                     updates.push_back(Update::Update_new::create_value(
                         static_cast<uint16_t>(other->get_id()),
                         Update::UpdateType::Health,
-                        static_cast<uint8_t>(health)));
+                        static_cast<uint8_t>(other->get_health())));
                 }
 
                 updates.push_back(Update::Update_new::create_delete_entity(id));
@@ -62,8 +62,10 @@ class Bullet : public Dynamic_entity {
             }
         }
 
+        auto [x_client, y_client] = get_position_for_client();
+
         updates.push_back(Update::Update_new::create_position(
-            static_cast<uint16_t>(id), x_pos, y_pos));
+            static_cast<uint16_t>(id), x_client, y_client));
 
         return updates;
     }

@@ -4,9 +4,9 @@
 #include "./constants/pickup_type.h"
 #include "./loader/config.h"
 
-#define PICKUP_WIDTH 1
-#define PICKUP_HEIGHT 1
-#define PICKUP_VEL 0 
+#define PICKUP_WIDTH 0.55
+#define PICKUP_HEIGHT 0.55
+#define PICKUP_VEL 0
 
 
 
