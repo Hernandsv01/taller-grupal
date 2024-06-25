@@ -5,8 +5,8 @@
 
 const std::vector<std::string> EntityFactory::subtype_chart = {
     "no_subtype",  "Jazz",        "Spaz",        "Lori",   "enemy1",
-    "enemy2",      "enemy3",      "coin",        "carrot", "weaponNormal",
-    "weaponLight", "weaponHeavy", "weaponPower",
+    "enemy2",      "enemy3",      "coin",        "carrot", "weaponLight",
+    "weaponHeavy", "weaponPower", "weaponNormal",
 };
 
 std::shared_ptr<Entity2> EntityFactory::createEntity(const int& type,

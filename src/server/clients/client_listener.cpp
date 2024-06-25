@@ -28,7 +28,7 @@ void Client_listener::joinEndedLobbyManagers() {
     for (auto it = clientes_en_lobby.begin(); it != clientes_en_lobby.end();) {
         LobbyManager* lobbyThread = (*it).get();
 
-        if (!lobbyThread->has_ended()) {
+        if (lobbyThread->has_ended()) {
             // No necesito stopearlo porque ya terminó.
             lobbyThread->join();
             it = clientes_en_lobby.erase(it);
