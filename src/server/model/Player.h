@@ -470,7 +470,7 @@ class Player : public Dynamic_entity {
     }
 
     enums_value_update::Player_State_Enum get_player_state() {
-        if (!is_damageable) {
+        if (!is_damageable && !is_doing_special) {
             return enums_value_update::Player_State_Enum::TakingDamage;
         } else if (is_shooting) {
             return enums_value_update::Player_State_Enum::Shooting;

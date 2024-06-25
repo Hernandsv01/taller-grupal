@@ -122,14 +122,16 @@ enum Ammo_type {
 };
 
 enum Player_State_Enum : uint8_t {
-    Idle,
-    Shooting,
-    Jumping,
-    Falling,
-    Running,
-    Dead,  // 3 seg hasta respawn
-    TakingDamage,
-    SpecialAttack
+    Idle = 0,
+    Shooting = 1,
+    Jumping = 2,
+    Falling = 3,
+    Running = 4,
+    Intoxicated = 5,
+    IntoxWalking = 6,
+    Dead = 7,  // 3 seg hasta respawn
+    TakingDamage = 8,
+    SpecialAttack = 11
 };
 
 enum Direction : uint8_t { Right = 0, Left = 1 };
