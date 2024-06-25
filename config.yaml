@@ -11,22 +11,22 @@ pickups:
 bullets:
   normal: 
     max_ammo: 255
-    speed: 0.2
+    speed: 1.0
     damage: 15
     bpm: 500
   light: 
     max_ammo: 250
-    speed: 1
+    speed: 1.0
     damage: 10
     bpm: 1000
   heavy: 
     max_ammo: 250
-    speed: 1
+    speed: 1.0
     damage: 40
     bpm: 250
   power: 
     max_ammo: 250
-    speed: 1
+    speed: 1.0
     damage: 100
     bpm: 100
 
