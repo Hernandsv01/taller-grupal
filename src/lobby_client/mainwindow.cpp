@@ -148,11 +148,6 @@ void MainWindow::on_botonUnirseAPartida_clicked() {
         ui->textoErrorElegirPartida->setText(e.what());
         return;
     }
-
-    // TODO: Que tendría que hacer cuando se conecta a la partida exitosamente?
-    //  -Deberia devolver el socket.
-    //  -Deberia iniciar la interfaz sdl.
-    // Close the application
     this->close();
 }
 
@@ -178,10 +173,6 @@ void MainWindow::on_botonCrearPartida_clicked() {
         ui->textoErrorCrearPartida->setText(e.what());
         return;
     }
-
-    // TODO: Que tendría que hacer cuando se conecta a la partida exitosamente?
-    //  -Deberia devolver el socket.
-    //  -Deberia iniciar la interfaz sdl.
     std::cout << "Conectado a la partida exitosamente" << std::endl;
 
     this->close();

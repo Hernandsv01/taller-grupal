@@ -49,7 +49,7 @@ struct EnemyConfig{
 
 struct PlayerConfig{
     float speed = 0.25;
-    int jump = 0.8;
+    float jump = 0.8;
     int max_health = 100;
 };
 

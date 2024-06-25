@@ -15,7 +15,6 @@ private:
 
 public:
     Ammo() = default;
-    // TODO: Usar valores de la config
     static Ammo create_normal() { return {enums_value_update::NORMAL, Config::get_normal_bpm(), Config::get_normal_speed(), Config::get_normal_damage(), Config::get_normal_max_ammo()}; }
     static Ammo create_light() { return {enums_value_update::LIGHT, Config::get_light_bpm(), Config::get_light_speed(), Config::get_light_damage(), Config::get_light_max_ammo()}; }
     static Ammo create_heavy() { return {enums_value_update::LIGHT, Config::get_heavy_bpm(), Config::get_heavy_speed(), Config::get_heavy_damage(), Config::get_heavy_max_ammo()}; }

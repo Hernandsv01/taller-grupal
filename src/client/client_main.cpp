@@ -13,7 +13,6 @@
  */
 
 int main(int argc, char* argv[]) {
-    // TODO: REMOVER PARA ENTREGA FINAL
 
     std::optional<Socket> socket_a_usar;
     auto playerIdAndMap = std::make_pair(0, std::string(""));
