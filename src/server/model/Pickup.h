@@ -4,9 +4,9 @@
 #include "./constants/pickup_type.h"
 #include "./loader/config.h"
 
-#define PICKUP_WIDTH 1
-#define PICKUP_HEIGHT 1
-#define PICKUP_VEL 0 
+#define PICKUP_WIDTH 0.55
+#define PICKUP_HEIGHT 0.55
+#define PICKUP_VEL 0
 
 
 
@@ -16,7 +16,7 @@ private:
     Pickup_type type; 
     int value;
 public:
-    Pickup(int id, float x_spawn, float y_spawn, Pickup_type type, Update::EntitySubtype subtype):  Dynamic_entity(id, x_spawn, y_spawn, PICKUP_WIDTH, PICKUP_HEIGHT, PICKUP_VEL, PICKUP_VEL, 0, false, 0, true, 0, true, true), 
+    Pickup(int id, float x_spawn, float y_spawn, Pickup_type type, Update::EntitySubtype subtype):  Dynamic_entity(id, x_spawn, y_spawn, PICKUP_WIDTH, PICKUP_HEIGHT, PICKUP_VEL, PICKUP_VEL, 0, 0, false, 0, true, 0, true),
     subtype(subtype), type(type){
         
         switch (subtype) {

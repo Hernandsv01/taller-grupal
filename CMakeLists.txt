@@ -61,6 +61,8 @@ set(SOURCES_CLIENT
         src/client/gui/textureManager.cpp
         src/client/gui/playableCharacter.h
         src/client/gui/playableCharacter.cpp
+        src/client/gui/soundManager.h
+        src/client/gui/soundManager.cpp
         src/client/eventlistener.cpp
         src/client/eventlistener.h
         src/client/mapper.cpp
@@ -136,8 +138,12 @@ target_link_libraries(client PRIVATE MatchEndedGui)
 target_link_libraries(server PRIVATE map)
 target_link_libraries(client PRIVATE map)
 
+target_compile_definitions(client PUBLIC SOUND_PATH="${CMAKE_CURRENT_SOURCE_DIR}/src/textures/sounds/")
+
+
 
 set(SDL2PP_WITH_IMAGE YES)
+set(SDL2PP_WITH_MIXER YES)
 set(SDL2PP_WITH_TTF YES)
 add_subdirectory(src/client/gui/SDL2pp)
 

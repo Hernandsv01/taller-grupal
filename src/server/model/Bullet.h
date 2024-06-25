@@ -3,17 +3,17 @@
 
 #include <algorithm>
 
-#include "Player.h"
 #include "Dynamic_entity.h"
+#include "Player.h"
 
-#define BULLET_HEIGHT 0.01
-#define BULLET_WIDTH 0.01
+#define BULLET_HEIGHT 0.35
+#define BULLET_WIDTH 0.25
 
 class Bullet : public Dynamic_entity {
    public:
     Bullet(int id, float x_spawn, float y_spawn, float vel_x, int damage)
         : Dynamic_entity(id, x_spawn, y_spawn, BULLET_WIDTH, BULLET_HEIGHT,
-                         vel_x, 0, 0, false, damage, false, 0, true, true){};
+                         vel_x, 0, 0, 0, false, damage, false, 0, true){};
 
     std::vector<Update::Update_new> tick(
         const Map& map,
@@ -41,7 +41,7 @@ class Bullet : public Dynamic_entity {
             }
 
             if (other->is_entity_damageable()) {
-                std::cout << "Se la dió contra un player" << std::endl;
+                std::cout << "Se la dió contra alguien" << std::endl;
                 bool is_dead = other->deal_damage(get_damage_dealt());
 
                 if (is_dead) {
@@ -49,12 +49,12 @@ class Bullet : public Dynamic_entity {
                         static_cast<uint16_t>(other->get_id()),
                         Update::UpdateType::State,
                         enums_value_update::Player_State_Enum::Dead));
-                } else {
-                    updates.push_back(Update::Update_new::create_value(
-                        static_cast<uint16_t>(other->get_id()),
-                        Update::UpdateType::Health,
-                        static_cast<uint8_t>(health)));
                 }
+                updates.push_back(Update::Update_new::create_value(
+                    static_cast<uint16_t>(other->get_id()),
+                    Update::UpdateType::Health,
+                    static_cast<uint8_t>(other->get_health())));
+
 
                 updates.push_back(Update::Update_new::create_delete_entity(id));
                 pending_deletion = true;
@@ -62,8 +62,10 @@ class Bullet : public Dynamic_entity {
             }
         }
 
+        auto [x_client, y_client] = get_position_for_client();
+
         updates.push_back(Update::Update_new::create_position(
-            static_cast<uint16_t>(id), x_pos, y_pos));
+            static_cast<uint16_t>(id), x_client, y_client));
 
         return updates;
     }

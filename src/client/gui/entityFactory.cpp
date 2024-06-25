@@ -21,14 +21,16 @@ std::shared_ptr<Entity2> EntityFactory::createEntity(const int& type,
         
         case Update::EntityType::Bullet:
             switch (subtype) {
-                case enums_value_update::Ammo_type::NORMAL:
-                    return std::make_shared<PlayableCharacter>(subtype_chart[9]);
                 case enums_value_update::Ammo_type::LIGHT:
-                    return std::make_shared<PlayableCharacter>(subtype_chart[10]);
+                    return std::make_shared<Entity2>(subtype_chart[10]);
                 case enums_value_update::Ammo_type::HEAVY:
-                    return std::make_shared<PlayableCharacter>(subtype_chart[11]);
+                    return std::make_shared<Entity2>(subtype_chart[11]);
                 case enums_value_update::Ammo_type::POWER:
-                    return std::make_shared<PlayableCharacter>(subtype_chart[12]);
+                    return std::make_shared<Entity2>(subtype_chart[12]);
+
+                case enums_value_update::Ammo_type::NORMAL:
+                default:
+                    return std::make_shared<Entity2>(subtype_chart[9]);
             }
         case Update::EntityType::Enemy:
         case Update::EntityType::Item: {

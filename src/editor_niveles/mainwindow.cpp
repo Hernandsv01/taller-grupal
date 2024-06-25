@@ -8,11 +8,16 @@
 #include <QMetaType>
 #include <QVariant>
 #include <filesystem>
+#include <iostream>
 #include <stdexcept>
 
 #include "../common/map/map.h"
 #include "./ui_mainwindow.h"
 #include "renderizadomapa.h"
+
+#ifndef TEXTURE_PATH
+#define TEXTURE_PATH ""
+#endif
 
 #define ITEM_BLOCK_TYPE_DATA (Qt::UserRole + 3)
 
@@ -23,21 +28,27 @@ Q_DECLARE_METATYPE(Block)
 Block getBlockFromTextureName(QString textureName) {
     Collision collision;
 
-    if (textureName == "dirt") {
-        collision = Collision::Cube;
-    } else if (textureName == "stone") {
-        collision = Collision::Cube;
-    } else if (textureName == "water") {
-        collision = Collision::Cube;
-    } else if (textureName == "spawn_enemy") {
-        collision = Collision::EnemySpawn;
-    } else if (textureName == "spawn_player") {
-        collision = Collision::PlayerSpawn;
-    } else if (textureName == "spawn_item") {
-        collision = Collision::ItemSpawn;
-    } else {
-        throw std::runtime_error("Textura no reconocida");
-    }
+    std::map<QString, Collision> textureToCollision = {
+        {"dirt", Collision::Cube},
+        {"stone", Collision::Cube},
+        {"water", Collision::Cube},
+        {"spawn_enemy", Collision::EnemySpawn},
+        {"spawn_player", Collision::PlayerSpawn},
+        {"spawn_item", Collision::ItemSpawn},
+        {"carrotusgrass", Collision::Cube},
+        {"carrotushang", Collision::Cube},
+        {"carrotusstone", Collision::Cube},
+        {"castlefloor", Collision::Cube},
+        {"castlelefthang", Collision::Cube},
+        {"castlerighthang", Collision::Cube},
+        {"castlewall", Collision::Cube},
+        {"diamondusgems", Collision::Cube},
+        {"diamondusgrass", Collision::Cube},
+        {"diamondushang", Collision::Cube},
+        {"diamondusstone", Collision::Cube},
+    };
+
+    collision = textureToCollision.at(textureName);
 
     return Block{collision, textureName.toStdString()};
 }
@@ -56,13 +67,13 @@ MainWindow::MainWindow(QWidget *parent)
     QMap<IdTexture, QImage> background_textures;
 
     loadTexturesFromAndDo(
-        ":/textures/backgrounds", background_textures,
+        TEXTURE_PATH "backgrounds/", background_textures,
         [&](const QString &textureName, const QImage &image) {
             avaible_background_texture_ids.push_back(textureName.toStdString());
         });
 
-    // itero sobre la carpeta de tiles, con el :/ para que busque en el qrc
-    loadTexturesFromAndDo(":/textures/tiles", tile_textures,
+    // itero sobre la carpeta de tiles
+    loadTexturesFromAndDo(TEXTURE_PATH "tiles/", tile_textures,
                           [&](const QString &textureName, const QImage &image) {
                               addTileToItemModel(textureName, image);
                           });

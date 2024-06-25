@@ -1,6 +1,8 @@
 #ifndef TEXTURE_MANAGER_H
 #define TEXTURE_MANAGER_H
 
+#define ANIMATION_RATE 10
+
 #include <SDL2pp/SDL2pp.hh>
 #include <map>
 #include <memory>
@@ -17,7 +19,6 @@ class TextureManager {
     static void load_textures_from_path_into_map(
         SDL2pp::Renderer& renderer, const std::string& path,
         std::map<std::string, SDL2pp::Texture*>& map);
-
 
    public:
     static void Init(SDL2pp::Renderer& renderer);

@@ -49,6 +49,8 @@ class Game : public Thread {
     std::string get_map_name();
     std::vector<Update::Update_new> get_full_game_updates();
 
+    void delete_disconnected_players(std::vector<Update::Update_new>& updates);
+
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;
 };
