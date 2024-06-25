@@ -4,29 +4,6 @@
 #include <string>
 #include <vector>
 
-namespace enums_value_update {
-enum Ammo_type {
-    NORMAL,  // Standard bullets
-    LIGHT,   // High rate of fire, low damage
-    HEAVY,   // Low rate of fire, high damage
-    POWER    // Lowest rate of fire, highest damage, high speed (almost like a
-             // sniper)
-};
-
-enum Player_State_Enum : uint8_t {
-    Idle,
-    Shooting,
-    Jumping,
-    Falling,
-    Running,
-    Dead,  // 3 seg hasta respawn
-    TakingDamage,
-    SpecialAttack
-};
-
-enum Direction : uint8_t { Right = 0, Left = 1 };
-}  // namespace enums_value_update
-
 namespace Update {
 enum UpdateType : uint8_t {
     CreateEntity = 0,      // type, subtype
@@ -58,7 +35,8 @@ enum EntitySubtype : uint8_t {
     Carrot = 8,  // type item
     Light = 9,   // type item
     Heavy = 10,  // type item
-    Power = 11   // type item
+    Power = 11,  // type item
+    Normal = 12  // type item
 };
 
 struct EntityTypeAndSubtype {
@@ -132,5 +110,31 @@ class Update_new {
     bool updateTypeIsValue() const;
 };
 }  // namespace Update
+
+namespace enums_value_update {
+enum Ammo_type {
+    NORMAL = Update::EntitySubtype::Normal,  // Standard bullets
+    LIGHT = Update::EntitySubtype::Light,    // High rate of fire, low damage
+    HEAVY = Update::EntitySubtype::Heavy,    // Low rate of fire, high damage
+    POWER =
+        Update::EntitySubtype::Power  // Lowest rate of fire, highest damage,
+                                      // high speed (almost like a sniper)
+};
+
+enum Player_State_Enum : uint8_t {
+    Idle,
+    Shooting,
+    Jumping,
+    Falling,
+    Running,
+    Intoxicated,
+    IntoxWalking,
+    Dead,  // 3 seg hasta respawn
+    TakingDamage,
+    SpecialAttack
+};
+
+enum Direction : uint8_t { Right = 0, Left = 1 };
+}  // namespace enums_value_update
 
 #endif  // COMMON_DTOS_H

@@ -68,7 +68,8 @@ void Game::run_iteration() {
     for (size_t i = 0; i < entity_pool.size(); ++i) {
         std::unique_ptr<Dynamic_entity>& entity_ptr = entity_pool[i];
         tick_updates = entity_ptr->tick(map, entity_pool, next_id);
-        total_updates.insert(total_updates.end(), tick_updates.begin(), tick_updates.end());
+        total_updates.insert(total_updates.end(), tick_updates.begin(),
+                             tick_updates.end());
     }
     sendAll(total_updates);
 }
@@ -209,8 +210,10 @@ std::vector<Update::Update_new> Game::get_full_game_updates() {
         updates.push_back(Update::Update_new::create_create_entity(
             entity_id, entity_type, entity_subtype));
 
-        updates.push_back(Update::Update_new::create_position(
-            entity_id, position_x, position_y));
+        auto [x_client, y_client] = entity->get_position_for_client();
+
+        updates.push_back(
+            Update::Update_new::create_position(entity_id, x_client, y_client));
     }
     return updates;
 }
@@ -248,7 +251,40 @@ void Game::add_socket_for_player(uint16_t player_id, Socket socket) {
     sendAll(full_updates);
 }
 
+void Game::delete_disconnected_players(
+    std::vector<Update::Update_new>& updates) {
+    std::vector<int> id_players_to_delete;
+
+    // itera sobre clientes, buscando cuales se desconectaron.
+    // Si encuentra alguno desconectado, lo elimina de la lista de clientes
+    // y agrega su id a la lista de ids a eliminar
+    for (auto it = clients.begin(); it != clients.end();) {
+        if ((*it)->has_desconnected()) {
+            id_players_to_delete.push_back((*it)->get_id());
+            it = clients.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // Itera la lista de ids eliminados. Agrega a las updates la update de
+    // entidad eliminada y luego elimina la entidad de la entity_pool.
+    for (int id : id_players_to_delete) {
+        std::cout << "Delete player id: " << std::to_string(id) << std::endl;
+
+        updates.push_back(Update::Update_new::create_delete_entity(
+            static_cast<uint16_t>(id)));
+
+        int entity_position = findEntityPositionById(id);
+        if (entity_position != -1) {
+            entity_pool.erase(entity_pool.begin() + entity_position);
+        }
+    }
+}
+
 void Game::sendAll(std::vector<Update::Update_new> updates) {
+    delete_disconnected_players(updates);
+
     for (auto& i : clients) {
         i->getSender().addToQueue(updates);
     }

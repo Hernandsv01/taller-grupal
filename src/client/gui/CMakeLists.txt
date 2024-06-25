@@ -17,6 +17,7 @@ SET(TARGET_SRC
 
 # set up SDL2pp library
 set(SDL2PP_WITH_IMAGE YES)
+set(SDL2PP_WITH_MIXER YES)
 set(SDL2PP_WITH_TTF YES)
 add_subdirectory(SDL2pp)
 
@@ -28,17 +29,31 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 add_definitions(-DDATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data/")
 include_directories(${SDL2PP_INCLUDE_DIRS})
 
+
 # define targets
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 
-add_executable(testMap testfiles/testMap.cpp render.cpp textureManager.cpp)
-target_link_libraries(testMap PUBLIC SDL2pp)
+add_executable(testMusic testfiles/testMusic.cpp soundManager.cpp)
+target_link_libraries(testMusic PUBLIC SDL2pp)
 
-add_executable(testStandR testfiles/testStandR.cpp render.cpp
-                        entityGame.cpp estado_juego.h entityFactory.cpp
-                        playableCharacter.cpp textureManager.cpp)
-target_link_libraries(testStandR PUBLIC SDL2pp)
+# add_executable(testMap testfiles/testMap.cpp render.cpp textureManager.cpp)
+# target_link_libraries(testMap PUBLIC SDL2pp)
 
+# add_executable(testStandR testfiles/testStandR.cpp render.cpp
+#                         entityGame.cpp estado_juego.h entityFactory.cpp
+#                         playableCharacter.cpp textureManager.cpp)
+# target_link_libraries(testStandR PUBLIC SDL2pp)
+
+# add_executable(testRunR testfiles/testRunR.cpp render.cpp
+#                         entityGame.cpp estado_juego.h entityFactory.cpp
+#                         playableCharacter.cpp textureManager.cpp)
+# target_link_libraries(testRunR PUBLIC SDL2pp)
+
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 add_executable(testRunR testfiles/testRunR.cpp render.cpp
                         entityGame.cpp estado_juego.h entityFactory.cpp
                         playableCharacter.cpp textureManager.cpp)
 target_link_libraries(testRunR PUBLIC SDL2pp)
+endif()
+
+

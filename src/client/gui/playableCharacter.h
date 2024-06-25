@@ -17,7 +17,7 @@ class PlayableCharacter : public Entity2 {
     int health;
     int ammoQuantity;
 
-    SharedTexturePtr weaponTexture;
+    SDL2pp::Texture *weaponTexture;
     int weaponSpriteNumber;
 
     SharedTexturePtr stateTexture;
@@ -49,18 +49,18 @@ class PlayableCharacter : public Entity2 {
     void showHud(SDL2pp::Renderer &renderer, const int &windowWidth,
                  const int &windowHeight, const int &seconds);
 
-    void updateHealth(const int &newHealthPoint);
+    virtual void updateHealth(const int &newHealthPoint) override;
 
-    virtual void renderMainPj(SDL2pp::Renderer &renderer,
-                                     const int &xRef, const int &yRef);
+    virtual void renderMainPj(SDL2pp::Renderer &renderer, const int &xRef,
+                              const int &yRef);
 
-    void updateScore(const int &newScore);
+    virtual void updateScore(const int &newScore);
 
-    void updateState(const std::string &newState);
+    virtual void updateState(const std::string &newState) override;
 
-    void updateWeapon(const std::string &newState);
+    virtual void updateWeapon(const std::string &newState) override;
 
-    virtual void updateAmmoQuantity(const int &ammoQuantity);
+    virtual void updateAmmoQuantity(const int &ammoQuantity) override;
 
     virtual bool isPlayer() override;
 

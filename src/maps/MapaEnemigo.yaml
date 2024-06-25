@@ -13,7 +13,7 @@ blocks:
       - ""
     -
       - 1
-      - stone
+      - dirt
     -
       - 0
       - ""
@@ -91,7 +91,7 @@ blocks:
       - ""
     -
       - 1
-      - stone
+      - dirt
   -
     -
       - 0
@@ -189,7 +189,7 @@ blocks:
       - ""
     -
       - 1
-      - stone
+      - dirt
     -
       - 0
       - ""
@@ -267,7 +267,7 @@ blocks:
       - ""
     -
       - 1
-      - stone
+      - dirt
   -
     -
       - 0
@@ -365,7 +365,7 @@ blocks:
       - ""
     -
       - 1
-      - stone
+      - dirt
     -
       - 0
       - ""
@@ -443,7 +443,7 @@ blocks:
       - ""
     -
       - 1
-      - stone
+      - dirt
   -
     -
       - 0
@@ -541,7 +541,7 @@ blocks:
       - ""
     -
       - 1
-      - stone
+      - dirt
     -
       - 1
       - stone
@@ -619,4 +619,4 @@ blocks:
       - stone
     -
       - 1
-      - stone
+      - dirt
