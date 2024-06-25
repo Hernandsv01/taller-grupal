@@ -10,23 +10,23 @@ pickups:
 
 bullets:
   normal: 
-    max_ammo: -1
-    speed: 0.2
+    max_ammo: 255
+    speed: 1.0
     damage: 15
     bpm: 500
   light: 
-    max_ammo: 1000
-    speed: 1
+    max_ammo: 250
+    speed: 1.0
     damage: 10
     bpm: 1000
   heavy: 
     max_ammo: 250
-    speed: 1
+    speed: 1.0
     damage: 40
     bpm: 250
   power: 
-    max_ammo: 100
-    speed: 1
+    max_ammo: 250
+    speed: 1.0
     damage: 100
     bpm: 100
 
@@ -44,11 +44,11 @@ enemy:
   crawler: 
     count: 10  # int
     life: 50   # int
-    speed: 20  # float
+    speed: 0.1  # float
     damage: 10 # int
   
 
 player: 
   speed: 0.25       # float
-  jump: 3        # int
+  jump: 1        # int
   max_healh: 100 # int

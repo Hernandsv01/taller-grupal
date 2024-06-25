@@ -17,29 +17,43 @@ int Entity2::getPosX() const { return positionX; }
 int Entity2::getPosY() const { return positionY; }
 
 void Entity2::renderize(SDL2pp::Renderer &renderer, const int &xRef,
-                        const int &yRef) {
+                        const int &yRef, uint32_t tick) {
+    auto *current_texture = TextureManager::getEntityTexture(texture);
+
+    renderizeWithTexture(renderer, *current_texture, xRef, yRef, tick);
+}
+
+void Entity2::renderizeWithTexture(SDL2pp::Renderer &renderer,
+                                   SDL2pp::Texture &texture, const int &xRef,
+                                   const int &yRef, uint32_t tick) {
     int xPosInRender = positionX - xRef;
     int yPosInRender = positionY - yRef;
     int turntoLeft = (isRight) ? SDL_FLIP_NONE : SDL_FLIP_HORIZONTAL;
 
-    auto current_texture = TextureManager::getEntityTexture(texture);
+    int texture_size = texture.GetHeight();
 
-    int texture_size = current_texture->GetHeight();
-
-    int num_animation_frames = current_texture->GetWidth() / texture_size;
+    int num_animation_frames = texture.GetWidth() / texture_size;
 
     renderer.Copy(
-        (*current_texture),
+        texture,
         SDL2pp::Rect(texture_size * actualSpriteNumber, 0, texture_size,
                      texture_size),
         SDL2pp::Rect(xPosInRender - texture_size / 2,
                      (yPosInRender - texture_size), texture_size, texture_size),
         0.0, SDL2pp::NullOpt, turntoLeft);
 
-    renderer.FillRect(
-        SDL2pp::Rect(xPosInRender-2, yPosInRender-2, 5, 5));
+    // Cuadrado Debugging. Muestra la posicion real de la entidad.
+    // renderer.FillRect(SDL2pp::Rect(xPosInRender - 2, yPosInRender - 2, 5,
+    // 5));
 
-    actualSpriteNumber = (actualSpriteNumber + 1) % num_animation_frames;
+    int advance_frame = (tick % ANIMATION_RATE == 0);
+
+    if (!loopAnimation && actualSpriteNumber == num_animation_frames - 1) {
+        advance_frame = 0;
+    }
+
+    actualSpriteNumber =
+        (actualSpriteNumber + advance_frame) % num_animation_frames;
 }
 
 bool Entity2::isPlayer() { return false; }

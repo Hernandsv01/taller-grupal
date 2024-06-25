@@ -2,6 +2,7 @@
 #define SOCKET_H
 
 #include "closedconectionerror.h"
+#include "liberror.h"
 
 /*
  * TDA Socket.

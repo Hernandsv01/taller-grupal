@@ -18,40 +18,17 @@ int main(int argc, char* argv[]) {
     std::optional<Socket> socket_a_usar;
     auto playerIdAndMap = std::make_pair(0, std::string(""));
 
-    if (argc == 2 && std::string(argv[1]) == "manual") {
-        GuiLobby gui_lobby(argc, argv);
-        gui_lobby.execute();
+    GuiLobby gui_lobby(argc, argv);
+    gui_lobby.execute();
 
-        if (!gui_lobby.isConnectedToMatch()) {
-            return 0;
-        }
-
-        playerIdAndMap = gui_lobby.getPlayerIdAndMapName();
-        socket_a_usar = gui_lobby.extractMatchConnection();
-
-    } else {
-        const char* hostname = "127.0.0.1";
-        const char* servname = "15500";
-
-        Lobby lobby;
-        lobby.connectToServer(hostname, servname);
-
-        auto avaibleMatches = lobby.getServerMatches();
-
-        uint8_t match_to_connect;
-
-        if (avaibleMatches.empty()) {
-            match_to_connect = lobby.createMatch("map3", "Partida1");
-        } else {
-            match_to_connect = avaibleMatches[0].id;
-        }
-        lobby.connectToMatch(match_to_connect);
-
-        playerIdAndMap = lobby.getPlayerIdAndMapName();
-        socket_a_usar = lobby.extractMatchConnection();
+    if (!gui_lobby.isConnectedToMatch()) {
+        return 0;
     }
 
-    SDL2pp::SDL sdl(SDL_INIT_VIDEO);
+    playerIdAndMap = gui_lobby.getPlayerIdAndMapName();
+    socket_a_usar = gui_lobby.extractMatchConnection();
+
+    SDL2pp::SDL sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     SDL2pp::Window window("TEST", SDL_WINDOWPOS_CENTERED,
                           SDL_WINDOWPOS_CENTERED, 800, 600,
                           SDL_WindowFlags::SDL_WINDOW_RESIZABLE);

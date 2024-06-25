@@ -28,10 +28,10 @@ struct BulletsConfig{
         Attributes(int max_ammo, float speed, int damage, int bpm) : max_ammo(max_ammo), speed(speed), damage(damage), bpm(bpm){};
     };
     
-    Attributes normal = Attributes(-1, 5, 20, 500);
-    Attributes light = Attributes(1000, 5, 10, 1000);
+    Attributes normal = Attributes(255, 5, 20, 500);
+    Attributes light = Attributes(250, 5, 10, 1000);
     Attributes heavy = Attributes(250, 5, 40, 250);
-    Attributes power = Attributes(100, 15, 100, 100);
+    Attributes power = Attributes(250, 15, 100, 100);
 };
 
 struct EnemyConfig{
@@ -44,12 +44,12 @@ struct EnemyConfig{
     };
     Attributes flyer = Attributes(10, 30, 20, 10);
     Attributes shooter = Attributes(10, 40, 10, 10);
-    Attributes crawler = Attributes(10, 50, 20, 10);
+    Attributes crawler = Attributes(10, 50, 0.01, 10);
 };
 
 struct PlayerConfig{
-    float speed = 3;
-    int jump = 10;
+    float speed = 0.25;
+    int jump = 1;
     int max_health = 100;
 };
 

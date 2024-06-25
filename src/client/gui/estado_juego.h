@@ -12,6 +12,7 @@
 #include "entityFactory.h"
 #include "entityGame.h"
 #include "playableCharacter.h"
+#include "soundManager.h"
 
 #define FACTOR_TAMANIO 32
 
@@ -25,8 +26,8 @@ struct Position {
 // la textura)
 
 const std::vector<std::string> posibleStates = {
-    "Stand",     "Shot",    "Jump",   "Fall", "Run",      "Intox",
-    "Intoxwalk", "Roasted", "Gethit", "Dash", "Shotfall", "Special"};
+    "Stand",     "Shot", "Jump",   "Fall", "Run",      "Intox",
+    "Intoxwalk", "Dead", "Gethit", "Dash", "Shotfall", "Special"};
 // Posibles estados de ¿solo jugador?
 
 // Clase que se encarga de mantener el estado del juego actualizado.
@@ -36,11 +37,13 @@ const std::vector<std::string> posibleStates = {
 class UpdatableGameState2 {
    private:
     std::map<int, std::shared_ptr<Entity2>> gameState;
+    uint16_t mainId;
     int remainingSeconds = 0;
     bool matchEnded = false;
+    uint32_t tick = 0;
 
    public:
-    explicit UpdatableGameState2() {
+    explicit UpdatableGameState2(uint16_t mainId) : mainId(mainId) {
         // std::shared_ptr<Entity2> ptr = std::make_unique<Entity2>();
         // gameState.emplace(1, std::move(ptr));
     }
@@ -49,6 +52,11 @@ class UpdatableGameState2 {
         switch (update.get_update_type()) {
             case Update::CreateEntity: {
                 Update::EntityType entityType = update.getEntityType();
+
+                if (entityType == Update::EntityType::Bullet) {
+                    SoundManager::PlayMusic("shoot", SHOOT_CHANNEL, 0);
+                }
+
                 Update::EntitySubtype entitySubtype = update.getEntitySubType();
                 addEntity(update.get_id(), entityType, entitySubtype);
                 break;
@@ -60,7 +68,10 @@ class UpdatableGameState2 {
                 break;
             }
             case Update::Direction: {
-                bool isRight = (update.get_value() == 0) ? true : false;
+                bool isRight =
+                    (update.get_value() == enums_value_update::Direction::Right)
+                        ? true
+                        : false;
                 updateDirection(update.get_id(), isRight);
                 break;
             }
@@ -96,7 +107,7 @@ class UpdatableGameState2 {
 
             case Update::ChangeAmmoType: {
                 int weaponType = update.get_value();
-                updateWeapon(update.get_id(), update.get_value());
+                updateWeapon(update.get_id(), weaponType);
                 break;
             }
             case Update::BulletsRemaining: {
@@ -111,18 +122,17 @@ class UpdatableGameState2 {
     }
 
     void copyAllEntities(SDL2pp::Renderer &renderer, const int &mainId,
-                         const int &xCenter, const int &yCenter, const int& xReference, const int& yReference) {
+                         const int &xCenter, const int &yCenter,
+                         const int &xReference, const int &yReference) {
         const auto &mainPlayer = gameState.at(mainId);
 
         for (auto &pair : gameState) {
-            if (isNotMain(pair.first, mainId)) {
-                pair.second->renderize(renderer, xReference, yReference);
-            }
+            pair.second->renderize(renderer, xReference, yReference, tick);
         }
-      
-        mainPlayer->renderMainPj(renderer, xCenter, yCenter);
-        mainPlayer->showHud(renderer, xCenter*2, yCenter*2, remainingSeconds);
 
+        dynamic_cast<PlayableCharacter *>(mainPlayer.get())
+            ->showHud(renderer, xCenter * 2, yCenter * 2, remainingSeconds,
+                      tick);
     }
 
     std::vector<std::tuple<int, std::string, int>> getPlayersScores() {
@@ -170,12 +180,27 @@ class UpdatableGameState2 {
 
     void updateHealthPoints(const int &id, const int &healthPoint) {
         std::shared_ptr<Entity2> &entity = gameState.at(id);
-        entity->updateHealth(healthPoint);
+
+        if (!entity->isPlayer()) return;
+        auto player = std::dynamic_pointer_cast<PlayableCharacter>(entity);
+
+        if (id == mainId && player->getHealth() > healthPoint) {
+            SoundManager::PlayMusic("hurt", HURT_CHANNEL, 0);
+        }
+
+        player->updateHealth(healthPoint);
     }
 
     void updateScore(const int &id, const int &score) {
         std::shared_ptr<Entity2> &entity = gameState.at(id);
-        entity->updateHealth(score);
+        if (!entity->isPlayer()) return;
+        auto player = std::dynamic_pointer_cast<PlayableCharacter>(entity);
+
+        if (id == mainId) {
+            SoundManager::PlayMusic("coin", SCORE_CHANNEL, 0);
+        }
+
+        player->updateScore(score);
     }
 
     void updateWeapon(const int &id, const int &weaponCode) {
@@ -200,7 +225,10 @@ class UpdatableGameState2 {
         entity->updateWeapon(weaponName);
     }
 
-    void updateAmmoQuantity(const int &id, const int &ammoQuantity) {
+    void updateAmmoQuantity(const int &id, int ammoQuantity) {
+        if (ammoQuantity == 255) {
+            ammoQuantity = -1;
+        }
         std::shared_ptr<Entity2> &entity = gameState.at(id);
         entity->updateAmmoQuantity(ammoQuantity);
     }
@@ -217,10 +245,7 @@ class UpdatableGameState2 {
 
     bool hasMatchEnded() { return this->matchEnded; }
 
-   private:
-    bool isNotMain(const int &playerId, const int &mainId) {
-        return (playerId != mainId);
-    }
+    void updateTick(uint32_t tick) { this->tick = tick; }
 };
 
 #endif  // ESTADO_JUEGO_H
