@@ -1,5 +1,5 @@
-#include <iostream>
 #include "soundManager.h"
+#include <iostream>
 
 #define CHUNKSIZE 4096
 #define SOUNDPATH "taller-grupal/src/client/gui/testfiles/"
@@ -21,13 +21,13 @@ void SoundManager::Init() {
 }
 
 void SoundManager::Cleanup() {
-//     for (auto& pair : sounds) {
-//         Mix_FreeChunk(pair.second);
-//     }
-//     sounds.clear();
+    // for (auto& pair : sounds) {
+    //     Mix_FreeChunk(pair.second);
+    // }
+    // sounds.clear();
 
-//     Mix_CloseAudio();
-//     SDL_Quit();
+    Mix_CloseAudio();
+    SDL_Quit();
 }
 
 Mix_Chunk* SoundManager::LoadMusic(const std::string& soundFilePath) {

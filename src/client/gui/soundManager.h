@@ -9,7 +9,6 @@
 #include <SDL2pp/Mixer.hh>
 #include <iostream>
 
-
 class SoundManager {
 private:
     static std::map<std::string, Mix_Music*> sounds;    

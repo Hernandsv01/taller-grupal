@@ -33,16 +33,16 @@ include_directories(${SDL2PP_INCLUDE_DIRS})
 add_executable(testMusic testfiles/testMusic.cpp soundManager.cpp)
 target_link_libraries(testMusic PUBLIC SDL2pp)
 
-add_executable(testMap testfiles/testMap.cpp render.cpp textureManager.cpp)
-target_link_libraries(testMap PUBLIC SDL2pp)
+# add_executable(testMap testfiles/testMap.cpp render.cpp textureManager.cpp)
+# target_link_libraries(testMap PUBLIC SDL2pp)
 
-add_executable(testStandR testfiles/testStandR.cpp render.cpp
-                        entityGame.cpp estado_juego.h entityFactory.cpp
-                        playableCharacter.cpp textureManager.cpp)
-target_link_libraries(testStandR PUBLIC SDL2pp)
+# add_executable(testStandR testfiles/testStandR.cpp render.cpp
+#                         entityGame.cpp estado_juego.h entityFactory.cpp
+#                         playableCharacter.cpp textureManager.cpp)
+# target_link_libraries(testStandR PUBLIC SDL2pp)
 
-add_executable(testRunR testfiles/testRunR.cpp render.cpp
-                        entityGame.cpp estado_juego.h entityFactory.cpp
-                        playableCharacter.cpp textureManager.cpp)
-target_link_libraries(testRunR PUBLIC SDL2pp)
+# add_executable(testRunR testfiles/testRunR.cpp render.cpp
+#                         entityGame.cpp estado_juego.h entityFactory.cpp
+#                         playableCharacter.cpp textureManager.cpp)
+# target_link_libraries(testRunR PUBLIC SDL2pp)
 
