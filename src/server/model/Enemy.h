@@ -15,6 +15,8 @@ class Enemy : public Dynamic_entity {
     int movement_range;
     Update::EntitySubtype subtype;
 
+    std::vector<Pickup_type> possible_item_drops{ Pickup_type::CARROT, Pickup_type::COIN, Pickup_type::LIGHT_AMMO, Pickup_type::HEAVY_AMMO, Pickup_type::POWER_AMMO,  };
+
    public:
     Enemy(int id, float x_spawn, float y_spawn, Update::EntitySubtype subtype)
         : Dynamic_entity(id, x_spawn, y_spawn, ENEMY_WIDTH, ENEMY_HEIGHT,
@@ -133,6 +135,13 @@ class Enemy : public Dynamic_entity {
         std::vector<Update::Update_new> updates;
         updates.push_back(Update::Update_new::create_delete_entity(id));
         set_pending_deletion();
+
+        Pickup_type type = possible_item_drops[rand() % possible_item_drops.size()];
+        std::unique_ptr<Dynamic_entity> pickup = std::make_unique<Pickup>(next_id, x_pos+(x_size/2), y_pos+(y_size/2), type, static_cast<Update::EntitySubtype>(type));
+        entity_pool.push_back(std::move(pickup));
+        updates.push_back(Update::Update_new::create_create_entity(next_id, Update::EntityType::Item, static_cast<Update::EntitySubtype>(type)));
+        updates.push_back(Update::Update_new::create_position(next_id++, x_pos+(x_size/2), y_pos+(y_size/2)));
+
         return updates;
     }
 
