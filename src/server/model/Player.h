@@ -323,14 +323,14 @@ class Player : public Dynamic_entity {
                 break;
 
             case STOP_RUN_RIGHT:
-                if (vel_x > 0 || !(type == Update::EntitySubtype::Spaz && is_doing_special)) {
+                if (vel_x > 0 && !(type == Update::EntitySubtype::Spaz && is_doing_special)) {
                     vel_x = 0;
                     is_running = false;
                 }
                 break;
 
             case STOP_RUN_LEFT:
-                if (vel_x < 0 || !(type == Update::EntitySubtype::Spaz && is_doing_special)) {
+                if (vel_x < 0 && !(type == Update::EntitySubtype::Spaz && is_doing_special)) {
                     vel_x = 0;
                     is_running = false;
                 }
