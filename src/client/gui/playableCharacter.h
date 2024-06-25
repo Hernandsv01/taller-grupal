@@ -33,7 +33,7 @@ class PlayableCharacter : public Entity2 {
                     uint32_t tick);
     void showScore(SDL2pp::Renderer &renderer);
     void showAmmoQuantity(SDL2pp::Renderer &renderer, const int &windowHeight,
-                          uint32_t tick);
+                            const int &windowWidth, uint32_t tick);
     void showRemainingTime(SDL2pp::Renderer &renderer, const int &windowWidth,
                            const int &totalSeconds);
 

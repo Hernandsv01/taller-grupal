@@ -11,6 +11,7 @@
 #define INF "infinity"
 #define SPACETOBORDER 5
 #define MAXSCOREDIGIT 7
+#define SPACETOTWONUMBERS 35
 #define SECONDINMIN 60
 
 #define INITIALHEALTH 0
@@ -69,20 +70,22 @@ void PlayableCharacter::showHud(SDL2pp::Renderer &renderer,
                                 const int &seconds, uint32_t tick) {
     showHealth(renderer, windowHeight, tick);
     showScore(renderer);
-    showAmmoQuantity(renderer, windowHeight, tick);
+    showAmmoQuantity(renderer, windowHeight, windowWidth, tick);
     showRemainingTime(renderer, windowWidth, seconds);
 }
 
 void PlayableCharacter::showAmmoQuantity(SDL2pp::Renderer &renderer,
                                          const int &windowHeight,
+                                         const int &windowWidth,
                                          uint32_t tick) {
     int textureSize = weaponTexture->GetHeight();
     int textureLength = weaponTexture->GetWidth() / textureSize;
     renderer.Copy(*weaponTexture,
                   SDL2pp::Rect(textureSize * weaponSpriteNumber, 0, textureSize,
                                textureSize),
-                  SDL2pp::Rect(560, windowHeight - textureSize - SPACETOBORDER,
-                               textureSize, textureSize));
+                  SDL2pp::Rect(windowWidth-textureSize-SPACETOTWONUMBERS-SPACETOBORDER, 
+                                windowHeight - textureSize - SPACETOBORDER,
+                                textureSize, textureSize));
 
     int advance_frame = (tick % ANIMATION_RATE == 0);
 
@@ -94,12 +97,12 @@ void PlayableCharacter::showAmmoQuantity(SDL2pp::Renderer &renderer,
         int infinityHeight = infinityTexture->GetHeight();
         renderer.Copy(
             *infinityTexture, SDL2pp::NullOpt,
-            SDL2pp::Rect(textureSize + 560,
+            SDL2pp::Rect(windowWidth-SPACETOTWONUMBERS-SPACETOBORDER,
                          windowHeight - infinityHeight - SPACETOBORDER,
                          infinityWidth, infinityHeight));
     } else {
         showNumber(renderer, ammoQuantity,
-                   std::to_string(ammoQuantity).length(), textureSize + 560,
+                   std::to_string(ammoQuantity).length(), windowWidth-SPACETOTWONUMBERS-SPACETOBORDER,
                    windowHeight - textureSize - SPACETOBORDER);
     }
 }
@@ -127,21 +130,25 @@ void PlayableCharacter::showScore(SDL2pp::Renderer &renderer) {
 void PlayableCharacter::showRemainingTime(SDL2pp::Renderer &renderer,
                                           const int &windowWidth,
                                           const int &totalSeconds) {
+    
     int minutes = totalSeconds / SECONDINMIN;
     int seconds = totalSeconds % SECONDINMIN;
-    // Show minutes
-    showNumber(renderer, minutes, 2, 560, SPACETOBORDER);
 
-    // Show ":"
     SharedTexturePtr separatorTexture = TextureManager::getTexture("separator");
     int separatorWidth = separatorTexture->GetWidth();
     int separatorHeight = separatorTexture->GetHeight();
+    
+    // Show minutes
+    showNumber(renderer, minutes, 2, windowWidth-SPACETOTWONUMBERS*2-separatorWidth, SPACETOBORDER);
+
+    // Show ":"
     renderer.Copy(
         *separatorTexture, SDL2pp::NullOpt,
-        SDL2pp::Rect(595, SPACETOBORDER, separatorWidth, separatorHeight));
+        SDL2pp::Rect(windowWidth-SPACETOTWONUMBERS-separatorWidth, SPACETOBORDER,
+                        separatorWidth, separatorHeight));
 
     // Show seconds
-    showNumber(renderer, seconds, 2, 600 + separatorWidth, SPACETOBORDER);
+    showNumber(renderer, seconds, 2, windowWidth-SPACETOTWONUMBERS, SPACETOBORDER);
 }
 
 void PlayableCharacter::showNumber(SDL2pp::Renderer &renderer,
