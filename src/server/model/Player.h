@@ -221,22 +221,16 @@ public:
             case RUN_LEFT:
                 direction = enums_value_update::Direction::Left;
                 setXSpeed(Config::get_player_speed() * (-1));
-                action_updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                        ));
+                total_updates.push_back(Update::Update_new::create_value(
+                    id, Update::UpdateType::Direction, direction));
                 is_running = true;
                 break;
 
             case RUN_RIGHT:
                 direction = enums_value_update::Direction::Right;
                 setXSpeed(Config::get_player_speed());
-                action_updates.push_back(Update::Update_new::create_value(
-                        id,
-                        Update::UpdateType::Direction,
-                        direction
-                ));
+                total_updates.push_back(Update::Update_new::create_value(
+                    id, Update::UpdateType::Direction, direction));
                 is_running = true;
                 break;
 
